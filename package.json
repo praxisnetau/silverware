@@ -1,0 +1,67 @@
+{
+  "name": "silverware",
+  "version": "0.1.0",
+  "description": "SilverWare Component Framework.",
+  "homepage": "https://github.com/praxisnetau/silverware",
+  "keywords": [
+    "silverware",
+    "component",
+    "framework",
+    "silverstripe"
+  ],
+  "license": "BSD-3-Clause",
+  "author": "Praxis Interactive",
+  "contributors": [
+    {
+      "name": "Colin Tucker",
+      "email": "colin@praxis.net.au",
+      "url": "http://www.praxis.net.au"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/praxisnetau/silverware.git"
+  },
+  "bugs": {
+    "url": "https://github.com/praxisnetau/silverware/issues"
+  },
+  "engines": {
+    "node": "^4.2.0"
+  },
+  "scripts": {
+    "watch": "webpack --env.development --colors --watch",
+    "build": "webpack --env.production --colors --optimize-minimize"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^6.7.6",
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-es2015": "^6.22.0",
+    "clean-webpack-plugin": "^0.1.15",
+    "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.26.2",
+    "extract-text-webpack-plugin": "^2.0.0",
+    "file-loader": "^0.10.1",
+    "node-sass": "^4.5.0",
+    "postcss-loader": "^1.3.3",
+    "sass-loader": "^6.0.2",
+    "style-loader": "^0.13.2",
+    "url-loader": "^0.5.8",
+    "webpack": "^2.2.1"
+  },
+  "babel": {
+    "presets": [
+      [
+        "es2015",
+        {
+          "modules": false
+        }
+      ]
+    ]
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}

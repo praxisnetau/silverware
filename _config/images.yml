@@ -1,0 +1,32 @@
+---
+Name: silverware-images
+---
+
+# Define Image Extensions:
+
+SilverStripe\Assets\Image:
+  extensions:
+    - SilverWare\Extensions\Model\CropPriorityExtension
+
+# Define Admin Extensions:
+
+SilverStripe\AssetAdmin\Forms\FileFormFactory:
+  extensions:
+    - SilverWare\Extensions\Admin\CropPriorityFileFormExtension
+
+# Define Image Resize Methods:
+
+SilverWare\Tools\ImageTools:
+  resize_methods:
+    crop-width: 'Crop Width'
+    crop-height: 'Crop Height'
+    fill: 'Fill'
+    fill-max: 'Fill Max'
+    fill-priority: 'Fill Priority'
+    fit: 'Fit'
+    fit-max: 'Fit Max'
+    pad: 'Pad'
+    scale-width: 'Scale Width'
+    scale-height: 'Scale Height'
+    scale-max-width: 'Scale Max Width'
+    scale-max-height: 'Scale Max Height'

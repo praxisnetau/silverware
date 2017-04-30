@@ -1,0 +1,26 @@
+/* Dimensions Field Styles
+===================================================================================================================== */
+
+.field {
+  
+  &.dimensions .by {
+    
+    display: inline-block;
+    line-height: 30px;
+    margin-right: $spacer-x / 2;
+    
+    &:last-child {
+      display: none;
+    }
+    
+    .icon::before {
+      content: "\44";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: normal;
+      font-family: "silverstripe";
+    }
+    
+  }
+  
+}

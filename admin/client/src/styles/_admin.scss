@@ -1,0 +1,107 @@
+/* SilverWare Admin Styles
+===================================================================================================================== */
+
+// Tree Styles:
+
+.cms-tree {
+  
+  &.jstree li.hidden {
+    display: none;
+  }
+  
+  .is-cached > a span.jstree-pageicon::after {
+    
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    content: url('../images/cached.png');
+    position: absolute;
+    
+  }
+  
+  .is-disabled > a span.jstree-pageicon::after {
+    
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    content: url('../images/disabled.png');
+    position: absolute;
+    
+  }
+  
+  .heading-h1 > a span.jstree-pageicon {
+    background-image: url('../images/headings/h1.png');
+  }
+  
+  .heading-h2 > a span.jstree-pageicon {
+    background-image: url('../images/headings/h2.png');
+  }
+  
+  .heading-h3 > a span.jstree-pageicon {
+    background-image: url('../images/headings/h3.png');
+  }
+  
+  .heading-h4 > a span.jstree-pageicon {
+    background-image: url('../images/headings/h4.png');
+  }
+  
+  .heading-h5 > a span.jstree-pageicon {
+    background-image: url('../images/headings/h5.png');
+  }
+  
+  .heading-h6 > a span.jstree-pageicon {
+    background-image: url('../images/headings/h6.png');
+  }
+  
+}
+
+// Field Styles:
+
+.field {
+  
+  &.form-group {
+    &.hidden {
+      display: none;
+    }
+  }
+  
+  .chosen-container-single {
+    .chosen-default {
+      color: $input-color-placeholder;
+    }
+  }
+  
+}
+
+// Badge Styles:
+
+ul.nav-tabs {
+  
+  span.number-badge {
+    color: $white;
+    padding: 0 4px;
+    font-size: 11px;
+    min-width: 16px;
+    min-height: 16px;
+    margin-left: 4px;
+    line-height: 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block;
+    background-color: $brand-danger;
+  }
+  
+}
+
+// Message Styles:
+
+.message {
+  
+  &.status {
+    margin-bottom: ($spacer * 1.5);
+  }
+  
+}

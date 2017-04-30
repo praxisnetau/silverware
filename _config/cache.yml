@@ -1,0 +1,12 @@
+---
+Name: silverware-cache
+---
+
+# Configure Render Cache:
+
+SilverStripe\Core\Injector\Injector:
+  Psr\SimpleCache\CacheInterface.SilverWare_render:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: 'SilverWare_render'
+      defaultLifetime: 300

@@ -1,0 +1,35 @@
+---
+Name: silverware-model
+---
+
+# SilverWare Model:
+
+SilverStripe\Core\Injector\Injector:
+  AppFixtureFactory:
+    class: SilverWare\Dev\FixtureFactory
+  GridFramework:
+    class: SilverWare\Grid\Frameworks\Bootstrap\Framework
+  AbsoluteInt:
+    class: SilverWare\ORM\FieldType\DBAbsoluteInt
+  Dimensions:
+    class: SilverWare\ORM\FieldType\DBDimensions
+  Viewports:
+    class: SilverWare\ORM\FieldType\DBViewports
+
+# Configure Fixture Factory:
+
+SilverWare\Dev\FixtureFactory:
+  default_blueprint: SilverWare\Dev\FixtureBlueprint
+
+# Configure Fixture Blueprint:
+
+SilverWare\Dev\FixtureBlueprint:
+  default_parents:
+    SilverWare\Model\Template: `\SilverWare\Folders\TemplateFolder::find()->ID`
+    SilverWare\Model\Layout: `\SilverWare\Folders\LayoutFolder::find()->ID`
+    SilverWare\Model\Panel: `\SilverWare\Folders\PanelFolder::find()->ID`
+  default_relations:
+    SilverStripe\SiteConfig\SiteConfig: `\SilverStripe\SiteConfig\SiteConfig::current_site_config()->ID`
+  default_identifiers:
+    SilverWare\Model\PageType: PageClass
+  verbose: false

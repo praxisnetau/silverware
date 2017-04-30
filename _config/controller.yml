@@ -1,0 +1,52 @@
+---
+Name: silverware-controller
+---
+
+# Configure Content Controller:
+
+SilverStripe\CMS\Controllers\ContentController:
+  required_js:
+    - silverware/client/dist/js/bundle.js
+  required_css:
+    - silverware/client/dist/styles/bundle.css
+  required_themed_js:
+    - production/js/bundle.js
+  required_themed_css:
+    - production/styles/bundle.css
+
+---
+Name: silverware-controller-dev
+Only:
+  environment: dev
+---
+
+# Configure Content Controller (dev):
+
+SilverStripe\CMS\Controllers\ContentController:
+  dev_server:
+    host: localhost
+    port: 8080
+    https: false
+    timeout: 10
+  load_js: true
+  load_css: true
+  load_themed_js: true
+  load_themed_css: false
+  load_component_requirements: true
+  disable_cache: true
+
+---
+Name: silverware-controller-live
+Except:
+  environment: dev
+---
+
+# Configure Content Controller (live):
+
+SilverStripe\CMS\Controllers\ContentController:
+  load_js: false
+  load_css: false
+  load_themed_js: true
+  load_themed_css: true
+  load_component_requirements: false
+  disable_cache: false

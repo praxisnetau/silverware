@@ -1,0 +1,44 @@
+---
+Name: silverware-styles
+---
+
+# Bootstrap Styles:
+
+SilverWare\Grid\Frameworks\Bootstrap\Framework:
+  style_mappings:
+    align:
+      left: left
+      center: center
+      right: right
+    background:
+      primary: bg-primary
+      inverse: bg-inverse
+    feature:
+      block: card-block
+      feature: card
+      heading: card-title
+      image-top: card-img-top
+    figure:
+      figure: figure
+      image: figure-img
+      caption: figure-caption
+    image:
+      fluid: img-fluid
+    position:
+      fixed-top: fixed-top
+      fixed-bottom: fixed-bottom
+      sticky-top: sticky-top
+    rounded:
+      rounded: rounded
+      top: rounded-top
+      right: rounded-right
+      bottom: rounded-bottom
+      left: rounded-left
+      circle: rounded-circle
+    text:
+      text: text
+    viewport:
+      small: sm
+      medium: md
+      large: lg
+      huge: xl

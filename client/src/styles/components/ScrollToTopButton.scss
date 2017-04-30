@@ -1,0 +1,72 @@
+/* Scroll to Top Button Styles
+===================================================================================================================== */
+
+.scrolltotopbutton {
+  
+  color: $white;
+  background-color: $brand-primary;
+  
+  opacity: 0;
+  outline: 0;
+  right: $spacer;
+  bottom: $spacer;
+  width: ($spacer * 4);
+  height: ($spacer * 4);
+  z-index: 1000;
+  position: fixed;
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 16px;
+  line-height: ($spacer * 4);
+  
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  
+  transition: opacity .3s 0s, visibility 0s .3s, color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s;
+  
+  &.is-visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  &.fade-out {
+    opacity: 0.5;
+  }
+  
+  &:focus {
+    color: $white;
+  }
+  
+  &:hover {
+    color: $white;
+    opacity: 1;
+  }
+  
+}
+
+// Media Queries:
+
+@media (min-width: map-get($grid-breakpoints, md)) {
+  
+  .scrolltotopbutton {
+    width: ($spacer * 5);
+    height: ($spacer * 5);
+    right: $spacer-double;
+    bottom: $spacer-double;
+    line-height: ($spacer * 5);
+  }
+  
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  
+  .scrolltotopbutton {
+    width: ($spacer * 6);
+    height: ($spacer * 6);
+    font-size: 20px;
+    line-height: ($spacer * 6);
+  }
+  
+}

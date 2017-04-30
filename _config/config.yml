@@ -1,0 +1,42 @@
+---
+Name: silverware
+---
+
+# Page Extensions:
+
+Page:
+  extensions:
+    - SilverWare\Extensions\PageExtension
+    - SilverWare\Extensions\AreaExtension
+    - SilverWare\Extensions\Model\MetaDataExtension
+  disable_metadata_toggle: true
+
+# Controller Extensions:
+
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - SilverWare\Extensions\ControllerExtension
+
+# Site Configuration Extensions:
+
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - SilverWare\Extensions\Config\PageTypeConfig
+    - SilverWare\Extensions\Config\AppIconConfig
+  asset_folders:
+    SilverWare\Extensions\Config\AppIconConfig: Icons
+
+# Define Default Folders:
+
+SilverWare\Model\Folder:
+  default_folders:
+    - SilverWare\Folders\TemplateFolder
+    - SilverWare\Folders\LayoutFolder
+    - SilverWare\Folders\PanelFolder
+
+# Field List Extensions:
+
+SilverStripe\Forms\FieldList:
+  extensions:
+    - SilverWare\Extensions\Forms\StatusMessageExtension
+

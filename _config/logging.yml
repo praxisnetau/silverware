@@ -1,0 +1,17 @@
+---
+Name: silverware-logging-dev
+Only:
+  environment: dev
+---
+
+# Configure Debug Logger:
+
+SilverStripe\Core\Injector\Injector:
+  Psr\Log\LoggerInterface:
+    calls:
+      LogFileHandler: [ pushHandler, [ %$LogFileHandler ] ]
+  LogFileHandler:
+    class: Monolog\Handler\StreamHandler
+    constructor:
+      - '../silverware-debug.log'
+      - 'debug'

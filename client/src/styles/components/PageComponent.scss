@@ -1,0 +1,14 @@
+/* Page Component Styles
+===================================================================================================================== */
+
+.pagecomponent {
+  
+  &.page-title-hidden {
+    
+    .content-container > article > header {
+      display: none;
+    }
+    
+  }
+  
+}
