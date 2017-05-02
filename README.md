@@ -1,5 +1,11 @@
 <p align="center">
-  <img src="media/silverware-logo.png" width="400" height="400" title="SilverWare" alt="SilverWare">
+  <img src="media/bitmap/silverware-logo.png" width="200" height="200" title="SilverWare" alt="SilverWare">
+</p>
+
+<p align="center">
+  <a href="https://packagist.org/packages/silverware/silverware" target="_blank"><img src="https://poser.pugx.org/silverware/silverware/v/stable" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/silverware/silverware" target="_blank"><img src="https://poser.pugx.org/silverware/silverware/v/unstable" alt="Latest Unstable Version"></a>
+  <a href="https://packagist.org/packages/silverware/silverware" target="_blank"><img src="https://poser.pugx.org/silverware/silverware/license" alt="License"></a>
 </p>
 
 **SilverWare** is a component framework for [SilverStripe v4][silverstripe] which allows you to build
