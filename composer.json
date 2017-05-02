@@ -47,6 +47,9 @@
     }
   },
   "extra": {
+    "branch-alias": {
+      "dev-master": "0.1.x-dev"
+    },
     "installer-name": "silverware"
   },
   "minimum-stability": "dev",
