@@ -159,7 +159,8 @@ const config = (env) => {
   return [
     {
       entry: {
-        'bundle': path.resolve(PATHS.ADMIN.BUNDLES, 'bundle.js')
+        'bundle': path.resolve(PATHS.ADMIN.BUNDLES, 'bundle.js'),
+        'preview': path.resolve(PATHS.ADMIN.BUNDLES, 'preview.js')
       },
       output: {
         path: PATHS.ADMIN.DIST,

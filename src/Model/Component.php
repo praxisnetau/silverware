@@ -362,6 +362,16 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     }
     
     /**
+     * Answers the type of component as a string.
+     *
+     * @return string
+     */
+    public function getComponentType()
+    {
+        return $this->i18n_singular_name();
+    }
+    
+    /**
      * Answers the default style ID for the HTML template.
      *
      * @return string
@@ -699,16 +709,6 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     }
     
     /**
-     * Answers the template used to render the receiver.
-     *
-     * @return string|array|SSViewer
-     */
-    public function getTemplate()
-    {
-        return static::class;
-    }
-    
-    /**
      * Renders the component for the HTML template.
      *
      * @param string $layout Page layout passed from template.
@@ -722,7 +722,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
             'Self' => $this,
             'Title' => $title,
             'Layout' => $layout
-        ])->renderWith($this->getTemplate());
+        ])->renderWith(static::class);
     }
     
     /**
@@ -742,5 +742,15 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         }
         
         return $html;
+    }
+    
+    /**
+     * Renders the component for preview within the CMS.
+     *
+     * @return DBHTMLText|string
+     */
+    public function renderPreview()
+    {
+        return $this->renderSelf();
     }
 }

@@ -241,16 +241,6 @@ class BaseComponent extends Component
     }
     
     /**
-     * Answers the base template used to render the receiver.
-     *
-     * @return string|array|SSViewer
-     */
-    public function getBaseTemplate()
-    {
-        return self::class;
-    }
-    
-    /**
      * Renders the component for the HTML template.
      *
      * @param string $layout Page layout passed from template.
@@ -262,7 +252,7 @@ class BaseComponent extends Component
     {
         return $this->getController()->customise([
             'Content' => $this->renderContent($layout, $title)
-        ])->renderWith($this->getBaseTemplate());
+        ])->renderWith(self::class);
     }
     
     /**

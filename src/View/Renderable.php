@@ -396,6 +396,16 @@ trait Renderable
     }
     
     /**
+     * Answers true if the receiver is being previewed within the CMS.
+     *
+     * @return boolean
+     */
+    public function isCMSPreview()
+    {
+        return (isset($_GET['CMSPreview']) && $_GET['CMSPreview']);
+    }
+    
+    /**
      * Answers true if the object uses a render cache.
      *
      * @return boolean

@@ -18,6 +18,10 @@
 namespace SilverWare\Model;
 
 use SilverStripe\CMS\Controllers\ContentController;
+use SilverStripe\View\Requirements;
+use SilverStripe\View\SSViewer;
+use Page;
+use PageController;
 
 /**
  * An extension of the content controller class for a SilverWare component controller.
@@ -30,4 +34,31 @@ use SilverStripe\CMS\Controllers\ContentController;
  */
 class ComponentController extends ContentController
 {
+    /**
+     * Answers a viewer object to render the template for the current page.
+     *
+     * @param $action string
+     *
+     * @return SSViewer
+     */
+    public function getViewer($action)
+    {
+        // Answer Viewer Object (from parent):
+        
+        if (!$this->isCMSPreview()) {
+            return parent::getViewer($action);
+        }
+        
+        // Load Page Requirements (uses theme):
+        
+        PageController::create(Page::create())->doInit();
+        
+        // Load Preview Requirements:
+        
+        Requirements::css(SILVERWARE_DIR . '/admin/client/dist/styles/preview.css');
+        
+        // Answer Viewer Object (for CMS preview):
+        
+        return new SSViewer(sprintf('%s\CMSPreview', Component::class));
+    }
 }
