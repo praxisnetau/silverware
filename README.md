@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="media/bitmap/silverware-logo.png" width="200" height="200" title="SilverWare" alt="SilverWare">
+  <img src="https://raw.githubusercontent.com/praxisnetau/silverware/master/media/bitmap/silverware-logo.png" width="200" height="200" title="SilverWare" alt="SilverWare">
 </p>
 
 <p align="center">
