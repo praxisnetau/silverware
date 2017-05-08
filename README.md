@@ -2,9 +2,11 @@
   <img src="https://raw.githubusercontent.com/praxisnetau/silverware/master/media/bitmap/silverware-logo.png" width="200" height="200" title="SilverWare" alt="SilverWare">
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/silverware/silverware/v/stable)](https://packagist.org/packages/silverware/silverware)
-[![Latest Unstable Version](https://poser.pugx.org/silverware/silverware/v/unstable)](https://packagist.org/packages/silverware/silverware)
-[![License](https://poser.pugx.org/silverware/silverware/license)](https://packagist.org/packages/silverware/silverware)
+<p align="center">
+  <a href="https://packagist.org/packages/silverware/silverware" target="_blank"><img src="https://poser.pugx.org/silverware/silverware/v/stable" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/silverware/silverware" target="_blank"><img src="https://poser.pugx.org/silverware/silverware/v/unstable" alt="Latest Unstable Version"></a>
+  <a href="https://packagist.org/packages/silverware/silverware" target="_blank"><img src="https://poser.pugx.org/silverware/silverware/license" alt="License"></a>
+</p>
 
 **SilverWare** is a component framework for [SilverStripe v4][silverstripe] which allows you to build
 entire page templates and layouts from small, reusable, configurable and extensible components.
