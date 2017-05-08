@@ -1,4 +1,4 @@
-<div<% if $CurrentPageClassID %> id="$CurrentPageClassID"<% end_if %>>
+<div $CurrentPageAttributesHTML>
   <div class="content-container">
     $Layout.RAW
   </div>

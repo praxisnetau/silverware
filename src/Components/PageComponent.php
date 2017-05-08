@@ -111,6 +111,16 @@ class PageComponent extends BaseComponent
     ];
     
     /**
+     * Maps field and method names to the class names of casting objects.
+     *
+     * @var array
+     * @config
+     */
+    private static $casting = [
+        'CurrentPageAttributesHTML' => 'HTMLFragment'
+    ];
+    
+    /**
      * Defines the default classes to use when rendering this object.
      *
      * @var array
@@ -159,6 +169,46 @@ class PageComponent extends BaseComponent
         }
         
         return $classes;
+    }
+    
+    /**
+     * Answers the attributes for the current page as an array.
+     *
+     * @return array
+     */
+    public function getCurrentPageAttributes()
+    {
+        // Create Attributes Array:
+        
+        $attributes = [];
+        
+        // Define Attributes Array:
+        
+        if ($id = $this->getCurrentPageClassID()) {
+            $attributes['id'] = $id;
+        }
+        
+        if ($class = $this->getCurrentPageAncestry()) {
+            $attributes['class'] = $class;
+        }
+        
+        // Extend Attributes Array:
+        
+        $this->extend('updateCurrentPageAttributes', $attributes);
+        
+        // Answer Attributes Array:
+        
+        return $attributes;
+    }
+    
+    /**
+     * Answers the attributes for the current page as a string.
+     *
+     * @return string
+     */
+    public function getCurrentPageAttributesHTML()
+    {
+        return $this->getAttributesHTML($this->getCurrentPageAttributes());
     }
     
     /**

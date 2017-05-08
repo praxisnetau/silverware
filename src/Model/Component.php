@@ -31,6 +31,7 @@ use SilverStripe\View\SSViewer;
 use SilverWare\Admin\PageIconFix;
 use SilverWare\Extensions\RenderableExtension;
 use SilverWare\Tools\ClassTools;
+use SilverWare\Tools\ViewTools;
 use SilverWare\View\GridAware;
 use SilverWare\View\Renderable;
 use SilverWare\View\RequireFiles;
@@ -649,6 +650,20 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     public function getCurrentPageClassID()
     {
         return Convert::raw2htmlid($this->getCurrentPageClass());
+    }
+    
+    /**
+     * Answers a string containing the current page ancestry for the HTML template.
+     *
+     * @return string
+     */
+    public function getCurrentPageAncestry($asString = false)
+    {
+        $ancestry = ViewTools::singleton()->convertClass(
+            ClassTools::singleton()->getObjectAncestry($this->getCurrentPageClass(), Page::class, true)
+        );
+        
+        return ViewTools::singleton()->array2att($ancestry);
     }
     
     /**

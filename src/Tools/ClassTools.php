@@ -164,7 +164,9 @@ class ClassTools extends Object
      */
     public function getClassWithoutNamespace($name)
     {
-        return substr($name, strrpos($name, '\\') + 1);
+        $pos = strrpos($name, '\\');
+        
+        return ($pos === false) ? $name : substr($name, $pos + 1);
     }
     
     /**
