@@ -309,6 +309,28 @@ class PageExtension extends DataExtension implements PermissionProvider
     }
     
     /**
+     * Answers an array of custom CSS required for the template.
+     *
+     * @return array
+     */
+    public function getCustomCSS()
+    {
+        // Create CSS Array:
+        
+        $css = [];
+        
+        // Merge Template Custom CSS:
+        
+        if ($template = $this->owner->getPageTemplate()) {
+            $css = array_merge($css, $template->getCustomCSS());
+        }
+        
+        // Answer CSS Array:
+        
+        return $css;
+    }
+    
+    /**
      * Answers a list of the enabled components within the extended object.
      *
      * @return ArrayList

@@ -112,6 +112,16 @@ class ConfigExtension extends DataExtension
     }
     
     /**
+     * Answers the current site config object.
+     *
+     * @return SiteConfig
+     */
+    public function getSiteConfig()
+    {
+        return SiteConfig::current_site_config();
+    }
+    
+    /**
      * Answers the asset folder used by the receiver.
      *
      * @return string
@@ -123,15 +133,5 @@ class ConfigExtension extends DataExtension
         if (is_array($folders) && isset($folders[static::class])) {
             return $folders[static::class];
         }
-    }
-    
-    /**
-     * Answers the current site config object.
-     *
-     * @return SiteConfig
-     */
-    public function getSiteConfig()
-    {
-        return SiteConfig::current_site_config();
     }
 }

@@ -3,8 +3,13 @@
 
 .field {
   
-  &.viewports .dropdown {
-    min-width: 140px;
+  &.viewports {
+    
+    .text, .dropdown {
+      min-width: 140px;
+      max-width: 140px;
+    }
+    
   }
   
 }

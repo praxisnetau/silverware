@@ -91,6 +91,7 @@
         }
         
         > section.content {
+          flex: 1;
           order: 2;
           margin-left: $spacer;
         }
@@ -105,6 +106,7 @@
         }
         
         > section.content {
+          flex: 1;
           order: 1;
           margin-right: $spacer;
         }

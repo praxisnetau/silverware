@@ -818,15 +818,15 @@ class FixtureBlueprint extends BaseBlueprint
     }
     
     /**
-     * Answers true if the given value is a code string.
+     * Answers true if the given value is a callback array.
      *
-     * @param string $value
+     * @param array $value
      *
      * @return boolean
      */
-    public function isCode($value)
+    public function isCallbackArray($value)
     {
-        return !is_array($value) ? preg_match('/^`(.)*`$/', $value) : false;
+        return (is_array($value) && isset($value['class']) && isset($value['method']));
     }
     
     /**
@@ -977,7 +977,15 @@ class FixtureBlueprint extends BaseBlueprint
         if ($defaultParents = $this->config()->default_parents) {
             
             if (isset($defaultParents[$this->getClass()])) {
-                return $this->processValue($defaultParents[$this->getClass()]);
+                
+                $result = $this->processValue($defaultParents[$this->getClass()]);
+                
+                if ($result instanceof DataObject) {
+                    return $result->ID;
+                }
+                
+                return $result;
+                
             }
             
         }
@@ -995,7 +1003,15 @@ class FixtureBlueprint extends BaseBlueprint
         if ($defaultRelations = $this->config()->default_relations) {
             
             if (isset($defaultRelations[$class])) {
-                return $this->processValue($defaultRelations[$class]);
+                
+                $result = $this->processValue($defaultRelations[$class]);
+                
+                if ($result instanceof DataObject) {
+                    return $result->ID;
+                }
+                
+                return $result;
+                
             }
             
         }
@@ -1168,41 +1184,80 @@ class FixtureBlueprint extends BaseBlueprint
     /**
      * Processes the given value and answers the resulting data.
      *
-     * @param string $value
+     * @param string|array $value
      *
      * @return mixed
      */
     protected function processValue($value)
     {
-        $value = trim($value);
+        if (is_array($value)) {
+            
+            // Handle Array Value:
+            
+            $value = $this->processArray($value);
+            
+        } else {
+            
+            // Handle String Value:
+            
+            $value = trim($value);
+            
+            if ($this->isReference($value)) {
+                return $this->processReference($value);
+            }
+            
+        }
         
-        if ($this->isCode($value)) {
-            return $this->processCode($value);
-        } elseif ($this->isReference($value)) {
-            return $this->processReference($value);
+        // Answer Value:
+        
+        return $value;
+    }
+    
+    /**
+     * Processes the given array value and answers the resulting data.
+     *
+     * @param array $value
+     *
+     * @return mixed
+     */
+    protected function processArray($value)
+    {
+        if (is_array($value)) {
+            
+            if ($this->isCallbackArray($value)) {
+                return $this->processCallbackArray($value);
+            }
+            
+            return implode(', ', $value);
+            
         }
         
         return $value;
     }
     
     /**
-     * Processes the given code string and answers the evaluated result.
+     * Processes the given callback array value and answers the resulting data.
      *
-     * @param string $value e.g. `SiteConfig::current_site_config()->ID`
+     * @param array $value
      *
      * @return mixed
      */
-    protected function processCode($value)
+    public function processCallbackArray($value)
     {
-        if ($this->isCode($value)) {
+        if ($this->isCallbackArray($value)) {
             
-            // Process Code String:
+            $class  = $value['class'];
+            $method = $value['method'];
             
-            $code = trim($value, '`');
-            
-            // Answer Evaluated Result:
-            
-            return eval("return $code;");
+            if ($result = call_user_func("{$class}::{$method}")) {
+                
+                if (isset($value['property'])) {
+                    return $result->{$value['property']};
+                }
+                
+                return $result;
+                
+            }
             
         }
     }

@@ -21,6 +21,7 @@ use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Object;
 use SilverStripe\View\Requirements;
+use SilverStripe\View\ViewableData;
 
 /**
  * A singleton providing utility functions for use with views.
@@ -142,5 +143,89 @@ class ViewTools extends Object
         // Answer Markup:
         
         return implode(' ', $markup);
+    }
+    
+    /**
+     * Processes the given attribute value which references methods / fields of the given objects.
+     *
+     * @param string $value
+     * @param ViewableData $object
+     * @param ViewableData $parent
+     * @param array $args
+     *
+     * @return string
+     */
+    public function processAttribute($value, ViewableData $object, ViewableData $parent = null, $args = [])
+    {
+        // Does the value refer to a field or method?
+        
+        if (strpos($value, '$') === 0) {
+            
+            // Obtain Field Name:
+            
+            $field = ltrim($value, '$');
+            
+            // Obtain Field Value:
+            
+            if ($object->hasMethod("get{$field}")) {
+                
+                // First, answer the result of a method call on the receiver:
+                
+                return call_user_func_array(
+                    [$object, "get{$field}"],
+                    $this->processAttributeArgs($args, $object, $parent)
+                );
+                
+            } elseif ($object->hasField($field)) {
+                
+                // Next, answer a field value from the given object:
+                
+                return $object->$field;
+                
+            } elseif ($parent->hasField($field)) {
+                
+                // Finally, answer a field value from the given parent object:
+                
+                return $parent->$field;
+                
+            }
+            
+        }
+        
+        // Answer Value:
+        
+        return $value;
+    }
+    
+    /**
+     * Processes the given array of arguments for an attribute.
+     *
+     * @param string|array $stringOrArray
+     * @param ViewableData $object
+     * @param ViewableData $parent
+     *
+     * @return array
+     */
+    public function processAttributeArgs($stringOrArray, ViewableData $object, ViewableData $parent = null)
+    {
+        $args = (array) $stringOrArray;
+        
+        foreach ($args as $key => $arg) {
+            $args[$key] = $this->processAttribute($arg, $object, $parent);
+        }
+        
+        return $args;
+    }
+    
+    /**
+     * Removes empty lines from the given string.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function removeEmptyLines($string)
+    {
+        return preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $string);
     }
 }

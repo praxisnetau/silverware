@@ -40,6 +40,14 @@ abstract class Framework extends ViewableData
     private static $columns = 12;
     
     /**
+     * Maps viewport sizes to breakpoints for this framework.
+     *
+     * @var array
+     * @config
+     */
+    private static $breakpoints = [];
+    
+    /**
      * Maps style names to the appropriate style classes provided by this framework.
      *
      * @var array
@@ -113,6 +121,32 @@ abstract class Framework extends ViewableData
         }
         
         return array_filter($styles);
+    }
+    
+    /**
+     * Answers the breakpoint for the specified viewport.
+     *
+     * @param string $viewport
+     *
+     * @return string
+     */
+    public function getBreakpoint($viewport)
+    {
+        $viewport = strtolower($viewport);
+        
+        if (($breakpoints = $this->getBreakpoints()) && isset($breakpoints[$viewport])) {
+            return $breakpoints[$viewport];
+        }
+    }
+    
+    /**
+     * Answers an array of breakpoints defined for the framework.
+     *
+     * @return array
+     */
+    public function getBreakpoints()
+    {
+        return $this->config()->breakpoints;
     }
     
     /**

@@ -21,7 +21,6 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\TextField;
-use SilverWare\Extensions\Lists\ListSourceExtension;
 
 /**
  * An extension of the base component class for a list component.
@@ -32,7 +31,7 @@ use SilverWare\Extensions\Lists\ListSourceExtension;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class ListComponent extends BaseComponent
+class ListComponent extends BaseListComponent
 {
     /**
      * Define show constants.
@@ -47,12 +46,6 @@ class ListComponent extends BaseComponent
     const ALIGN_LEFT = 'left';
     const ALIGN_RIGHT = 'right';
     const ALIGN_STAGGER = 'stagger';
-    
-    /**
-     * Define image link constants.
-     */
-    const IMAGE_LINK_ITEM = 'item';
-    const IMAGE_LINK_FILE = 'file';
     
     /**
      * Human-readable singular name.
@@ -92,7 +85,7 @@ class ListComponent extends BaseComponent
      * @var string
      * @config
      */
-    private static $hide_ancestor = BaseComponent::class;
+    private static $hide_ancestor = BaseListComponent::class;
     
     /**
      * Maps field names to field types for this object.
@@ -110,10 +103,8 @@ class ListComponent extends BaseComponent
         'DateFormat' => 'Varchar(32)',
         'HeadingLevel' => 'Varchar(2)',
         'ImageAlignment' => 'Varchar(16)',
-        'ImageLinksTo' => 'Varchar(8)',
         'ButtonLabel' => 'Varchar(128)',
-        'LinkTitles' => 'Boolean',
-        'LinkImages' => 'Boolean'
+        'LinkTitles' => 'Boolean'
     ];
     
     /**
@@ -128,20 +119,8 @@ class ListComponent extends BaseComponent
         'ShowDetails' => 'all',
         'ShowSummary' => 'all',
         'ShowFooter' => 'all',
-        'ImageLinksTo' => 'item',
         'DateFormat' => 'd MMMM Y',
-        'LinkTitles' => 1,
-        'LinkImages' => 1
-    ];
-    
-    /**
-     * Defines the extension classes to apply to this object.
-     *
-     * @var array
-     * @config
-     */
-    private static $extensions = [
-        ListSourceExtension::class
+        'LinkTitles' => 1
     ];
     
     /**
@@ -230,11 +209,6 @@ class ListComponent extends BaseComponent
                         $this->fieldLabel('ImageAlignment'),
                         $this->getImageAlignmentOptions()
                     )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    DropdownField::create(
-                        'ImageLinksTo',
-                        $this->fieldLabel('ImageLinksTo'),
-                        $this->getImageLinksToOptions()
-                    ),
                     TextField::create(
                         'DateFormat',
                         $this->fieldLabel('DateFormat')
@@ -280,7 +254,6 @@ class ListComponent extends BaseComponent
         $labels['ShowFooter'] = _t(__CLASS__ . '.SHOWFOOTER', 'Show footer');
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['LinkTitles'] = _t(__CLASS__ . '.LINKTITLES', 'Link titles');
-        $labels['LinkImages'] = _t(__CLASS__ . '.LINKIMAGES', 'Link images');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['ImageAlignment'] = _t(__CLASS__ . '.IMAGEALIGNMENT', 'Image alignment');
         
@@ -306,19 +279,13 @@ class ListComponent extends BaseComponent
     }
     
     /**
-     * Answers a list of items.
+     * Answers true if the receiver can paginate.
      *
-     * @return ArrayList
+     * @return boolean
      */
-    public function getListItems()
+    public function canPaginate()
     {
-        $items = parent::getListItems();
-        
-        foreach ($items as $item) {
-            $item->setListComponent($this);
-        }
-        
-        return $items;
+        return true;
     }
     
     /**
@@ -438,16 +405,6 @@ class ListComponent extends BaseComponent
     }
     
     /**
-     * Answers a message string to be shown when no data is available.
-     *
-     * @return string
-     */
-    public function getNoDataMessage()
-    {
-        return _t(__CLASS__ . '.NODATAAVAILABLE', 'No data available.');
-    }
-    
-    /**
      * Answers an array of options for the show fields.
      *
      * @return array
@@ -472,19 +429,6 @@ class ListComponent extends BaseComponent
             self::ALIGN_LEFT => _t(__CLASS__ . '.LEFT', 'Left'),
             self::ALIGN_RIGHT => _t(__CLASS__ . '.RIGHT', 'Right'),
             self::ALIGN_STAGGER => _t(__CLASS__ . '.STAGGER', 'Stagger')
-        ];
-    }
-    
-    /**
-     * Answers an array of options for the image links to field.
-     *
-     * @return array
-     */
-    public function getImageLinksToOptions()
-    {
-        return [
-            self::IMAGE_LINK_ITEM => _t(__CLASS__ . '.ITEM', 'Item'),
-            self::IMAGE_LINK_FILE => _t(__CLASS__ . '.FILE', 'File')
         ];
     }
     

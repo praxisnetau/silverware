@@ -20,7 +20,8 @@ namespace SilverWare\Lists;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\View\SSViewer;
-use SilverWare\Components\ListComponent;
+use SilverWare\Components\BaseListComponent;
+use SilverWare\Tools\ViewTools;
 use SilverWare\View\ViewClasses;
 
 /**
@@ -37,20 +38,20 @@ trait ListItem
     use ViewClasses;
     
     /**
-     * The list component instance responsible for rendering the list item.
+     * The component instance responsible for rendering the list item.
      *
-     * @var ListComponent
+     * @var BaseListComponent
      */
     protected $listComponent;
     
     /**
      * Defines the value of the listComponent attribute.
      *
-     * @param ListComponent $listComponent
+     * @param BaseListComponent $listComponent
      *
      * @return $this
      */
-    public function setListComponent(ListComponent $listComponent)
+    public function setListComponent(BaseListComponent $listComponent)
     {
         $this->listComponent = $listComponent;
         
@@ -60,7 +61,7 @@ trait ListItem
     /**
      * Answers the value of the listComponent attribute.
      *
-     * @return ListComponent
+     * @return BaseListComponent
      */
     public function getListComponent()
     {
@@ -153,7 +154,7 @@ trait ListItem
     }
     
     /**
-     * Processes the given string of text which references methods / fields of the receiver and list component.
+     * Processes the given string of text which references methods / fields of the receiver and List Component.
      *
      * @param string $text
      * @param array $args
@@ -162,58 +163,6 @@ trait ListItem
      */
     public function processListItemText($text, $args = [])
     {
-        // Does the text refer to a field or method?
-        
-        if (strpos($text, '$') === 0) {
-            
-            // Obtain Field Name:
-            
-            $field = ltrim($text, '$');
-            
-            // Obtain Field Value:
-            
-            if ($this->hasMethod("get{$field}")) {
-                
-                // First, answer the result of a method call on the receiver:
-                
-                $text = call_user_func_array([$this, "get{$field}"], $this->processListItemArgs($args));
-                
-            } elseif ($this->hasField($field)) {
-                
-                // Next, answer a field value from the receiver:
-                
-                return $this->$field;
-                
-            } elseif ($this->getListComponent()->hasField($field)) {
-                
-                // Finally, answer a field value from the associated List Component:
-                
-                return $this->getListComponent()->$field;
-                
-            }
-            
-        }
-        
-        // Answer Text Value:
-        
-        return $text;
-    }
-    
-    /**
-     * Processes the given array of arguments for a list item detail.
-     *
-     * @param string|array $stringOrArray
-     *
-     * @return array
-     */
-    public function processListItemArgs($stringOrArray)
-    {
-        $args = (array) $stringOrArray;
-        
-        foreach ($args as $key => $arg) {
-            $args[$key] = $this->processListItemText($arg);
-        }
-        
-        return $args;
+        return ViewTools::singleton()->processAttribute($text, $this, $this->getListComponent(), $args);
     }
 }

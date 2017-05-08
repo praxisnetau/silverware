@@ -59,7 +59,8 @@ class ListSourceExtension extends DataExtension
         'ImageResize' => 'Dimensions',
         'ImageResizeMethod' => 'Varchar(32)',
         'PaginateItems' => 'Boolean',
-        'ReverseItems' => 'Boolean'
+        'ReverseItems' => 'Boolean',
+        'ImageItems' => 'Boolean'
     ];
     
     /**
@@ -81,7 +82,8 @@ class ListSourceExtension extends DataExtension
     private static $defaults = [
         'ItemsPerPage' => 10,
         'PaginateItems' => 0,
-        'ReverseItems' => 0
+        'ReverseItems' => 0,
+        'ImageItems' => 0
     ];
     
     /**
@@ -112,13 +114,29 @@ class ListSourceExtension extends DataExtension
         
         // Create Options Fields:
         
-        $fields->addFieldsToTab(
+        $fields->addFieldToTab(
             'Root.Options',
             CompositeField::create([
                 TextField::create(
                     'NumberOfItems',
                     $this->owner->fieldLabel('NumberOfItems')
                 ),
+                CheckboxField::create(
+                    'ReverseItems',
+                    $this->owner->fieldLabel('ReverseItems')
+                ),
+                CheckboxField::create(
+                    'ImageItems',
+                    $this->owner->fieldLabel('ImageItems')
+                )
+            ])->setName('ListSourceOptions')->setTitle($this->owner->fieldLabel('ListSourceOptions'))
+        );
+        
+        // Create Pagination Options (if permitted):
+        
+        if ($this->owner->canPaginate()) {
+            
+            $fields->insertAfter(
                 SelectionGroup::create(
                     'PaginateItems',
                     [
@@ -137,12 +155,10 @@ class ListSourceExtension extends DataExtension
                         )
                     ]
                 )->setTitle($this->owner->fieldLabel('PaginateItems')),
-                CheckboxField::create(
-                    'ReverseItems',
-                    $this->owner->fieldLabel('ReverseItems')
-                )
-            ])->setName('ListSourceOptions')->setTitle($this->owner->fieldLabel('ListSourceOptions'))
-        );
+                'NumberOfItems'
+            );
+            
+        }
     }
     
     /**
@@ -157,11 +173,22 @@ class ListSourceExtension extends DataExtension
         $labels['Enabled'] = _t(__CLASS__ . '.ENABLED', 'Enabled');
         $labels['Disabled'] = _t(__CLASS__ . '.DISABLED', 'Disabled');
         $labels['ListSource'] = $labels['ListSourceID'] = _t(__CLASS__ . '.LISTSOURCE', 'List source');
+        $labels['ImageItems'] = _t(__CLASS__ . '.IMAGEITEMS', 'Show only items with images');
         $labels['ReverseItems'] = _t(__CLASS__ . '.REVERSEITEMS', 'Reverse items');
         $labels['ItemsPerPage'] = _t(__CLASS__ . '.ITEMSPERPAGE', 'Items per page');
         $labels['PaginateItems'] = _t(__CLASS__ . '.PAGINATEITEMS', 'Paginate items');
         $labels['NumberOfItems'] = _t(__CLASS__ . '.NUMBEROFITEMS', 'Number of items');
         $labels['ListSourceOptions'] = _t(__CLASS__ . '.LISTSOURCE', 'List source');
+    }
+    
+    /**
+     * Answers true if the extended object can paginate.
+     *
+     * @return boolean
+     */
+    public function canPaginate()
+    {
+        return false;
     }
     
     /**
@@ -195,6 +222,16 @@ class ListSourceExtension extends DataExtension
             
         }
         
+        // Remove Items without Images (if applicable):
+        
+        if ($this->owner->ImageItems) {
+            
+            $items = $items->filterByCallback(function($item) {
+                return $item->hasMetaImage();
+            });
+            
+        }
+        
         // Reverse Items (if applicable):
         
         if ($this->owner->ReverseItems) {
@@ -217,6 +254,12 @@ class ListSourceExtension extends DataExtension
                 $items->setPageLength($this->owner->ItemsPerPage);
             }
             
+        }
+        
+        // Associate Items with List Component:
+        
+        foreach ($items as $item) {
+            $item->setListComponent($this->owner);
         }
         
         // Answer List:

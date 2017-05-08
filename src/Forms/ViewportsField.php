@@ -21,6 +21,7 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormField;
+use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\Map;
@@ -75,6 +76,13 @@ class ViewportsField extends FormField
     protected $emptyString;
     
     /**
+     * If true, text fields are used instead of dropdown fields.
+     *
+     * @var boolean
+     */
+    protected $useTextInput = false;
+    
+    /**
      * Defines the schema data type.
      *
      * @var string
@@ -108,9 +116,7 @@ class ViewportsField extends FormField
         
         // Build Viewport Fields:
         
-        foreach (DBViewports::singleton()->getViewports() as $viewport) {
-            $this->fields[$viewport] = $this->buildViewportField($viewport);
-        }
+        $this->buildViewportFields();
         
         // Define Empty String:
         
@@ -279,6 +285,32 @@ class ViewportsField extends FormField
     }
     
     /**
+     * Defines the value of the useTextInput attribute.
+     *
+     * @param boolean $useTextInput
+     *
+     * @return $this
+     */
+    public function setUseTextInput($useTextInput)
+    {
+        $this->useTextInput = (boolean) $useTextInput;
+        
+        $this->buildViewportFields();
+        
+        return $this;
+    }
+    
+    /**
+     * Answers the value of the useTextInput attribute.
+     *
+     * @return boolean
+     */
+    public function getUseTextInput()
+    {
+        return $this->useTextInput;
+    }
+    
+    /**
      * Returns a read-only version of the receiver.
      *
      * @return ViewportsField
@@ -437,24 +469,6 @@ class ViewportsField extends FormField
     }
     
     /**
-     * Builds and answers a form field for the specified viewport.
-     *
-     * @param string $viewport
-     *
-     * @return FormField
-     */
-    protected function buildViewportField($viewport)
-    {
-        $field = DropdownField::create(
-            sprintf('%s[%s]', $this->getName(), $viewport),
-            $this->getViewportLabel($viewport),
-            $this->getSource()
-        );
-        
-        return $field;
-    }
-    
-    /**
      * Converts the given source parameter to an array.
      *
      * @param array|ArrayAccess $source
@@ -472,6 +486,47 @@ class ViewportsField extends FormField
         }
         
         return $source;
+    }
+    
+    /**
+     * Builds the viewport fields for the receiver.
+     *
+     * @return void
+     */
+    protected function buildViewportFields()
+    {
+        foreach (DBViewports::singleton()->getViewports() as $viewport) {
+            $this->fields[$viewport] = $this->buildViewportField($viewport);
+        }
+    }
+    
+    /**
+     * Builds and answers a form field for the specified viewport.
+     *
+     * @param string $viewport
+     *
+     * @return FormField
+     */
+    protected function buildViewportField($viewport)
+    {
+        if ($this->useTextInput) {
+            
+            $field = TextField::create(
+                sprintf('%s[%s]', $this->getName(), $viewport),
+                $this->getViewportLabel($viewport)
+            );
+            
+        } else {
+            
+            $field = DropdownField::create(
+                sprintf('%s[%s]', $this->getName(), $viewport),
+                $this->getViewportLabel($viewport),
+                $this->getSource()
+            );
+            
+        }
+        
+        return $field;
     }
     
     /**
@@ -495,15 +550,21 @@ class ViewportsField extends FormField
                 $field->removeExtraClass('hidden');
             }
             
-            // Update Empty Strings:
+            // Update Dropdown Fields:
             
-            if ($field->hasMethod('setEmptyString')) {
-                $field->setEmptyString(' ')->setAttribute('data-placeholder', $this->emptyString);
+            if ($field instanceof DropdownField) {
+                
+                // Update Empty Strings:
+                
+                if ($field->hasMethod('setEmptyString')) {
+                    $field->setEmptyString(' ')->setAttribute('data-placeholder', $this->emptyString);
+                }
+                
+                // Update Source:
+                
+                $field->setSource($this->getSource());
+                
             }
-            
-            // Update Source:
-            
-            $field->setSource($this->getSource());
             
             // Update Disabled Flags:
             

@@ -25,11 +25,19 @@ SilverWare\Dev\FixtureFactory:
 
 SilverWare\Dev\FixtureBlueprint:
   default_parents:
-    SilverWare\Model\Template: `\SilverWare\Folders\TemplateFolder::find()->ID`
-    SilverWare\Model\Layout: `\SilverWare\Folders\LayoutFolder::find()->ID`
-    SilverWare\Model\Panel: `\SilverWare\Folders\PanelFolder::find()->ID`
+    SilverWare\Model\Template:
+      class: SilverWare\Folders\TemplateFolder
+      method: find
+    SilverWare\Model\Layout:
+      class: SilverWare\Folders\LayoutFolder
+      method: find
+    SilverWare\Model\Panel:
+      class: SilverWare\Folders\PanelFolder
+      method: find
   default_relations:
-    SilverStripe\SiteConfig\SiteConfig: `\SilverStripe\SiteConfig\SiteConfig::current_site_config()->ID`
+    SilverStripe\SiteConfig\SiteConfig:
+      class: SilverStripe\SiteConfig\SiteConfig
+      method: current_site_config
   default_identifiers:
     SilverWare\Model\PageType: PageClass
   verbose: false

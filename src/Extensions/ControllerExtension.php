@@ -25,6 +25,7 @@ use SilverStripe\Security\Security;
 use SilverStripe\View\Requirements;
 use SilverWare\Grid\Grid;
 use SilverWare\Tools\ClassTools;
+use SilverWare\Tools\ViewTools;
 use PageController;
 
 /**
@@ -263,13 +264,27 @@ class ControllerExtension extends Extension
             
         }
         
-        // Component Requirements Enabled?
+        // Load Page Controller Requirements:
         
-        if ($this->owner->config()->load_component_requirements) {
+        if ($this->owner instanceof PageController) {
             
-            // Load Component Requirements:
+            // Custom CSS Enabled?
             
-            if ($this->owner instanceof PageController) {
+            if ($this->owner->config()->load_custom_css) {
+                
+                // Load Custom CSS:
+                
+                if ($css = $this->getCustomCSSAsString()) {
+                    $this->loadCustomCSS($css);
+                }
+                
+            }
+            
+            // Component Requirements Enabled?
+            
+            if ($this->owner->config()->load_component_requirements) {
+                
+                // Load Component Requirements:
                 
                 foreach ($this->owner->getEnabledComponents() as $component) {
                     $component->loadRequirements();
@@ -349,6 +364,52 @@ class ControllerExtension extends Extension
     protected function loadCSS($name)
     {
         Requirements::css($name);
+    }
+    
+    /**
+     * Loads the given custom CSS string.
+     *
+     * @param string $css Custom CSS.
+     *
+     * @return void
+     */
+    protected function loadCustomCSS($css)
+    {
+        Requirements::customCSS($css);
+    }
+    
+    /**
+     * Answers the custom CSS required for the template as a string.
+     *
+     * @return string
+     */
+    public function getCustomCSSAsString()
+    {
+        // Create CSS Array:
+        
+        $css = [];
+        
+        // Merge Custom CSS from Page Controller:
+        
+        if ($this->owner instanceof PageController) {
+            $css = array_merge($css, $this->owner->getCustomCSS());
+        }
+        
+        // Create CSS String:
+        
+        $css = implode("\n", $css);
+        
+        // Remove Empty Lines:
+        
+        $css = ViewTools::singleton()->removeEmptyLines($css);
+        
+        // Trim CSS String:
+        
+        $css = trim($css);
+        
+        // Answer CSS String:
+        
+        return $css;
     }
     
     /**

@@ -19,6 +19,7 @@ namespace SilverWare\Extensions\Model;
 
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
@@ -27,7 +28,7 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\FieldType\DBField;
-use SilverWare\Components\ListComponent;
+use SilverWare\Components\BaseListComponent;
 use SilverWare\Forms\DimensionsField;
 use SilverWare\Tools\ImageTools;
 use SilverWare\Tools\ViewTools;
@@ -118,6 +119,25 @@ class MetaDataExtension extends DataExtension
     ];
     
     /**
+     * Defines the default meta field configuration for the extended object.
+     *
+     * @var array
+     * @config
+     */
+    private static $default_meta_fields = [
+        'Image' => 'Root.Meta',
+        'Summary' => 'Root.Meta'
+    ];
+    
+    /**
+     * Defines the default asset folder for uploaded images.
+     *
+     * @var string
+     * @config
+     */
+    private static $default_image_folder = 'Images';
+    
+    /**
      * Updates the CMS fields of the extended object.
      *
      * @param FieldList $fields List of CMS fields from the extended object.
@@ -136,53 +156,120 @@ class MetaDataExtension extends DataExtension
             'Main'
         );
         
+        // Iterate Meta Field Configuration:
+        
+        foreach ($this->owner->getMetaFieldConfig() as $name => $spec) {
+            
+            if ($spec) {
+                
+                // Initialise:
+                
+                $before = null;
+                $method = "getMeta{$name}Fields";
+                
+                // Determine Specification Type:
+                
+                if (is_array($spec)) {
+                    $tab    = isset($spec['tab']) ? $spec['tab'] : 'Root.Meta';
+                    $method = isset($spec['method']) ? $spec['method'] : "getMeta{$name}Fields";
+                    $before = isset($spec['before']) ? $spec['before'] : null;
+                } else {
+                    $tab = $spec;
+                }
+                
+                // Add Fields to Specified Tab:
+                
+                if ($this->owner->hasMethod($method)) {
+                    $fields->addFieldsToTab($tab, $this->owner->$method(), $before);
+                }
+                
+            }
+            
+        }
+        
+        // Remove Meta Tab (if empty):
+        
+        if (!$fields->fieldByName('Root.Meta')->getChildren()->exists()) {
+            $fields->removeFieldFromTab('Root', 'Meta');
+        }
+    }
+    
+    /**
+     * Answers the meta field configuration from the extended object.
+     *
+     * @return array
+     */
+    public function getMetaFieldConfig()
+    {
+        if (is_array($this->owner->config()->meta_fields)) {
+            return $this->owner->config()->meta_fields;
+        }
+        
+        return Config::inst()->get(self::class, 'default_meta_fields');
+    }
+    
+    /**
+     * Answers a list of fields for the meta summary.
+     *
+     * @return FieldList
+     */
+    public function getMetaSummaryFields()
+    {
+        return FieldList::create([
+            HTMLEditorField::create(
+                'SummaryMeta',
+                $this->owner->fieldLabel('SummaryMeta')
+            )->setRows(10)
+        ]);
+    }
+    
+    /**
+     * Answers a list of fields for the meta image.
+     *
+     * @return FieldList
+     */
+    public function getMetaImageFields()
+    {
         // Define Placeholder:
         
         $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
         
-        // Create Meta Fields:
+        // Answer Field Objects:
         
-        $fields->addFieldsToTab(
-            'Root.Meta',
-            [
+        return FieldList::create([
+            CompositeField::create([
+                UploadField::create(
+                    'ImageMeta',
+                    $this->owner->fieldLabel('ImageMeta')
+                )->setAllowedFileCategories('image')->setFolderName($this->owner->getMetaImageFolder()),
                 HTMLEditorField::create(
-                    'SummaryMeta',
-                    $this->owner->fieldLabel('SummaryMeta')
+                    'ImageMetaCaption',
+                    $this->owner->fieldLabel('ImageMetaCaption')
                 )->setRows(10),
-                CompositeField::create([
-                    UploadField::create(
-                        'ImageMeta',
-                        $this->owner->fieldLabel('ImageMeta')
-                    )->setAllowedFileCategories('image'), //->setFolderName($this->getAssetFolder()),
-                    HTMLEditorField::create(
-                        'ImageMetaCaption',
-                        $this->owner->fieldLabel('ImageMetaCaption')
-                    )->setRows(10),
-                    DropdownField::create(
-                        'ImageMetaAlignment',
-                        $this->owner->fieldLabel('ImageMetaAlignment'),
-                        ImageTools::singleton()->getAlignmentOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                    DimensionsField::create(
-                        'ImageMetaResize',
-                        $this->owner->fieldLabel('ImageMetaResize')
-                    ),
-                    DropdownField::create(
-                        'ImageMetaResizeMethod',
-                        $this->owner->fieldLabel('ImageMetaResizeMethod'),
-                        ImageTools::singleton()->getResizeMethods()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                    CheckboxField::create(
-                        'ImageMetaHidden',
-                        $this->owner->fieldLabel('ImageMetaHidden')
-                    ),
-                    CheckboxField::create(
-                        'ImageMetaCaptionHidden',
-                        $this->owner->fieldLabel('ImageMetaCaptionHidden')
-                    )
-                ])->setName('ImageMetaComposite')->setTitle($this->owner->fieldLabel('ImageMetaComposite'))
-            ]
-        );
+                DropdownField::create(
+                    'ImageMetaAlignment',
+                    $this->owner->fieldLabel('ImageMetaAlignment'),
+                    ImageTools::singleton()->getAlignmentOptions()
+                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                DimensionsField::create(
+                    'ImageMetaResize',
+                    $this->owner->fieldLabel('ImageMetaResize')
+                ),
+                DropdownField::create(
+                    'ImageMetaResizeMethod',
+                    $this->owner->fieldLabel('ImageMetaResizeMethod'),
+                    ImageTools::singleton()->getResizeMethods()
+                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                CheckboxField::create(
+                    'ImageMetaHidden',
+                    $this->owner->fieldLabel('ImageMetaHidden')
+                ),
+                CheckboxField::create(
+                    'ImageMetaCaptionHidden',
+                    $this->owner->fieldLabel('ImageMetaCaptionHidden')
+                )
+            ])->setName('ImageMetaComposite')->setTitle($this->owner->fieldLabel('ImageMetaComposite'))
+        ]);
     }
     
     /**
@@ -227,7 +314,7 @@ class MetaDataExtension extends DataExtension
      */
     public function hasMetaLink()
     {
-        return (boolean) $this->getMetaLink();
+        return (boolean) $this->owner->getMetaLink();
     }
     
     /**
@@ -261,7 +348,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaDate()
     {
-        return $this->getMetaCreated();
+        return $this->owner->getMetaCreated();
     }
     
     /**
@@ -273,7 +360,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaDateFormatted($format)
     {
-        return $this->getMetaDate()->Format($format);
+        return $this->owner->getMetaDate()->Format($format);
     }
     
     /**
@@ -321,7 +408,7 @@ class MetaDataExtension extends DataExtension
             return $this->owner->dbObject('Summary');
         }
         
-        if ($content = $this->getMetaContent()) {
+        if ($content = $this->owner->getMetaContent()) {
             return DBField::create_field('HTMLFragment', sprintf('<p>%s</p>', $content->Summary()));
         }
     }
@@ -333,7 +420,7 @@ class MetaDataExtension extends DataExtension
      */
     public function hasMetaSummary()
     {
-        if ($summary = $this->getMetaSummary()) {
+        if ($summary = $this->owner->getMetaSummary()) {
             return (boolean) $summary->RAW();
         }
         
@@ -349,8 +436,8 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaSummaryLimited($maxSentences = 2)
     {
-        if ($this->hasMetaSummary()) {
-            return trim(preg_replace('/\s+/', ' ', $this->getMetaSummary()->LimitSentences($maxSentences)));
+        if ($this->owner->hasMetaSummary()) {
+            return trim(preg_replace('/\s+/', ' ', $this->owner->getMetaSummary()->LimitSentences($maxSentences)));
         }
     }
     
@@ -373,7 +460,7 @@ class MetaDataExtension extends DataExtension
      */
     public function hasMetaContent()
     {
-        if ($content = $this->getMetaContent()) {
+        if ($content = $this->owner->getMetaContent()) {
             return (boolean) $content->RAW();
         }
         
@@ -388,7 +475,7 @@ class MetaDataExtension extends DataExtension
     public function getMetaClassNames()
     {
         return [
-            ($this->hasMetaImage() ? 'has-image' : 'no-image')
+            ($this->owner->hasMetaImage() ? 'has-image' : 'no-image')
         ];
     }
     
@@ -405,13 +492,23 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
+     * Answers the name of the asset folder used for uploading images.
+     *
+     * @return string
+     */
+    public function getMetaImageFolder()
+    {
+        return Config::inst()->get(self::class, 'default_image_folder');
+    }
+    
+    /**
      * Answers true if the extended object has an image.
      *
      * @return boolean
      */
     public function hasMetaImage()
     {
-        if ($image = $this->getMetaImage()) {
+        if ($image = $this->owner->getMetaImage()) {
             return $image->exists();
         }
         
@@ -425,13 +522,13 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageLink()
     {
-        if ($this->hasMetaImage()) {
+        if ($this->owner->hasMetaImage()) {
             
-            if ($list = $this->getListComponent()) {
+            if ($list = $this->owner->getListComponent()) {
                 
                 switch ($list->ImageLinksTo) {
                     
-                    case ListComponent::IMAGE_LINK_ITEM:
+                    case BaseListComponent::IMAGE_LINK_ITEM:
                         return $this->owner->getMetaLink();
                     
                 }
@@ -450,10 +547,29 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageLinkAttributes()
     {
-        return [
+        $attributes = [
             'href' => $this->owner->MetaImageLink,
+            'class' => $this->owner->MetaImageLinkClass,
             'title' => $this->owner->MetaTitle
         ];
+        
+        if ($extra = Config::inst()->get(self::class, 'image_link_attributes')) {
+            
+            foreach ($extra as $name => $value) {
+                
+                // Process Attribute Value:
+                
+                $attributes[$name] = ViewTools::singleton()->processAttribute(
+                    $value,
+                    $this->owner,
+                    $this->getListComponent()
+                );
+                
+            }
+            
+        }
+        
+        return $attributes;
     }
     
     /**
@@ -463,13 +579,25 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageLinkAttributesHTML()
     {
-        return ViewTools::singleton()->getAttributesHTML($this->getMetaImageLinkAttributes());
+        return ViewTools::singleton()->getAttributesHTML($this->owner->getMetaImageLinkAttributes());
+    }
+    
+    /**
+     * Answers the meta image group for the extended object.
+     *
+     * @return string
+     */
+    public function getMetaImageGroup()
+    {
+        if ($list = $this->owner->getListComponent()) {
+            return $list->getHTMLID();
+        }
     }
     
     /**
      * Answers the meta image caption for the extended object.
      *
-     * @return Image
+     * @return string
      */
     public function getMetaImageCaption()
     {
@@ -493,7 +621,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageShown()
     {
-        return ($this->hasMetaImage() && !$this->owner->ImageMetaHidden);
+        return ($this->owner->hasMetaImage() && !$this->owner->ImageMetaHidden);
     }
     
     /**
@@ -503,7 +631,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageCaptionShown()
     {
-        return ($this->hasMetaImageCaption() && !$this->owner->ImageMetaCaptionHidden);
+        return ($this->owner->hasMetaImageCaption() && !$this->owner->ImageMetaCaptionHidden);
     }
     
     /**
@@ -517,13 +645,13 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageResized($width = null, $height = null, $method = null)
     {
-        if ($this->hasMetaImage()) {
+        if ($this->owner->hasMetaImage()) {
             
             return ImageTools::singleton()->resize(
-                $this->getMetaImage(),
-                $this->getMetaImageResizeWidth($width),
-                $this->getMetaImageResizeHeight($height),
-                $this->getMetaImageResizeMethod($method)
+                $this->owner->getMetaImage(),
+                $this->owner->getMetaImageResizeWidth($width),
+                $this->owner->getMetaImageResizeHeight($height),
+                $this->owner->getMetaImageResizeMethod($method)
             );
             
         }
@@ -616,7 +744,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageClass()
     {
-        return ViewTools::singleton()->array2att($this->getMetaImageClassNames());
+        return ViewTools::singleton()->array2att($this->owner->getMetaImageClassNames());
     }
     
     /**
@@ -628,8 +756,38 @@ class MetaDataExtension extends DataExtension
     {
         $classes = ['image'];
         
-        if ($alignment = $this->getMetaImageAlignment()) {
+        if ($alignment = $this->owner->getMetaImageAlignment()) {
             $classes[] = $alignment;
+        }
+        
+        return $classes;
+    }
+    
+    /**
+     * Answers a string of meta image link class names for the template.
+     *
+     * @return string
+     */
+    public function getMetaImageLinkClass()
+    {
+        return ViewTools::singleton()->array2att($this->owner->getMetaImageLinkClassNames());
+    }
+    
+    /**
+     * Answers an array of meta image link class names for the template.
+     *
+     * @return array
+     */
+    public function getMetaImageLinkClassNames()
+    {
+        $classes = ['image-link'];
+        
+        if ($list = $this->owner->getListComponent()) {
+            
+            if ($to = strtolower($list->ImageLinksTo)) {
+                $classes[] = sprintf('to-%s', $to);
+            }
+        
         }
         
         return $classes;
@@ -642,7 +800,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageCaptionClass()
     {
-        return ViewTools::singleton()->array2att($this->getMetaImageCaptionClassNames());
+        return ViewTools::singleton()->array2att($this->owner->getMetaImageCaptionClassNames());
     }
     
     /**
@@ -654,7 +812,7 @@ class MetaDataExtension extends DataExtension
     {
         $classes = ['caption'];
         
-        if ($alignment = $this->getMetaImageAlignment()) {
+        if ($alignment = $this->owner->getMetaImageAlignment()) {
             $classes[] = $alignment;
         }
         
@@ -668,7 +826,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageWrapperClass()
     {
-        return ViewTools::singleton()->array2att($this->getMetaImageWrapperClassNames());
+        return ViewTools::singleton()->array2att($this->owner->getMetaImageWrapperClassNames());
     }
     
     /**
@@ -680,7 +838,7 @@ class MetaDataExtension extends DataExtension
     {
         $classes = [$this->owner->MetaImageCaptionShown ? 'captionImage' : 'image'];
         
-        if ($alignment = $this->getMetaImageAlignment()) {
+        if ($alignment = $this->owner->getMetaImageAlignment()) {
             $classes[] = $alignment;
         }
         
@@ -690,7 +848,7 @@ class MetaDataExtension extends DataExtension
     /**
      * Answers a list component associated with the extended object (if it exists).
      *
-     * @return ListComponent
+     * @return BaseListComponent
      */
     protected function getListComponent()
     {

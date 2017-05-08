@@ -20,6 +20,7 @@ namespace SilverWare\ORM\FieldType;
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\FieldType\DBComposite;
 use SilverWare\Forms\ViewportsField;
+use SilverWare\Grid\Grid;
 
 /**
  * A composite database field used to store different values for particular device viewports.
@@ -96,6 +97,18 @@ class DBViewports extends DBComposite
         }
         
         return true;
+    }
+    
+    /**
+     * Answers the breakpoint for the specified viewport.
+     *
+     * @param string $viewport
+     *
+     * @return string
+     */
+    public function getBreakpoint($viewport)
+    {
+        return Grid::framework()->getBreakpoint($viewport);
     }
     
     /**

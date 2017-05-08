@@ -5,6 +5,11 @@ Name: silverware-styles
 # Bootstrap Styles:
 
 SilverWare\Grid\Frameworks\Bootstrap\Framework:
+  breakpoints:
+    small: 576px
+    medium: 768px
+    large: 992px
+    huge: 1200px
   style_mappings:
     align:
       left: left
