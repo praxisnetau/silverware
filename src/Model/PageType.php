@@ -85,9 +85,9 @@ class PageType extends DataObject
      * @config
      */
     private static $summary_fields = [
-        'PageName' => 'Type',
-        'MyTemplate.Title' => 'Template',
-        'MyLayout.Title' => 'Layout'
+        'PageName',
+        'MyTemplate.Title',
+        'MyLayout.Title'
     ];
     
     /**
