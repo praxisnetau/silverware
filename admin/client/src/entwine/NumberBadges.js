@@ -3,7 +3,7 @@
 
 import $ from 'jQuery';
 
-$.entwine('ss.tab.badges', function($) {
+$.entwine('silverware.numberbadges', function($) {
   
   // Handle Tab Badges:
   
@@ -43,6 +43,49 @@ $.entwine('ss.tab.badges', function($) {
     
     getTabId: function(name) {
       return 'a#tab-' + name.replace('.', '_');
+    }
+    
+  });
+  
+  // Handle Tree Badges:
+  
+  $('.cms-tree li').entwine({
+    
+    updateBadge: function(value) {
+      
+      var $span = this.find('span.status-number-badge');
+      
+      if ($span.length) {
+        
+        var id = '#' + this.attr('id');
+          
+        var selector = id + '.status-number-badge a span.jstree-pageicon::before';
+        var content  = 'content: "' + (value > 0 ? value : '') + '";';
+          
+        $('head').append('<style type="text/css">' + selector + ' { ' + content + ' } </style>');
+        
+      }
+      
+    }
+    
+  });
+  
+  $('span.status-number-badge-value').entwine({
+    
+    onmatch: function() {
+      
+      this._super();
+      
+      if (!this.data('updated')) {
+        
+        var value = parseInt(this.attr('title'));
+        
+        this.closest('li').updateBadge(value);
+        
+        this.data('updated', true);
+        
+      }
+      
     }
     
   });

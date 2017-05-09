@@ -2,7 +2,7 @@
 Name: silverware-admin
 ---
 
-# Admin Extensions:
+# Configure Admin Extensions:
 
 SilverStripe\Admin\LeftAndMain:
   extensions:

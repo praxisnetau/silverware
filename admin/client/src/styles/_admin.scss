@@ -77,6 +77,27 @@
 
 // Badge Styles:
 
+.cms-tree {
+  
+  .status-number-badge > a span.jstree-pageicon::before {
+    top: 6px;
+    right: -3px;
+    color: $white;
+    padding: 0 2px;
+    font-size: 9px;
+    min-width: 13px;
+    min-height: 13px;
+    font-weight: bold;
+    line-height: 13px;
+    position: absolute;
+    text-align: center;
+    text-shadow: none;
+    border-radius: 7px;
+    background-color: $brand-danger;
+  }
+  
+}
+
 ul.nav-tabs {
   
   span.number-badge {
