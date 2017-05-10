@@ -11,6 +11,12 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
     large: 992px
     huge: 1200px
   style_mappings:
+    alert:
+      alert: alert
+      info: alert-info
+      success: alert-success
+      warning: alert-warning
+      danger: alert-danger
     align:
       left: left
       center: center

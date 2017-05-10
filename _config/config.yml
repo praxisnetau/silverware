@@ -34,6 +34,12 @@ SilverWare\Model\Folder:
     - SilverWare\Folders\LayoutFolder
     - SilverWare\Folders\PanelFolder
 
+# Form Extensions:
+
+SilverStripe\Forms\Form:
+  extensions:
+    - SilverWare\Extensions\Forms\AlertMessageExtension
+
 # Field List Extensions:
 
 SilverStripe\Forms\FieldList:
