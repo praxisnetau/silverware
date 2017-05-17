@@ -315,18 +315,6 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     }
     
     /**
-     * Answers true if the member can view the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canView($member = null)
-    {
-        return Permission::checkMember($member, ['ADMIN', 'SILVERWARE_COMPONENT_VIEW']);
-    }
-    
-    /**
      * Provides the permissions for the security interface.
      *
      * @return array
@@ -342,23 +330,17 @@ class Component extends SiteTree implements Flushable, PermissionProvider
                 'help' => _t(__CLASS__ . '.PERMISSION_CREATE_HELP', 'Ability to create SilverWare components.'),
                 'sort' => 100
             ],
-            'SILVERWARE_COMPONENT_VIEW' => [
-                'category' => $category,
-                'name' => _t(__CLASS__ . '.PERMISSION_VIEW_NAME', 'View components'),
-                'help' => _t(__CLASS__ . '.PERMISSION_VIEW_HELP', 'Ability to view SilverWare components.'),
-                'sort' => 200
-            ],
             'SILVERWARE_COMPONENT_EDIT' => [
                 'category' => $category,
                 'name' => _t(__CLASS__ . '.PERMISSION_EDIT_NAME', 'Edit components'),
                 'help' => _t(__CLASS__ . '.PERMISSION_EDIT_HELP', 'Ability to edit SilverWare components.'),
-                'sort' => 300
+                'sort' => 200
             ],
             'SILVERWARE_COMPONENT_DELETE' => [
                 'category' => $category,
                 'name' => _t(__CLASS__ . '.PERMISSION_DELETE_NAME', 'Delete components'),
                 'help' => _t(__CLASS__ . '.PERMISSION_DELETE_HELP', 'Ability to delete SilverWare components.'),
-                'sort' => 400
+                'sort' => 300
             ]
         ];
     }

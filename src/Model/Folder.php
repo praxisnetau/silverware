@@ -151,7 +151,7 @@ class Folder extends SiteTree implements PermissionProvider
     {
         $classes = parent::CMSTreeClasses();
         
-        if (!$this->canView()) {
+        if (!$this->canEdit()) {
             $classes .= ' hidden';
         }
         
@@ -206,18 +206,6 @@ class Folder extends SiteTree implements PermissionProvider
     }
     
     /**
-     * Answers true if the member can view the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canView($member = null)
-    {
-        return Permission::checkMember($member, ['ADMIN', 'SILVERWARE_FOLDER_VIEW']);
-    }
-    
-    /**
      * Provides the permissions for the security interface.
      *
      * @return array
@@ -233,23 +221,17 @@ class Folder extends SiteTree implements PermissionProvider
                 'help' => _t('.PERMISSION_CREATE_HELP', 'Ability to create SilverWare folders.'),
                 'sort' => 100
             ],
-            'SILVERWARE_FOLDER_VIEW' => [
-                'category' => $category,
-                'name' => _t('.PERMISSION_VIEW_NAME', 'View folders'),
-                'help' => _t('.PERMISSION_VIEW_HELP', 'Ability to view SilverWare folders.'),
-                'sort' => 200
-            ],
             'SILVERWARE_FOLDER_EDIT' => [
                 'category' => $category,
                 'name' => _t('.PERMISSION_EDIT_NAME', 'Edit folders'),
                 'help' => _t('.PERMISSION_EDIT_HELP', 'Ability to edit SilverWare folders.'),
-                'sort' => 300
+                'sort' => 200
             ],
             'SILVERWARE_FOLDER_DELETE' => [
                 'category' => $category,
                 'name' => _t('.PERMISSION_DELETE_NAME', 'Delete folders'),
                 'help' => _t('.PERMISSION_DELETE_HELP', 'Ability to delete SilverWare folders.'),
-                'sort' => 400
+                'sort' => 300
             ]
         ];
     }
