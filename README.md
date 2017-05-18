@@ -10,7 +10,7 @@
 
 **SilverWare** is a component framework for [SilverStripe v4][silverstripe] which allows you to build
 entire page templates and layouts from small, reusable, configurable and extensible components.
-SilverWare and it's associated modules provide a number of components for you to use in your apps
+SilverWare and its associated modules provide a number of components for you to use in your apps
 out-of-the-box, however it's easy to extend the SilverWare model and build your own components too.
 
 ## Contents
@@ -20,6 +20,7 @@ out-of-the-box, however it's easy to extend the SilverWare model and build your 
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Components](#components)
 - [Issues](#issues)
 - [To-Do](#to-do)
 - [Contribution](#contribution)
@@ -125,7 +126,7 @@ certain pages will display different content in this area.
 
 You could now add a `Panel` called "Contact Sidebar". Select the areas this panel will display on
 (e.g. "Sidebar"), and then select which pages this panel will appear on (e.g. "Contact Us"). Now, add your
-components as children to this panel. Your "Contact Us" page will now show these components in it's sidebar.
+components as children to this panel. Your "Contact Us" page will now show these components in its sidebar.
 
 ### Page Types
 
@@ -144,6 +145,99 @@ define the default template and layout for each particular page type. To define 
 You may also override the template and/or layout on a page-by-page basis.  Click on the page in the site
 tree you wish to modify, then click the "Settings" tab, and select the template and/or layout in the
 "Appearance" section.
+
+## Components
+
+SilverWare ships with the following components ready for use:
+
+- [`AreaComponent`](#areacomponent)
+- [`ContentComponent`](#contentcomponent)
+- [`CopyrightComponent`](#copyrightcomponent)
+- [`DeveloperComponent`](#developercomponent)
+- [`FeatureComponent`](#featurecomponent)
+- [`HeadingComponent`](#headingcomponent)
+- [`ImageComponent`](#imagecomponent)
+- [`ListComponent`](#listcomponent)
+- [`PageComponent`](#pagecomponent)
+- [`ScrollToTopButton`](#scrolltotopbutton)
+- [`TagCloudComponent`](#tagcloudcomponent)
+- [`TitleComponent`](#titlecomponent)
+
+### AreaComponent
+
+Defines an area within a template or layout where a `Panel` can
+appear, for example, a sidebar. This allows different types of pages on the
+site to have different components shown for this area.
+
+### ContentComponent
+
+Allows you to embed a block of rich-text content, edited using `HTMLEditorField`.
+
+### CopyrightComponent
+
+Adds a standard copyright message, usually in the footer of the site. Supports a single year,
+or range of years, and showing the current year automatically. Can also link to a page or URL with more
+copyright information, and a page or URL for the entity named in the copyright message.
+
+### DeveloperComponent
+
+Adds a developer attribution message, usually in the footer of the site. Supports
+linking to a page or URL for the site developer.
+
+### FeatureComponent
+
+Allows the user to select a page to feature in a block. The component will
+show the title and a summary of the featured page, and also an image if the
+page has one defined.  Both the image and summary can be overridden by the
+`FeatureComponent` itself.
+
+### HeadingComponent
+
+Adds a regular H1-H6 heading with text of your choice. Also supports selection
+of a font icon to display with the heading.
+
+### ImageComponent
+
+Allows the user to add a responsive image with optional caption to the template or layout. The image
+can be selected from the existing asset images, or uploaded through the component.
+The component can be configured to resize the image using a variety of methods.
+
+### ListComponent
+
+Renders a list of items with optional pagination. The `ListComponent` can render items
+from any implementor of `ListSource` on the site. For example, a list source could be a blog, a
+news archive, or an image gallery. Once the list source is defined, you can then
+specify how many items to display, whether to paginate or not, standard or reversed
+sort order, and whether or not to show only items with images.
+
+### PageComponent
+
+Renders the template for the current page. A `PageComponent` is usually added to a
+layout, and informs SilverWare where it should render the template for the current
+page. It is analogous to the `$Layout` tag used in regular SilverStripe templates.
+
+### ScrollToTopButton
+
+Adds a "scroll to top" button that when clicked returns the user to the top of the page.
+The button is hidden by default when the user is at the top of the page, and appears when
+the user begins to scroll down. It can be customised by choosing a font icon,
+and also has fields for defining the show offset, opacity offset and scroll duration.
+
+### TagCloudComponent
+
+Shows an interactive tag cloud with tags obtained from an implementor of `TagSource`.
+The cloud is rendered as an HTML5 canvas (supported by most modern browsers), and
+can be rotated by the user using the mouse or touch gestures. The component has
+configurable text and outline colors, along with zoom, rotation, and font size options.
+Weighted tags are also supported.
+
+### TitleComponent
+
+Shows the title of the current page. This component is useful when you need to show
+the page title in a separate row or column from the actual page template itself.
+If you need to hide the page title in the template (so that two titles are not shown),
+select the "Hide title of page" option in your `PageComponent`. This adds the class
+`page-title-hidden` which can be used in your site styles.
 
 ## Issues
 
@@ -169,6 +263,7 @@ for more information.
 - Makes use of [Bootstrap](https://github.com/twbs/bootstrap) by the
   [Bootstrap Authors](https://github.com/twbs/bootstrap/graphs/contributors)
   and [Twitter, Inc](https://twitter.com).
+- Makes use of [TagCanvas](http://www.goat1000.com/tagcanvas.php) by [Graham Breach](http://www.goat1000.com).
 - Makes use of [webpack](https://github.com/webpack/webpack) and
   [webpack dev server](https://github.com/webpack/webpack-dev-server)
   by [Tobias Koppers](https://github.com/sokra), [Kees Kluskens](https://github.com/SpaceK33z),
