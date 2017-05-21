@@ -451,7 +451,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         // Obtain Child Objects:
         
         $this->cacheEnabledChildren = $this->getAllChildren()->filterByCallback(function ($child) {
-            return $child->isEnabled();
+            return ($child instanceof Component) ? $child->isEnabled() : false;
         });
         
         // Answer Child Objects:

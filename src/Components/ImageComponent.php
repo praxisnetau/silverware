@@ -91,6 +91,7 @@ class ImageComponent extends BaseComponent
      */
     private static $db = [
         'Caption' => 'HTMLText',
+        'LinkImage' => 'Boolean',
         'HideCaption' => 'Boolean'
     ];
     
@@ -121,7 +122,18 @@ class ImageComponent extends BaseComponent
      * @config
      */
     private static $defaults = [
+        'LinkImage' => 1,
         'HideCaption' => 0
+    ];
+    
+    /**
+     * Maps field and method names to the class names of casting objects.
+     *
+     * @var array
+     * @config
+     */
+    private static $casting = [
+        'ImageLinkAttributesHTML' => 'HTMLFragment'
     ];
     
     /**
@@ -175,6 +187,10 @@ class ImageComponent extends BaseComponent
             'Root.Options',
             CompositeField::create([
                 CheckboxField::create(
+                    'LinkImage',
+                    $this->fieldLabel('LinkImage')
+                ),
+                CheckboxField::create(
                     'HideCaption',
                     $this->fieldLabel('HideCaption')
                 )
@@ -204,6 +220,7 @@ class ImageComponent extends BaseComponent
         $labels['Caption'] = _t(__CLASS__ . '.CAPTION', 'Caption');
         $labels['ImageID'] = _t(__CLASS__ . '.IMAGE', 'Image');
         $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
+        $labels['LinkImage'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
         
         // Define Relation Labels:
         
@@ -266,6 +283,32 @@ class ImageComponent extends BaseComponent
         $this->extend('updateCaptionClassNames', $classes);
         
         return $classes;
+    }
+    
+    /**
+     * Answers an array of attributes for the image link element.
+     *
+     * @return array
+     */
+    public function getImageLinkAttributes()
+    {
+        return [
+            'href' => $this->Image()->URL,
+            'data-title' => $this->Title,
+            'data-footer' => $this->dbObject('Caption')->Summary(),
+            'data-toggle' => 'lightbox',
+            'class' => 'image'
+        ];
+    }
+    
+    /**
+     * Answers a string of attributes for the image link element.
+     *
+     * @return string
+     */
+    public function getImageLinkAttributesHTML()
+    {
+        return $this->getAttributesHTML($this->getImageLinkAttributes());
     }
     
     /**

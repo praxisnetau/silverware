@@ -1,0 +1,21 @@
+/* Image Component
+===================================================================================================================== */
+
+.imagecomponent {
+  
+  figure {
+    
+    width: 100%;
+    margin-bottom: 0;
+    
+    > figcaption > p:last-child {
+      margin-bottom: 0;
+    }
+    
+  }
+  
+  a.image {
+    display: block;
+  }
+  
+}
