@@ -52,6 +52,16 @@ class AreaExtension extends DataExtension
      */
     public function getPanelForArea(AreaComponent $area)
     {
+        // Answer Panel from Children:
+        
+        foreach ($this->owner->getChildPanels() as $panel) {
+            
+            if ($panel->hasArea($area)) {
+                return $panel;
+            }
+            
+        }
+        
         // Answer Panel from Owner:
         
         foreach ($this->owner->Panels() as $panel) {
@@ -70,6 +80,16 @@ class AreaExtension extends DataExtension
         
         // Answer Panel for All Pages:
         
-        return $area->Panels()->find('ShowOn', 'AllPages');
+        return $area->getFolderPanels()->find('ShowOn', 'AllPages');
+    }
+    
+    /**
+     * Answers a list of child panels from the extended object.
+     *
+     * @return DataList
+     */
+    public function getChildPanels()
+    {
+        return $this->owner->AllChildren()->filter('ClassName', Panel::class);
     }
 }

@@ -18,6 +18,7 @@
 namespace SilverWare\Components;
 
 use SilverStripe\ORM\ArrayList;
+use SilverWare\Folders\PanelFolder;
 use SilverWare\Grid\Column;
 use SilverWare\Model\Panel;
 use Page;
@@ -149,6 +150,16 @@ class AreaComponent extends BaseComponent
         }
         
         return ArrayList::create();
+    }
+    
+    /**
+     * Answers only the panels associated with the receiver from the panels folder.
+     *
+     * @return DataList
+     */
+    public function getFolderPanels()
+    {
+        return $this->Panels()->filter('ParentID', PanelFolder::find()->ID);
     }
     
     /**

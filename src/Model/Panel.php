@@ -126,6 +126,7 @@ class Panel extends Component
      * @config
      */
     private static $allowed_parents = [
+        Page::class,
         PanelFolder::class
     ];
     
@@ -153,7 +154,15 @@ class Panel extends Component
                     'Areas',
                     $this->fieldLabel('Areas'),
                     AreaComponent::get()->map()
-                ),
+                )
+            ]
+        );
+        
+        // Insert Show On Field (within folder only):
+        
+        if ($this->Parent() instanceof PanelFolder) {
+            
+            $fields->insertAfter(
                 SelectionGroup::create(
                     'ShowOn',
                     [
@@ -168,9 +177,11 @@ class Panel extends Component
                             $this->fieldLabel('OnlyThesePages')
                         )
                     ]
-                )->setTitle($this->fieldLabel('ShowOn'))
-            ]
-        );
+                )->setTitle($this->fieldLabel('ShowOn')),
+                'Areas'
+            );
+            
+        }
         
         // Answer Field Objects:
         

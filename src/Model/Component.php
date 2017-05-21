@@ -21,6 +21,7 @@ use SilverStripe\CMS\Controllers\ModelAsController;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Flushable;
 use SilverStripe\ORM\ArrayList;
@@ -244,6 +245,10 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         
         $classes = ClassTools::singleton()->getStyleClasses($classes, $this->class);
         
+        if (!$this->canEdit()) {
+            $classes .= ' hidden';
+        }
+        
         $this->extend('updateCMSTreeClasses', $classes);
         
         return $classes;
@@ -271,16 +276,30 @@ class Component extends SiteTree implements Flushable, PermissionProvider
             
             if ($parents = $this->config()->allowed_parents) {
                 
-                if (!in_array($class, $parents)) {
+                // Initialise Allowed Classes Array:
+                
+                $classes = [];
+                
+                // Obtain Subclasses for Parent Class:
+                
+                foreach ($parents as $parent) {
+                    $classes = array_merge($classes, array_values(ClassInfo::subclassesFor($parent)));
+                }
+                
+                // Disallow Parent (if not found):
+                
+                if (!in_array($class, $classes)) {
                     return false;
                 }
                 
-            }
-            
-            // Disallow Page as Parent:
-            
-            if ($context['Parent'] instanceof Page) {
-                return false;
+            } else {
+                
+                // Disallow Page as Parent:
+                
+                if ($context['Parent'] instanceof Page) {
+                    return false;
+                }
+                
             }
             
         }
