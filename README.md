@@ -128,6 +128,10 @@ You could now add a `Panel` called "Contact Sidebar". Select the areas this pane
 (e.g. "Sidebar"), and then select which pages this panel will appear on (e.g. "Contact Us"). Now, add your
 components as children to this panel. Your "Contact Us" page will now show these components in its sidebar.
 
+Panels can also be added by CMS users as children of regular pages within the site tree. In this case, the
+panel will display for the selected area on the parent page and all of its child pages. Note that the
+CMS user must have permission to create SilverWare components.
+
 ### Page Types
 
 SilverWare needs to know which template and layout to render for each particular page type. By default,
