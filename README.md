@@ -158,6 +158,7 @@ SilverWare ships with the following components ready for use:
 - [`HeadingComponent`](#headingcomponent)
 - [`ImageComponent`](#imagecomponent)
 - [`ListComponent`](#listcomponent)
+- [`MediaComponent`](#mediacomponent)
 - [`PageComponent`](#pagecomponent)
 - [`ScrollToTopButton`](#scrolltotopbutton)
 - [`TagCloudComponent`](#tagcloudcomponent)
@@ -209,6 +210,16 @@ from any implementor of `ListSource` on the site. For example, a list source cou
 news archive, or an image gallery. Once the list source is defined, you can then
 specify how many items to display, whether to paginate or not, standard or reversed
 sort order, and whether or not to show only items with images.
+
+### MediaComponent
+
+Embeds media from a URL, such as a YouTube video, Flickr photo, or Twitter tweet.
+`MediaComponent` uses [Embed][embed] to access the media URL and
+obtain information from the remote service. This data is subsequently stored within the
+component, preventing excess remote calls.
+
+For more information about the types of media which `MediaComponent` supports, see the
+[Embed documentation][embed].
 
 ### PageComponent
 
@@ -264,6 +275,7 @@ for more information.
   [Bootstrap Authors](https://github.com/twbs/bootstrap/graphs/contributors)
   and [Twitter, Inc](https://twitter.com).
 - Makes use of [TagCanvas](http://www.goat1000.com/tagcanvas.php) by [Graham Breach](http://www.goat1000.com).
+- Makes use of [Embed](https://github.com/oscarotero/Embed) by [Oscar Otero](https://github.com/oscarotero).
 - Makes use of [webpack](https://github.com/webpack/webpack) and
   [webpack dev server](https://github.com/webpack/webpack-dev-server)
   by [Tobias Koppers](https://github.com/sokra), [Kees Kluskens](https://github.com/SpaceK33z),
@@ -284,4 +296,5 @@ for more information.
 [silverstripe-cms]: https://github.com/silverstripe/silverstripe-cms
 [silverware-app]: https://github.com/praxisnetau/silverware-app
 [silverware-theme]: https://github.com/praxisnetau/silverware-theme
+[embed]: https://github.com/oscarotero/Embed
 [issues]: https://github.com/praxisnetau/silverware/issues
