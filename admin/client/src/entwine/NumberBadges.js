@@ -59,7 +59,7 @@ $.entwine('silverware.numberbadges', function($) {
         
         var id = '#' + this.attr('id');
           
-        var selector = id + '.status-number-badge a span.jstree-pageicon::before';
+        var selector = id + '.status-number-badge > a span.jstree-pageicon::before';
         var content  = 'content: "' + (value > 0 ? value : '') + '";';
           
         $('head').append('<style type="text/css">' + selector + ' { ' + content + ' } </style>');
