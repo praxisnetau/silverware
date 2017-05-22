@@ -21,12 +21,12 @@
   "require": {
     "php": ">=5.6.0",
     "embed/embed": "^3.0",
-    "silverstripe/asset-admin": "^1.0@dev",
-    "silverstripe/cms": "^4.0@dev",
-    "silverstripe/framework": "^4.0@dev",
-    "silverware/colorpicker": "^0.1@dev",
-    "silverware/font-icons": "^0.1@dev",
-    "silverware/theme": "^0.1@dev"
+    "silverstripe/asset-admin": "^1@dev",
+    "silverstripe/cms": "^4@dev",
+    "silverstripe/framework": "^4@dev",
+    "silverware/colorpicker": "~0.1@dev",
+    "silverware/font-icons": "~0.1@dev",
+    "silverware/theme": "~0.1@dev"
   },
   "autoload": {
     "psr-4": {
