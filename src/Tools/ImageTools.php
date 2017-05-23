@@ -18,7 +18,8 @@
 namespace SilverWare\Tools;
 
 use SilverStripe\Assets\Image;
-use SilverStripe\Core\Object;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * A singleton providing utility functions for use with images.
@@ -29,8 +30,11 @@ use SilverStripe\Core\Object;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class ImageTools extends Object
+class ImageTools
 {
+    use Configurable;
+    use Injectable;
+    
     /**
      * Define resize constants.
      */

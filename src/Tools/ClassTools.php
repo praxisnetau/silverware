@@ -19,10 +19,9 @@ namespace SilverWare\Tools;
 
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\ClassInfo;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Object;
 use SilverStripe\ORM\HiddenClass;
 use ReflectionException;
 
@@ -35,8 +34,10 @@ use ReflectionException;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class ClassTools extends Object
+class ClassTools
 {
+    use Injectable;
+    
     /**
      * Answers an array containing the class names of the ancestors of the object.
      *

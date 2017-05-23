@@ -19,7 +19,7 @@ namespace SilverWare\Tools;
 
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
-use SilverStripe\Core\Object;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\View\Requirements;
 use SilverStripe\View\ViewableData;
 
@@ -32,8 +32,10 @@ use SilverStripe\View\ViewableData;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class ViewTools extends Object
+class ViewTools
 {
+    use Injectable;
+    
     /**
      * Converts the given array of strings into an HTML attribute string.
      *
