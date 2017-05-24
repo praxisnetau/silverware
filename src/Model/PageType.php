@@ -18,6 +18,7 @@
 namespace SilverWare\Model;
 
 use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\RequiredFields;
@@ -261,8 +262,8 @@ class PageType extends DataObject
      */
     public function getPageName()
     {
-        if ($this->PageClass) {
-            return singleton($this->PageClass)->i18n_singular_name();
+        if ($this->PageClass && class_exists($this->PageClass)) {
+            return Injector::inst()->get($this->PageClass)->i18n_singular_name();
         }
     }
     
@@ -320,7 +321,7 @@ class PageType extends DataObject
             $type = self::findByClass($class);
             
             if (!$type || $type->ID == $this->ID) {
-                $options[$class] = singleton($class)->i18n_singular_name();
+                $options[$class] = Injector::inst()->get($class)->i18n_singular_name();
             }
             
         }

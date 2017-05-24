@@ -94,7 +94,7 @@ class ClassTools
         
         foreach ($classes as $class) {
             
-            $instance = singleton($class);
+            $instance = Injector::inst()->get($class);
             
             if ($ancestor = $instance->stat('hide_ancestor')) {
                 $remove[$ancestor] = $ancestor;
