@@ -318,7 +318,7 @@ class FixtureBlueprint extends BaseBlueprint
                 sprintf(
                     'Mutating %s (%s to %s)',
                     $identifier,
-                    $object->class,
+                    get_class($object),
                     $class
                 )
             );
@@ -1060,7 +1060,7 @@ class FixtureBlueprint extends BaseBlueprint
      */
     public function createMessage(DataObject $object, $identifier)
     {
-        $this->changeMessage(sprintf('Creating %s.%s', $object->class, $identifier), 'created');
+        $this->changeMessage(sprintf('Creating %s.%s', get_class($object), $identifier), 'created');
     }
     
     /**
@@ -1073,7 +1073,7 @@ class FixtureBlueprint extends BaseBlueprint
      */
     public function updateMessage(DataObject $object, $identifier)
     {
-        $this->changeMessage(sprintf('Updating %s.%s', $object->class, $identifier), 'changed');
+        $this->changeMessage(sprintf('Updating %s.%s', get_class($object), $identifier), 'changed');
     }
     
     /**

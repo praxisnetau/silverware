@@ -71,7 +71,7 @@ class URLSegmentExtension extends DataExtension
      */
     public function requireDefaultRecords()
     {
-        $class = $this->owner->class;
+        $class = get_class($this->owner);
         
         $records = DataList::create($class)->where('URLSegment IS NULL');
         
@@ -92,7 +92,7 @@ class URLSegmentExtension extends DataExtension
      */
     public function validURLSegment()
     {
-        $list = DataList::create($this->owner->class)->filter(['URLSegment' => $this->owner->URLSegment]);
+        $list = DataList::create(get_class($this->owner))->filter(['URLSegment' => $this->owner->URLSegment]);
         
         if ($id = $this->owner->ID) {
             $list = $list->exclude(['ID' => $id]);
@@ -111,7 +111,7 @@ class URLSegmentExtension extends DataExtension
     public function generateURLSegment($string)
     {
         if (!$string) {
-            $class = ClassTools::singleton()->getClassWithoutNamespace($this->owner->class);
+            $class = ClassTools::singleton()->getClassWithoutNamespace(get_class($this->owner));
             $string = sprintf('%s-%s', $class, $this->owner->ID);
         }
         

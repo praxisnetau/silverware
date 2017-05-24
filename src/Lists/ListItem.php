@@ -93,7 +93,7 @@ trait ListItem
      */
     public function getListItemTemplate()
     {
-        $template = sprintf('%s\ListItem', $this->class);
+        $template = sprintf('%s\ListItem', static::class);
         
         if (SSViewer::hasTemplate($template)) {
             return $template;

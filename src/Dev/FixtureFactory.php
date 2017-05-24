@@ -101,11 +101,11 @@ class FixtureFactory extends BaseFactory
      */
     public function addFixture($object, $identifier)
     {
-        if (!isset($this->fixtures[$object->class])) {
-            $this->fixtures[$object->class] = [];
+        if (!isset($this->fixtures[get_class($object)])) {
+            $this->fixtures[get_class($object)] = [];
         }
         
-        $this->fixtures[$object->class][$identifier] = $object->ID;
+        $this->fixtures[get_class($object)][$identifier] = $object->ID;
     }
     
     /**

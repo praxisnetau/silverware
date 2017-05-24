@@ -106,7 +106,7 @@ class PageTypeConfig extends ConfigExtension
      */
     public function getTemplateForPage(SiteTree $page)
     {
-        return $this->getTemplateForClass($page->class);
+        return $this->getTemplateForClass(get_class($page));
     }
     
     /**
@@ -118,7 +118,7 @@ class PageTypeConfig extends ConfigExtension
      */
     public function getLayoutForPage(SiteTree $page)
     {
-        return $this->getLayoutForClass($page->class);
+        return $this->getLayoutForClass(get_class($page));
     }
     
     /**

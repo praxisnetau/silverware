@@ -322,8 +322,8 @@ trait Renderable
     {
         $this->StyleID = sprintf(
             '%s_%s',
-            ClassTools::singleton()->getClassWithoutNamespace($object->class),
-            ClassTools::singleton()->getClassWithoutNamespace($this->class)
+            ClassTools::singleton()->getClassWithoutNamespace(get_class($object)),
+            ClassTools::singleton()->getClassWithoutNamespace(get_class($this))
         );
         
         return $this;
@@ -338,7 +338,7 @@ trait Renderable
      */
     public function getClassNameWithID($includeNamespace = false)
     {
-        $className = $this->class;
+        $className = static::class;
         
         if (!$includeNamespace) {
             $className = ClassTools::singleton()->getClassWithoutNamespace($className);

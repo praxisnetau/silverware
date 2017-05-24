@@ -243,7 +243,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     {
         $classes = parent::CMSTreeClasses();
         
-        $classes = ClassTools::singleton()->getStyleClasses($classes, $this->class);
+        $classes = ClassTools::singleton()->getStyleClasses($classes, static::class);
         
         if (!$this->canEdit()) {
             $classes .= ' hidden';
@@ -270,7 +270,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
             
             // Obtain Parent Class:
             
-            $class = $context['Parent']->class;
+            $class = get_class($context['Parent']);
             
             // Obtain Allowed Parents:
             
@@ -639,7 +639,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     public function getCurrentPageClass()
     {
         if ($page = $this->getCurrentPage()) {
-            return $page->class;
+            return get_class($page);
         }
     }
     
@@ -764,7 +764,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
      */
     public function getCustomCSSTemplate()
     {
-        return sprintf('%s\CustomCSS', $this->class);
+        return sprintf('%s\CustomCSS', static::class);
     }
     
     /**

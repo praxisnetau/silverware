@@ -39,6 +39,6 @@ trait PageIconFix
     {
         $classes = parent::CMSTreeClasses();
         
-        return ClassTools::singleton()->getStyleClasses($classes, $this->class);
+        return ClassTools::singleton()->getStyleClasses($classes, static::class);
     }
 }
