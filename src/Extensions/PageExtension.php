@@ -369,31 +369,6 @@ class PageExtension extends DataExtension implements PermissionProvider
     }
     
     /**
-     * Answers the value of the specified attribute from the parent(s) of the extended object.
-     *
-     * @param string $name
-     *
-     * @return mixed
-     */
-    public function getFieldFromParent($name)
-    {
-        $value = null;
-        
-        if ($this->owner->ParentID) {
-            
-            $parent = $this->owner->Parent();
-            
-            while (!$value && ($parent instanceof Page)) {
-                $value = $parent->{$name};
-                $parent = $parent->Parent();
-            }
-            
-        }
-        
-        return $value;
-    }
-    
-    /**
      * Answers the value of the specified attribute from the extended object or an ancestor.
      *
      * @param string $name

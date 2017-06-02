@@ -383,11 +383,11 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     {
         $ids = [$this->getTitleID()];
         
-        $Parent = $this->Parent();
+        $parent = $this->getParent();
         
-        while ($Parent instanceof Component) {
-            $ids[] = $Parent->getTitleID();
-            $Parent = $Parent->Parent();
+        while ($parent instanceof Component) {
+            $ids[]  = $parent->getTitleID();
+            $parent = $parent->getParent();
         }
         
         return implode('_', array_reverse($ids));

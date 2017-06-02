@@ -942,6 +942,31 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
+     * Answers the value of the specified attribute from the parent(s) of the extended object.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function getFieldFromParent($name)
+    {
+        $value = null;
+        
+        if ($this->owner->hasMethod('getParent')) {
+            
+            $parent = $this->owner->getParent();
+            
+            while ($parent && !$value) {
+                $value  = $parent->{$name};
+                $parent = $parent->hasMethod('getParent') ? $parent->getParent() : null;
+            }
+            
+        }
+        
+        return $value;
+    }
+    
+    /**
      * Answers a list component associated with the extended object (if it exists).
      *
      * @return BaseListComponent

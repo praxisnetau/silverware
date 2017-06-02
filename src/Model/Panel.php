@@ -160,7 +160,7 @@ class Panel extends Component
         
         // Insert Show On Field (within folder only):
         
-        if ($this->Parent() instanceof PanelFolder) {
+        if ($this->getParent() instanceof PanelFolder) {
             
             $fields->insertAfter(
                 SelectionGroup::create(

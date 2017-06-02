@@ -249,8 +249,10 @@ class FixtureBlueprint extends BaseBlueprint
             return $objects->filter($field, $identifier);
         }
         
-        return $objects->filterByCallback(function($item, $list) use ($identifier) {
-            return ($item->Title == $this->getIdentifierAsTitle($identifier));
+        $title = $this->getIdentifierOrTitle($identifier, $data);
+        
+        return $objects->filterByCallback(function($item, $list) use ($title) {
+            return ($item->Title == $title);
         });
     }
     
@@ -908,6 +910,19 @@ class FixtureBlueprint extends BaseBlueprint
     public function getIdentifierAsTitle($identifier)
     {
         return FormField::name_to_label($identifier);
+    }
+    
+    /**
+     * Answers either the identifier string or the title (if it exists in the given data array).
+     *
+     * @param string $identifier
+     * @param array $data
+     *
+     * @return string
+     */
+    public function getIdentifierOrTitle($identifier, $data)
+    {
+        return isset($data['Title']) ? $data['Title'] : $this->getIdentifierAsTitle($identifier);
     }
     
     /**

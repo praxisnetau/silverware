@@ -114,7 +114,9 @@ class ImageDefaultsExtension extends DataExtension
             return $width;
         }
         
-        return $this->owner->getFieldFromParent('DefaultImageResizeWidth');
+        if ($this->owner->hasExtension(MetaDataExtension::class)) {
+            return $this->owner->getFieldFromParent('DefaultImageResizeWidth');
+        }
     }
     
     /**
@@ -128,7 +130,9 @@ class ImageDefaultsExtension extends DataExtension
             return $height;
         }
         
-        return $this->owner->getFieldFromParent('DefaultImageResizeHeight');
+        if ($this->owner->hasExtension(MetaDataExtension::class)) {
+            return $this->owner->getFieldFromParent('DefaultImageResizeHeight');
+        }
     }
     
     /**
@@ -142,7 +146,9 @@ class ImageDefaultsExtension extends DataExtension
             return $method;
         }
         
-        return $this->owner->getFieldFromParent('DefaultImageResizeMethod');
+        if ($this->owner->hasExtension(MetaDataExtension::class)) {
+            return $this->owner->getFieldFromParent('DefaultImageResizeMethod');
+        }
     }
     
     /**
@@ -156,6 +162,8 @@ class ImageDefaultsExtension extends DataExtension
             return $alignment;
         }
         
-        return $this->owner->getFieldFromParent('DefaultImageAlignment');
+        if ($this->owner->hasExtension(MetaDataExtension::class)) {
+            return $this->owner->getFieldFromParent('DefaultImageAlignment');
+        }
     }
 }
