@@ -21,6 +21,7 @@ use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
+use SilverWare\Colorpicker\Forms\ColorField;
 use SilverWare\FontIcons\Forms\FontIconField;
 
 /**
@@ -100,6 +101,8 @@ class ScrollToTopButton extends BaseComponent
         'OffsetShow' => 'Int',
         'OffsetOpacity' => 'Int',
         'ScrollDuration' => 'Int',
+        'ColorBackground' => 'Color',
+        'ColorForeground' => 'Color',
         'CornerStyle' => 'Varchar(16)'
     ];
     
@@ -152,6 +155,14 @@ class ScrollToTopButton extends BaseComponent
         $fields->addFieldToTab(
             'Root.Style',
             CompositeField::create([
+                ColorField::create(
+                    'ColorBackground',
+                    $this->fieldLabel('ColorBackground')
+                ),
+                ColorField::create(
+                    'ColorForeground',
+                    $this->fieldLabel('ColorForeground')
+                ),
                 DropdownField::create(
                     'CornerStyle',
                     $this->fieldLabel('CornerStyle'),
@@ -206,6 +217,8 @@ class ScrollToTopButton extends BaseComponent
         $labels['OffsetShow'] = _t(__CLASS__ . '.OFFSETSHOWINPIXELS', 'Show offset (in pixels)');
         $labels['OffsetOpacity'] = _t(__CLASS__ . '.OFFSETOPACITYINPIXELS', 'Opacity offset (in pixels)');
         $labels['ScrollDuration'] = _t(__CLASS__ . '.SCROLLDURATIONINMS', 'Scroll duration (in milliseconds)');
+        $labels['ColorBackground'] = _t(__CLASS__ . '.BACKGROUNDCOLOR', 'Background color');
+        $labels['ColorForeground'] = _t(__CLASS__ . '.FOREGROUNDCOLOR', 'Foreground color');
         
         // Answer Field Labels:
         
