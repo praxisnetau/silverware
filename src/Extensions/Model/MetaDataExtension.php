@@ -151,7 +151,7 @@ class MetaDataExtension extends DataExtension
         $fields->insertAfter(
             Tab::create(
                 'Meta',
-                $this->owner->fieldLabel('Meta')
+                $this->owner->getMetaTabTitle()
             ),
             'Main'
         );
@@ -164,15 +164,17 @@ class MetaDataExtension extends DataExtension
                 
                 // Initialise:
                 
+                $params = [];
                 $before = null;
                 $method = "getMeta{$name}Fields";
                 
                 // Determine Specification Type:
                 
                 if (is_array($spec)) {
-                    $tab    = isset($spec['tab']) ? $spec['tab'] : 'Root.Meta';
+                    $tab    = isset($spec['tab'])    ? $spec['tab']    : 'Root.Meta';
                     $method = isset($spec['method']) ? $spec['method'] : "getMeta{$name}Fields";
                     $before = isset($spec['before']) ? $spec['before'] : null;
+                    $params = isset($spec['params']) ? $spec['params'] : [];
                 } else {
                     $tab = $spec;
                 }
@@ -180,7 +182,7 @@ class MetaDataExtension extends DataExtension
                 // Add Fields to Specified Tab:
                 
                 if ($this->owner->hasMethod($method)) {
-                    $fields->addFieldsToTab($tab, $this->owner->$method(), $before);
+                    $fields->addFieldsToTab($tab, $this->owner->$method($params), $before);
                 }
                 
             }
@@ -195,25 +197,45 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
+     * Answers the title for the meta tab.
+     *
+     * @return string
+     */
+    public function getMetaTabTitle()
+    {
+        return $this->owner->fieldLabel('Meta');
+    }
+    
+    /**
      * Answers the meta field configuration from the extended object.
      *
      * @return array
      */
     public function getMetaFieldConfig()
     {
+        // Obtain Default Config:
+        
+        $config = Config::inst()->get(self::class, 'default_meta_fields');
+        
+        // Merge Owner Config:
+        
         if (is_array($this->owner->config()->meta_fields)) {
-            return $this->owner->config()->meta_fields;
+            $config = array_merge($config, $this->owner->config()->meta_fields);
         }
         
-        return Config::inst()->get(self::class, 'default_meta_fields');
+        // Answer Config:
+        
+        return $config;
     }
     
     /**
      * Answers a list of fields for the meta summary.
      *
+     * @param array $params
+     *
      * @return FieldList
      */
-    public function getMetaSummaryFields()
+    public function getMetaSummaryFields($params = [])
     {
         return FieldList::create([
             HTMLEditorField::create(
@@ -226,31 +248,87 @@ class MetaDataExtension extends DataExtension
     /**
      * Answers a list of fields for the meta image.
      *
+     * @param array $params
+     *
      * @return FieldList
      */
-    public function getMetaImageFields()
+    public function getMetaImageFields($params = [])
     {
         // Define Placeholder:
         
         $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
         
-        // Answer Field Objects:
+        // Create Upload Field:
         
-        return FieldList::create([
-            CompositeField::create([
-                UploadField::create(
-                    'ImageMeta',
-                    $this->owner->fieldLabel('ImageMeta')
-                )->setAllowedFileCategories('image')->setFolderName($this->owner->getMetaImageFolder()),
-                HTMLEditorField::create(
-                    'ImageMetaCaption',
-                    $this->owner->fieldLabel('ImageMetaCaption')
-                )->setRows(10),
-                DropdownField::create(
-                    'ImageMetaAlignment',
-                    $this->owner->fieldLabel('ImageMetaAlignment'),
-                    ImageTools::singleton()->getAlignmentOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+        $fields = [
+            UploadField::create(
+                'ImageMeta',
+                $this->owner->fieldLabel('ImageMeta')
+            )->setAllowedFileCategories('image')->setFolderName($this->owner->getMetaImageFolder())
+        ];
+        
+        // Create Other Fields:
+        
+        $showAlign   = true;
+        $showResize  = true;
+        $showCaption = true;
+        $showOptions = true;
+        
+        // Detect Simple Mode:
+        
+        if (isset($params['mode']) && $params['mode'] == 'simple') {
+            $showAlign   = false;
+            $showResize  = false;
+            $showCaption = false;
+            $showOptions = false;
+        }
+        
+        // Detect Field Options:
+        
+        if (isset($params['showalign']) && $params['showalign']) {
+            $showAlign = true;
+        }
+        
+        if (isset($params['showresize']) && $params['showresize']) {
+            $showResize = true;
+        }
+        
+        if (isset($params['showcaption']) && $params['showcaption']) {
+            $showCaption = true;
+        }
+        
+        if (isset($params['showoptions']) && $params['showoptions']) {
+            $showOptions = true;
+        }
+        
+        // Create Caption Field:
+        
+        if ($showCaption) {
+            
+            $fields[] = HTMLEditorField::create(
+                'ImageMetaCaption',
+                $this->owner->fieldLabel('ImageMetaCaption')
+            )->setRows(10);
+            
+        }
+        
+        // Create Alignment Field:
+        
+        if ($showAlign) {
+            
+            $fields[] = DropdownField::create(
+                'ImageMetaAlignment',
+                $this->owner->fieldLabel('ImageMetaAlignment'),
+                ImageTools::singleton()->getAlignmentOptions()
+            )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder);
+            
+        }
+        
+        // Create Resize Fields:
+        
+        if ($showResize) {
+            
+            $fields = array_merge($fields, [
                 DimensionsField::create(
                     'ImageMetaResize',
                     $this->owner->fieldLabel('ImageMetaResize')
@@ -259,7 +337,16 @@ class MetaDataExtension extends DataExtension
                     'ImageMetaResizeMethod',
                     $this->owner->fieldLabel('ImageMetaResizeMethod'),
                     ImageTools::singleton()->getResizeMethods()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+            ]);
+            
+        }
+        
+        // Create Options Fields:
+        
+        if ($showOptions) {
+            
+            $fields = array_merge($fields, [
                 CheckboxField::create(
                     'ImageMetaHidden',
                     $this->owner->fieldLabel('ImageMetaHidden')
@@ -268,7 +355,16 @@ class MetaDataExtension extends DataExtension
                     'ImageMetaCaptionHidden',
                     $this->owner->fieldLabel('ImageMetaCaptionHidden')
                 )
-            ])->setName('ImageMetaComposite')->setTitle($this->owner->fieldLabel('ImageMetaComposite'))
+            ]);
+            
+        }
+        
+        // Answer Field Objects:
+        
+        return FieldList::create([
+            CompositeField::create(
+                $fields
+            )->setName('ImageMetaComposite')->setTitle($this->owner->fieldLabel('ImageMetaComposite'))
         ]);
     }
     
