@@ -7,7 +7,6 @@ require('styles/bundle.scss');
 
 // Load Scripts:
 
-require('entwine/PageIconFix.js');
 require('entwine/NumberBadges.js');
 
 // Load Form Fields:

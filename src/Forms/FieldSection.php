@@ -8,37 +8,44 @@
  * For full copyright and license information, please view the
  * LICENSE.md file that was distributed with this source code.
  *
- * @package SilverWare\Admin
+ * @package SilverWare\Forms
  * @author Colin Tucker <colin@praxis.net.au>
  * @copyright 2017 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
 
-namespace SilverWare\Admin;
+namespace SilverWare\Forms;
 
-use SilverWare\Tools\ClassTools;
+use SilverStripe\Forms\CompositeField;
 
 /**
- * Replaces the namespaced tree class of the object with a CSS-friendly class (fixes a bug in SS4 alpha).
+ * An extension of the composite field class for a named section of fields.
  *
- * @package SilverWare\Admin
+ * @package SilverWare\Forms
  * @author Colin Tucker <colin@praxis.net.au>
  * @copyright 2017 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-trait PageIconFix
+class FieldSection extends CompositeField
 {
     /**
-     * Answers a string of CSS classes to apply to the receiver in the CMS tree.
+     * Constructs the object upon instantiation.
      *
-     * @return string
+     * @param string $name Name of field.
+     * @param string $title Title of field.
+     * @param array|FieldList $children Child fields.
      */
-    public function CMSTreeClasses()
+    public function __construct($name, $title, $children)
     {
-        $classes = parent::CMSTreeClasses();
+        // Construct Parent:
         
-        return ClassTools::singleton()->getStyleClasses($classes, static::class);
+        parent::__construct($children);
+        
+        // Define Attributes:
+        
+        $this->setName($name);
+        $this->setTitle($title);
     }
 }

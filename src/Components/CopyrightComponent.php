@@ -18,13 +18,13 @@
 namespace SilverWare\Components;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\Forms\RequiredFields;
 use SilverWare\Extensions\Model\TokenMappingExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Forms\FieldSection;
+use SilverWare\Forms\PageDropdownField;
 use Page;
 
 /**
@@ -205,19 +205,17 @@ class CopyrightComponent extends BaseComponent
                         )->setAttribute('placeholder', $this->fieldLabel('YearFinish'))
                     ]
                 ),
-                TreeDropdownField::create(
+                PageDropdownField::create(
                     'CopyrightPageID',
-                    $this->fieldLabel('CopyrightPageID'),
-                    Page::class
+                    $this->fieldLabel('CopyrightPageID')
                 ),
                 TextField::create(
                     'CopyrightURL',
                     $this->fieldLabel('CopyrightURL')
                 ),
-                TreeDropdownField::create(
+                PageDropdownField::create(
                     'EntityPageID',
-                    $this->fieldLabel('EntityPageID'),
-                    Page::class
+                    $this->fieldLabel('EntityPageID')
                 ),
                 TextField::create(
                     'EntityURL',
@@ -231,32 +229,36 @@ class CopyrightComponent extends BaseComponent
         $fields->addFieldsToTab(
             'Root.Options',
             [
-                CompositeField::create([
-                    TextField::create(
-                        'CopyrightNoun',
-                        $this->fieldLabel('CopyrightNoun')
-                    ),
-                    TextField::create(
-                        'CopyrightText',
-                        $this->fieldLabel('CopyrightText')
-                    ),
-                    CheckboxField::create(
-                        'OpenCopyrightLinkInNewTab',
-                        $this->fieldLabel('OpenCopyrightLinkInNewTab')
-                    ),
-                    CheckboxField::create(
-                        'OpenEntityLinkInNewTab',
-                        $this->fieldLabel('OpenEntityLinkInNewTab')
-                    ),
-                    CheckboxField::create(
-                        'CopyrightLinkDisabled',
-                        $this->fieldLabel('CopyrightLinkDisabled')
-                    ),
-                    CheckboxField::create(
-                        'EntityLinkDisabled',
-                        $this->fieldLabel('EntityLinkDisabled')
-                    )
-                ])->setName('CopyrightComponentOptions')->setTitle($this->i18n_singular_name())
+                FieldSection::create(
+                    'CopyrightComponentOptions',
+                    $this->i18n_singular_name(),
+                    [
+                        TextField::create(
+                            'CopyrightNoun',
+                            $this->fieldLabel('CopyrightNoun')
+                        ),
+                        TextField::create(
+                            'CopyrightText',
+                            $this->fieldLabel('CopyrightText')
+                        ),
+                        CheckboxField::create(
+                            'OpenCopyrightLinkInNewTab',
+                            $this->fieldLabel('OpenCopyrightLinkInNewTab')
+                        ),
+                        CheckboxField::create(
+                            'OpenEntityLinkInNewTab',
+                            $this->fieldLabel('OpenEntityLinkInNewTab')
+                        ),
+                        CheckboxField::create(
+                            'CopyrightLinkDisabled',
+                            $this->fieldLabel('CopyrightLinkDisabled')
+                        ),
+                        CheckboxField::create(
+                            'EntityLinkDisabled',
+                            $this->fieldLabel('EntityLinkDisabled')
+                        )
+                    ]
+                )
             ]
         );
         

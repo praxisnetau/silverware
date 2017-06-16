@@ -18,7 +18,6 @@
 namespace SilverWare\Extensions\Lists;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\SelectionGroup;
@@ -27,6 +26,7 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverWare\Components\ListComponent;
 use SilverWare\Forms\DimensionsField;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Tools\ImageTools;
 
 /**
@@ -96,74 +96,82 @@ class ListViewExtension extends DataExtension
         
         $fields->addFieldToTab(
             'Root.Style',
-            CompositeField::create([
-                DropdownField::create(
-                    'ListHeadingLevel',
-                    $this->owner->fieldLabel('ListHeadingLevel'),
-                    ListComponent::singleton()->getTitleLevelOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-            ])->setName('ListViewStyle')->setTitle($this->owner->fieldLabel('ListView'))
+            FieldSection::create(
+                'ListViewStyle',
+                $this->owner->fieldLabel('ListView'),
+                [
+                    DropdownField::create(
+                        'ListHeadingLevel',
+                        $this->owner->fieldLabel('ListHeadingLevel'),
+                        ListComponent::singleton()->getTitleLevelOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                ]
+            )
         );
         
         // Create Options Fields:
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                SelectionGroup::create(
-                    'ListPaginateItems',
-                    [
-                        SelectionGroup_Item::create(
-                            '0',
-                            null,
-                            $this->owner->fieldLabel('Disabled')
-                        ),
-                        SelectionGroup_Item::create(
-                            '1',
-                            TextField::create(
-                                'ListItemsPerPage',
-                                $this->owner->fieldLabel('ListItemsPerPage')
+            FieldSection::create(
+                'ListViewOptions',
+                $this->owner->fieldLabel('ListView'),
+                [
+                    SelectionGroup::create(
+                        'ListPaginateItems',
+                        [
+                            SelectionGroup_Item::create(
+                                '0',
+                                null,
+                                $this->owner->fieldLabel('Disabled')
                             ),
-                            $this->owner->fieldLabel('Enabled')
-                        )
-                    ]
-                )->setTitle($this->owner->fieldLabel('ListPaginateItems')),
-                DimensionsField::create(
-                    'ListImageResize',
-                    $this->owner->fieldLabel('ListImageResize')
-                ),
-                DropdownField::create(
-                    'ListImageResizeMethod',
-                    $this->owner->fieldLabel('ListImageResizeMethod'),
-                    ImageTools::singleton()->getResizeMethods()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                DropdownField::create(
-                    'ListImageAlignment',
-                    $this->owner->fieldLabel('ListImageAlignment'),
-                    ListComponent::singleton()->getImageAlignmentOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                DropdownField::create(
-                    'ListImageLinksTo',
-                    $this->owner->fieldLabel('ListImageLinksTo'),
-                    ListComponent::singleton()->getImageLinksToOptions()
-                ),
-                TextField::create(
-                    'ListTitle',
-                    $this->owner->fieldLabel('ListTitle')
-                ),
-                TextField::create(
-                    'ListButtonLabel',
-                    $this->owner->fieldLabel('ListButtonLabel')
-                ),
-                CheckboxField::create(
-                    'ListLinkTitles',
-                    $this->owner->fieldLabel('ListLinkTitles')
-                ),
-                CheckboxField::create(
-                    'ListTitleHidden',
-                    $this->owner->fieldLabel('ListTitleHidden')
-                )
-            ])->setName('ListViewOptions')->setTitle($this->owner->fieldLabel('ListView'))
+                            SelectionGroup_Item::create(
+                                '1',
+                                TextField::create(
+                                    'ListItemsPerPage',
+                                    $this->owner->fieldLabel('ListItemsPerPage')
+                                ),
+                                $this->owner->fieldLabel('Enabled')
+                            )
+                        ]
+                    )->setTitle($this->owner->fieldLabel('ListPaginateItems')),
+                    DimensionsField::create(
+                        'ListImageResize',
+                        $this->owner->fieldLabel('ListImageResize')
+                    ),
+                    DropdownField::create(
+                        'ListImageResizeMethod',
+                        $this->owner->fieldLabel('ListImageResizeMethod'),
+                        ImageTools::singleton()->getResizeMethods()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    DropdownField::create(
+                        'ListImageAlignment',
+                        $this->owner->fieldLabel('ListImageAlignment'),
+                        ListComponent::singleton()->getImageAlignmentOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    DropdownField::create(
+                        'ListImageLinksTo',
+                        $this->owner->fieldLabel('ListImageLinksTo'),
+                        ListComponent::singleton()->getImageLinksToOptions()
+                    ),
+                    TextField::create(
+                        'ListTitle',
+                        $this->owner->fieldLabel('ListTitle')
+                    ),
+                    TextField::create(
+                        'ListButtonLabel',
+                        $this->owner->fieldLabel('ListButtonLabel')
+                    ),
+                    CheckboxField::create(
+                        'ListLinkTitles',
+                        $this->owner->fieldLabel('ListLinkTitles')
+                    ),
+                    CheckboxField::create(
+                        'ListTitleHidden',
+                        $this->owner->fieldLabel('ListTitleHidden')
+                    )
+                ]
+            )
         );
     }
     

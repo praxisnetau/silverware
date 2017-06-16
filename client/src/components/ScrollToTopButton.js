@@ -1,9 +1,11 @@
 /* Scroll to Top Button
 ===================================================================================================================== */
 
-import $ from 'jQuery';
+import $ from 'jquery';
 
 $(function() {
+  
+  // Handle Scroll to Top Buttons:
   
   $('.scrolltotopbutton').each(function() {
     

@@ -17,11 +17,11 @@
 
 namespace SilverWare\Extensions\Model;
 
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
 use SilverWare\Forms\DimensionsField;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Tools\ImageTools;
 
 /**
@@ -68,22 +68,26 @@ class ImageDefaultsExtension extends DataExtension
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                DropdownField::create(
-                    'ImageDefaultAlignment',
-                    $this->owner->fieldLabel('ImageDefaultAlignment'),
-                    ImageTools::singleton()->getAlignmentOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                DimensionsField::create(
-                    'ImageDefaultResize',
-                    $this->owner->fieldLabel('ImageDefaultResize')
-                ),
-                DropdownField::create(
-                    'ImageDefaultResizeMethod',
-                    $this->owner->fieldLabel('ImageDefaultResizeMethod'),
-                    ImageTools::singleton()->getResizeMethods()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
-            ])->setName('ImageDefaultsOptions')->setTitle($this->owner->fieldLabel('ImageDefaults'))
+            FieldSection::create(
+                'ImageDefaultsOptions',
+                $this->owner->fieldLabel('ImageDefaults'),
+                [
+                    DropdownField::create(
+                        'ImageDefaultAlignment',
+                        $this->owner->fieldLabel('ImageDefaultAlignment'),
+                        ImageTools::singleton()->getAlignmentOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    DimensionsField::create(
+                        'ImageDefaultResize',
+                        $this->owner->fieldLabel('ImageDefaultResize')
+                    ),
+                    DropdownField::create(
+                        'ImageDefaultResizeMethod',
+                        $this->owner->fieldLabel('ImageDefaultResizeMethod'),
+                        ImageTools::singleton()->getResizeMethods()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                ]
+            )
         );
     }
     

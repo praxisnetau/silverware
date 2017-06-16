@@ -17,7 +17,6 @@
 
 namespace SilverWare\View;
 
-use SilverWare\Tools\ClassTools;
 use SilverWare\Tools\ViewTools;
 
 /**
@@ -70,17 +69,5 @@ trait ViewClasses
         // Answer Parent Result:
         
         return parent::__call($name, $args);
-    }
-    
-    /**
-     * Answers an array of ancestor class names for the HTML template.
-     *
-     * @return array
-     */
-    public function getAncestorClassNames()
-    {
-        return ViewTools::singleton()->convertClass(
-            ClassTools::singleton()->getObjectAncestry($this, self::class, true)
-        );
     }
 }

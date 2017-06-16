@@ -19,7 +19,6 @@ namespace SilverWare\Components;
 
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\RequiredFields;
@@ -27,6 +26,7 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataList;
 use SilverWare\Colorpicker\Forms\ColorField;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Tags\Tag;
 use SilverWare\Tags\TagSource;
 use SilverWare\Tools\ClassTools;
@@ -101,8 +101,8 @@ class TagCloudComponent extends BaseComponent
         'Zoom' => 'Decimal',
         'ZoomMin' => 'Decimal',
         'ZoomMax' => 'Decimal',
-        'TextColor' => 'Color',
-        'OutlineColor' => 'Color',
+        'ColorText' => 'Color',
+        'ColorOutline' => 'Color',
         'InitialRotationH' => 'Decimal',
         'InitialRotationV' => 'Decimal',
         'WeightSizeMin' => 'AbsoluteInt',
@@ -170,81 +170,89 @@ class TagCloudComponent extends BaseComponent
         
         $fields->addFieldToTab(
             'Root.Style',
-            CompositeField::create([
-                ColorField::create(
-                    'TextColor',
-                    $this->fieldLabel('TextColor')
-                ),
-                ColorField::create(
-                    'OutlineColor',
-                    $this->fieldLabel('OutlineColor')
-                )
-            ])->setName('TagCloudComponentStyle')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'TagCloudComponentStyle',
+                $this->i18n_singular_name(),
+                [
+                    ColorField::create(
+                        'ColorText',
+                        $this->fieldLabel('ColorText')
+                    ),
+                    ColorField::create(
+                        'ColorOutline',
+                        $this->fieldLabel('ColorOutline')
+                    )
+                ]
+            )
         );
         
         // Create Options Fields:
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                FieldGroup::create(
-                    $this->fieldLabel('Zoom'),
-                    [
-                        DropdownField::create(
-                            'Zoom',
-                            $this->fieldLabel('ZoomInitial'),
-                            $this->getRangeOptions(0.5, 3, 0.1)
-                        ),
-                        DropdownField::create(
-                            'ZoomMin',
-                            $this->fieldLabel('ZoomMin'),
-                            $this->getRangeOptions(0.5, 3, 0.1)
-                        ),
-                        DropdownField::create(
-                            'ZoomMax',
-                            $this->fieldLabel('ZoomMax'),
-                            $this->getRangeOptions(0.5, 3, 0.1)
-                        ),
-                        DropdownField::create(
-                            'Depth',
-                            $this->fieldLabel('Depth'),
-                            $this->getRangeOptions(0.1, 1, 0.1)
-                        )
-                    ]
-                ),
-                FieldGroup::create(
-                    $this->fieldLabel('InitialRotation'),
-                    [
-                        DropdownField::create(
-                            'InitialRotationH',
-                            $this->fieldLabel('InitialRotationH'),
-                            $this->getRangeOptions(-1, 1, 0.1)
-                        ),
-                        DropdownField::create(
-                            'InitialRotationV',
-                            $this->fieldLabel('InitialRotationV'),
-                            $this->getRangeOptions(-1, 1, 0.1)
-                        )
-                    ]
-                ),
-                FieldGroup::create(
-                    $this->fieldLabel('WeightSize'),
-                    [
-                        TextField::create(
-                            'WeightSizeMin',
-                            $this->fieldLabel('WeightSizeMin')
-                        ),
-                        TextField::create(
-                            'WeightSizeMax',
-                            $this->fieldLabel('WeightSizeMax')
-                        )
-                    ]
-                ),
-                CheckboxField::create(
-                    'Weight',
-                    $this->fieldLabel('Weight')
-                )
-            ])->setName('TagCloudComponentOptions')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'TagCloudComponentOptions',
+                $this->i18n_singular_name(),
+                [
+                    FieldGroup::create(
+                        $this->fieldLabel('Zoom'),
+                        [
+                            DropdownField::create(
+                                'Zoom',
+                                $this->fieldLabel('ZoomInitial'),
+                                $this->getRangeOptions(0.5, 3, 0.1)
+                            ),
+                            DropdownField::create(
+                                'ZoomMin',
+                                $this->fieldLabel('ZoomMin'),
+                                $this->getRangeOptions(0.5, 3, 0.1)
+                            ),
+                            DropdownField::create(
+                                'ZoomMax',
+                                $this->fieldLabel('ZoomMax'),
+                                $this->getRangeOptions(0.5, 3, 0.1)
+                            ),
+                            DropdownField::create(
+                                'Depth',
+                                $this->fieldLabel('Depth'),
+                                $this->getRangeOptions(0.1, 1, 0.1)
+                            )
+                        ]
+                    ),
+                    FieldGroup::create(
+                        $this->fieldLabel('InitialRotation'),
+                        [
+                            DropdownField::create(
+                                'InitialRotationH',
+                                $this->fieldLabel('InitialRotationH'),
+                                $this->getRangeOptions(-1, 1, 0.1)
+                            ),
+                            DropdownField::create(
+                                'InitialRotationV',
+                                $this->fieldLabel('InitialRotationV'),
+                                $this->getRangeOptions(-1, 1, 0.1)
+                            )
+                        ]
+                    ),
+                    FieldGroup::create(
+                        $this->fieldLabel('WeightSize'),
+                        [
+                            TextField::create(
+                                'WeightSizeMin',
+                                $this->fieldLabel('WeightSizeMin')
+                            ),
+                            TextField::create(
+                                'WeightSizeMax',
+                                $this->fieldLabel('WeightSizeMax')
+                            )
+                        ]
+                    ),
+                    CheckboxField::create(
+                        'Weight',
+                        $this->fieldLabel('Weight')
+                    )
+                ]
+            )
         );
         
         // Answer Field Objects:
@@ -284,8 +292,8 @@ class TagCloudComponent extends BaseComponent
         $labels['ZoomMin'] = _t(__CLASS__ . '.MINIMUM', 'Minimum');
         $labels['ZoomMax'] = _t(__CLASS__ . '.MAXIMUM', 'Maximum');
         $labels['ZoomInitial'] = _t(__CLASS__ . '.INITIAL', 'Initial');
-        $labels['TextColor'] = _t(__CLASS__ . '.TEXTCOLOR', 'Text color');
-        $labels['OutlineColor'] = _t(__CLASS__ . '.OUTLINECOLOR', 'Outline color');
+        $labels['ColorText'] = _t(__CLASS__ . '.TEXTCOLOR', 'Text color');
+        $labels['ColorOutline'] = _t(__CLASS__ . '.OUTLINECOLOR', 'Outline color');
         $labels['InitialRotation'] = _t(__CLASS__ . '.INITIALROTATION', 'Initial rotation');
         $labels['InitialRotationV'] = _t(__CLASS__ . '.VERTICAL', 'Vertical');
         $labels['InitialRotationH'] = _t(__CLASS__ . '.HORIZONTAL', 'Horizontal');
@@ -328,8 +336,8 @@ class TagCloudComponent extends BaseComponent
                 'data-zoom-max' => $this->ZoomMax,
                 'data-canvas' => $this->CanvasCSSID,
                 'data-tag-list' => $this->TagListID,
-                'data-color-text' => $this->TextColor,
-                'data-color-outline' => $this->OutlineColor,
+                'data-color-text' => $this->ColorText,
+                'data-color-outline' => $this->ColorOutline,
                 'data-weight-size-min' => $this->WeightSizeMin,
                 'data-weight-size-max' => $this->WeightSizeMax,
                 'data-initial' => $this->Initial,

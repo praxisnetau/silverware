@@ -17,6 +17,16 @@ SilverStripe\CMS\Controllers\ContentController:
   extensions:
     - SilverWare\Extensions\ControllerExtension
 
+# Configure Admin Extensions:
+
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - SilverWare\Extensions\Admin\LeftAndMainExtension
+  extra_requirements_css:
+    - silverware/admin/client/dist/styles/bundle.css
+  extra_requirements_javascript:
+    - silverware/admin/client/dist/js/bundle.js
+
 # Site Configuration Extensions:
 
 SilverStripe\SiteConfig\SiteConfig:

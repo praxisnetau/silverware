@@ -18,12 +18,12 @@
 namespace SilverWare\Components;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\Forms\RequiredFields;
 use SilverWare\Extensions\Model\TokenMappingExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Forms\FieldSection;
+use SilverWare\Forms\PageDropdownField;
 use Page;
 
 /**
@@ -176,10 +176,9 @@ class DeveloperComponent extends BaseComponent
                     'DeveloperName',
                     $this->fieldLabel('DeveloperName')
                 ),
-                TreeDropdownField::create(
+                PageDropdownField::create(
                     'DeveloperPageID',
-                    $this->fieldLabel('DeveloperPageID'),
-                    Page::class
+                    $this->fieldLabel('DeveloperPageID')
                 ),
                 TextField::create(
                     'DeveloperURL',
@@ -193,20 +192,24 @@ class DeveloperComponent extends BaseComponent
         $fields->addFieldsToTab(
             'Root.Options',
             [
-                CompositeField::create([
-                    TextField::create(
-                        'DeveloperText',
-                        $this->fieldLabel('DeveloperText')
-                    ),
-                    CheckboxField::create(
-                        'OpenLinkInNewTab',
-                        $this->fieldLabel('OpenLinkInNewTab')
-                    ),
-                    CheckboxField::create(
-                        'LinkDisabled',
-                        $this->fieldLabel('LinkDisabled')
-                    )
-                ])->setName('DeveloperComponentOptions')->setTitle($this->i18n_singular_name())
+                FieldSection::create(
+                    'DeveloperComponentOptions',
+                    $this->i18n_singular_name(),
+                    [
+                        TextField::create(
+                            'DeveloperText',
+                            $this->fieldLabel('DeveloperText')
+                        ),
+                        CheckboxField::create(
+                            'OpenLinkInNewTab',
+                            $this->fieldLabel('OpenLinkInNewTab')
+                        ),
+                        CheckboxField::create(
+                            'LinkDisabled',
+                            $this->fieldLabel('LinkDisabled')
+                        )
+                    ]
+                )
             ]
         );
         

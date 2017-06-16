@@ -20,9 +20,9 @@ namespace SilverWare\Components;
 use SilverStripe\Assets\Image;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverWare\Extensions\Model\ImageResizeExtension;
+use SilverWare\Forms\FieldSection;
 
 /**
  * An extension of the base component class for an image component.
@@ -185,16 +185,20 @@ class ImageComponent extends BaseComponent
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                CheckboxField::create(
-                    'LinkImage',
-                    $this->fieldLabel('LinkImage')
-                ),
-                CheckboxField::create(
-                    'HideCaption',
-                    $this->fieldLabel('HideCaption')
-                )
-            ])->setName('ImageComponentOptions')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'ImageComponentOptions',
+                $this->i18n_singular_name(),
+                [
+                    CheckboxField::create(
+                        'LinkImage',
+                        $this->fieldLabel('LinkImage')
+                    ),
+                    CheckboxField::create(
+                        'HideCaption',
+                        $this->fieldLabel('HideCaption')
+                    )
+                ]
+            )
         );
         
         // Answer Field Objects:

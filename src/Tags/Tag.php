@@ -27,8 +27,8 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Permission;
 use SilverWare\Extensions\Model\URLSegmentExtension;
+use SilverWare\Security\CMSMainPermissions;
 
 /**
  * An extension of the data object class for a tag.
@@ -41,6 +41,8 @@ use SilverWare\Extensions\Model\URLSegmentExtension;
  */
 class Tag extends DataObject
 {
+    use CMSMainPermissions;
+    
     /**
      * Human-readable singular name.
      *
@@ -219,55 +221,6 @@ class Tag extends DataObject
         // Answer Field Labels:
         
         return $labels;
-    }
-    
-    /**
-     * Answers true if the member can create a new instance of the receiver.
-     *
-     * @param Member $member Optional member object.
-     * @param array $context Context-specific data.
-     *
-     * @return boolean
-     */
-    public function canCreate($member = null, $context = [])
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can delete the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canDelete($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can edit the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canEdit($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can view the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canView($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
     }
     
     /**

@@ -24,7 +24,6 @@ use SilverStripe\ORM\DB;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\Versioned\Versioned;
-use SilverWare\Admin\PageIconFix;
 
 /**
  * An extension of the site tree class for a SilverWare folder.
@@ -37,8 +36,6 @@ use SilverWare\Admin\PageIconFix;
  */
 class Folder extends SiteTree implements PermissionProvider
 {
-    use PageIconFix;
-    
     /**
      * Icon file for this object.
      *
@@ -109,7 +106,7 @@ class Folder extends SiteTree implements PermissionProvider
         
         // Define Field Labels:
         
-        $labels['Title'] = _t(__CLASS__ . '.FOLDERNAME', 'Folder name');
+        $labels['Title'] = _t(__CLASS__ . '.NAME', 'Name');
         
         // Answer Field Labels:
         

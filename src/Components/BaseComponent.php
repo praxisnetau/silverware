@@ -18,8 +18,8 @@
 namespace SilverWare\Components;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Model\Component;
 
 /**
@@ -115,13 +115,17 @@ class BaseComponent extends Component
         $fields->addFieldsToTab(
             'Root.Style',
             [
-                CompositeField::create([
-                    DropdownField::create(
-                        'TitleLevel',
-                        $this->fieldLabel('TitleLevel'),
-                        $this->getTitleLevelOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
-                ])->setName('TitleStyle')->setTitle($this->fieldLabel('TitleStyle'))
+                FieldSection::create(
+                    'TitleStyle',
+                    $this->fieldLabel('TitleStyle'),
+                    [
+                        DropdownField::create(
+                            'TitleLevel',
+                            $this->fieldLabel('TitleLevel'),
+                            $this->getTitleLevelOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                    ]
+                )
             ]
         );
         
@@ -130,12 +134,16 @@ class BaseComponent extends Component
         $fields->addFieldsToTab(
             'Root.Options',
             [
-                CompositeField::create([
-                    CheckboxField::create(
-                        'HideTitle',
-                        $this->fieldLabel('HideTitle')
-                    )
-                ])->setName('TitleOptions')->setTitle($this->fieldLabel('TitleOptions'))
+                FieldSection::create(
+                    'TitleOptions',
+                    $this->fieldLabel('TitleOptions'),
+                    [
+                        CheckboxField::create(
+                            'HideTitle',
+                            $this->fieldLabel('HideTitle')
+                        )
+                    ]
+                )
             ]
         );
         

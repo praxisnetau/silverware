@@ -200,7 +200,9 @@ class DimensionsField extends FormField
     /**
      * Saves the receiver into the given data object.
      *
-     * @param DataObjectInterface|DataObject $dataObject
+     * @param DataObjectInterface|DataObject $record
+     *
+     * @return void
      */
     public function saveInto(DataObjectInterface $record)
     {

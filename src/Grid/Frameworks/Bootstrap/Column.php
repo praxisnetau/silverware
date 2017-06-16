@@ -181,7 +181,7 @@ class Column extends ColumnExtension
      * Answers the offset class for the specified viewport and value.
      *
      * @param string $viewport
-     * @param string $prefix
+     * @param string $value
      *
      * @return string
      */

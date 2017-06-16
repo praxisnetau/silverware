@@ -174,7 +174,7 @@ const config = (env) => {
       plugins: plugins(env, PATHS.ADMIN.SRC, PATHS.ADMIN.DIST),
       resolve: {
         alias: {
-          'admin': path.resolve(process.env.PWD, '../silverstripe-admin/client/src')
+          'silverstripe-admin': path.resolve(process.env.PWD, '../silverstripe-admin/client/src')
         },
         modules: [
           PATHS.ADMIN.SRC,
@@ -182,8 +182,7 @@ const config = (env) => {
         ]
       },
       externals: {
-        jquery: 'jQuery',
-        jQuery: 'jQuery'
+        jquery: 'jQuery'
       }
     },
     {
@@ -210,8 +209,7 @@ const config = (env) => {
         ]
       },
       externals: {
-        jquery: 'jQuery',
-        jQuery: 'jQuery'
+        jquery: 'jQuery'
       }
     }
   ];

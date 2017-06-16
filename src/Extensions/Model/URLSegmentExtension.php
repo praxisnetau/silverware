@@ -56,6 +56,8 @@ class URLSegmentExtension extends DataExtension
     
     /**
      * Event method called before the receiver is written to the database.
+     *
+     * @return void
      */
     public function onBeforeWrite()
     {

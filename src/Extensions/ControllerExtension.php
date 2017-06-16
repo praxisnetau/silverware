@@ -230,7 +230,7 @@ class ControllerExtension extends Extension
         
         // Themed CSS Enabled?
         
-        if ($this->owner->config()->load_themed_css) {
+        if ($this->owner->config()->load_themed_css || $this->isDevServerFallback()) {
             
             // Load Themed CSS:
             
@@ -340,6 +340,18 @@ class ControllerExtension extends Extension
     protected function getDevServerConfig()
     {
         return $this->owner->config()->dev_server;
+    }
+    
+    /**
+     * Answers true if the dev server is not active and fallback mode is enabled.
+     *
+     * @return boolean
+     */
+    protected function isDevServerFallback()
+    {
+        $config = $this->getDevServerConfig();
+        
+        return (!$this->isDevServerActive() && isset($config['fallback']) && $config['fallback']);
     }
     
     /**

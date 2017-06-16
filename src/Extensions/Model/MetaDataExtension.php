@@ -21,7 +21,6 @@ use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
@@ -30,6 +29,7 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverWare\Components\BaseListComponent;
 use SilverWare\Forms\DimensionsField;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Tools\ImageTools;
 use SilverWare\Tools\ViewTools;
 
@@ -362,9 +362,11 @@ class MetaDataExtension extends DataExtension
         // Answer Field Objects:
         
         return FieldList::create([
-            CompositeField::create(
+            FieldSection::create(
+                'ImageMetaSection',
+                $this->owner->fieldLabel('ImageMetaSection'),
                 $fields
-            )->setName('ImageMetaComposite')->setTitle($this->owner->fieldLabel('ImageMetaComposite'))
+            )
         ]);
     }
     
@@ -381,7 +383,7 @@ class MetaDataExtension extends DataExtension
         $labels['ImageMeta'] = _t(__CLASS__ . '.FILE', 'File');
         $labels['ImageMetaResize'] = _t(__CLASS__ . '.DIMENSIONS', 'Dimensions');
         $labels['ImageMetaCaption'] = _t(__CLASS__ . '.CAPTION', 'Caption');
-        $labels['ImageMetaComposite'] = _t(__CLASS__ . '.IMAGE', 'Image');
+        $labels['ImageMetaSection'] = _t(__CLASS__ . '.IMAGE', 'Image');
         $labels['ImageMetaResizeMethod'] = _t(__CLASS__ . '.RESIZEMETHOD', 'Resize method');
         $labels['ImageMetaCaptionHidden'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['ImageMetaAlignment'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');

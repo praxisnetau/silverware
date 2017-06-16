@@ -17,12 +17,13 @@
 
 namespace SilverWare\Components;
 
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
-use SilverWare\Colorpicker\Forms\ColorField;
+use SilverWare\Extensions\Style\CornerStyle;
+use SilverWare\Extensions\Style\LinkColorStyle;
 use SilverWare\FontIcons\Forms\FontIconField;
+use SilverWare\Forms\FieldSection;
 
 /**
  * An extension of the base component class for a scroll to top button.
@@ -35,12 +36,6 @@ use SilverWare\FontIcons\Forms\FontIconField;
  */
 class ScrollToTopButton extends BaseComponent
 {
-    /**
-     * Define corner constants.
-     */
-    const CORNER_ROUNDED  = 'rounded';
-    const CORNER_CIRCULAR = 'circular';
-    
     /**
      * Human-readable singular name.
      *
@@ -100,10 +95,7 @@ class ScrollToTopButton extends BaseComponent
         'ButtonIcon' => 'FontIcon',
         'OffsetShow' => 'Int',
         'OffsetOpacity' => 'Int',
-        'ScrollDuration' => 'Int',
-        'ColorBackground' => 'Color',
-        'ColorForeground' => 'Color',
-        'CornerStyle' => 'Varchar(16)'
+        'ScrollDuration' => 'Int'
     ];
     
     /**
@@ -120,6 +112,17 @@ class ScrollToTopButton extends BaseComponent
     ];
     
     /**
+     * Defines the extension classes to apply to this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $extensions = [
+        LinkColorStyle::class,
+        CornerStyle::class
+    ];
+    
+    /**
      * Answers a list of field objects for the CMS interface.
      *
      * @return FieldList
@@ -129,10 +132,6 @@ class ScrollToTopButton extends BaseComponent
         // Obtain Field Objects (from parent):
         
         $fields = parent::getCMSFields();
-        
-        // Define Placeholder:
-        
-        $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
         
         // Create Main Fields:
         
@@ -150,45 +149,28 @@ class ScrollToTopButton extends BaseComponent
             ]
         );
         
-        // Create Style Fields:
-        
-        $fields->addFieldToTab(
-            'Root.Style',
-            CompositeField::create([
-                ColorField::create(
-                    'ColorBackground',
-                    $this->fieldLabel('ColorBackground')
-                ),
-                ColorField::create(
-                    'ColorForeground',
-                    $this->fieldLabel('ColorForeground')
-                ),
-                DropdownField::create(
-                    'CornerStyle',
-                    $this->fieldLabel('CornerStyle'),
-                    $this->getCornerStyleOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
-            ])->setName('ScrollToTopButtonStyle')->setTitle($this->i18n_singular_name())
-        );
-        
         // Create Options Fields:
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                NumericField::create(
-                    'OffsetShow',
-                    $this->fieldLabel('OffsetShow')
-                ),
-                NumericField::create(
-                    'OffsetOpacity',
-                    $this->fieldLabel('OffsetOpacity')
-                ),
-                NumericField::create(
-                    'ScrollDuration',
-                    $this->fieldLabel('ScrollDuration')
-                )
-            ])->setName('ScrollToTopButtonOptions')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'ScrollToTopButtonOptions',
+                $this->i18n_singular_name(),
+                [
+                    NumericField::create(
+                        'OffsetShow',
+                        $this->fieldLabel('OffsetShow')
+                    ),
+                    NumericField::create(
+                        'OffsetOpacity',
+                        $this->fieldLabel('OffsetOpacity')
+                    ),
+                    NumericField::create(
+                        'ScrollDuration',
+                        $this->fieldLabel('ScrollDuration')
+                    )
+                ]
+            )
         );
         
         // Answer Field Objects:
@@ -213,12 +195,9 @@ class ScrollToTopButton extends BaseComponent
         
         $labels['Label'] = _t(__CLASS__ . '.LABEL', 'Label');
         $labels['ButtonIcon'] = _t(__CLASS__ . '.ICON', 'Icon');
-        $labels['CornerStyle'] = _t(__CLASS__ . '.CORNERSTYLE', 'Corner style');
         $labels['OffsetShow'] = _t(__CLASS__ . '.OFFSETSHOWINPIXELS', 'Show offset (in pixels)');
         $labels['OffsetOpacity'] = _t(__CLASS__ . '.OFFSETOPACITYINPIXELS', 'Opacity offset (in pixels)');
         $labels['ScrollDuration'] = _t(__CLASS__ . '.SCROLLDURATIONINMS', 'Scroll duration (in milliseconds)');
-        $labels['ColorBackground'] = _t(__CLASS__ . '.BACKGROUNDCOLOR', 'Background color');
-        $labels['ColorForeground'] = _t(__CLASS__ . '.FOREGROUNDCOLOR', 'Foreground color');
         
         // Answer Field Labels:
         
@@ -263,27 +242,6 @@ class ScrollToTopButton extends BaseComponent
     }
     
     /**
-     * Answers an array of class names for the HTML template.
-     *
-     * @return array
-     */
-    public function getClassNames()
-    {
-        $classes = parent::getClassNames();
-        
-        switch ($this->CornerStyle) {
-            case self::CORNER_ROUNDED:
-                $classes[] = $this->style('rounded');
-                break;
-            case self::CORNER_CIRCULAR:
-                $classes[] = $this->style('rounded.circle');
-                break;
-        }
-        
-        return $classes;
-    }
-    
-    /**
      * Renders the component for the HTML template.
      *
      * @param string $layout Page layout passed from template.
@@ -294,18 +252,5 @@ class ScrollToTopButton extends BaseComponent
     public function renderSelf($layout = null, $title = null)
     {
         return $this->getController()->renderWith(self::class);
-    }
-    
-    /**
-     * Answers an array of options for the corner style field.
-     *
-     * @return array
-     */
-    public function getCornerStyleOptions()
-    {
-        return [
-            self::CORNER_ROUNDED  => _t(__CLASS__ . '.ROUNDED', 'Rounded'),
-            self::CORNER_CIRCULAR => _t(__CLASS__ . '.CIRCULAR', 'Circular'),
-        ];
     }
 }

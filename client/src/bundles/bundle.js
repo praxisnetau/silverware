@@ -3,13 +3,13 @@
 
 // Load Styles:
 
-require('../styles/bundle.scss');
+require('styles/bundle.scss');
 
 // Load jQuery Plugins:
 
-require('jquery/tagcanvas');
+require('jquery/tagcanvas.js');
 
 // Load Components:
 
-require('components/ScrollToTopButton');
-require('components/TagCloudComponent');
+require('components/ScrollToTopButton.js');
+require('components/TagCloudComponent.js');

@@ -6,10 +6,19 @@
 @import "~theme/styles/variables";
 @import "~theme/styles/mixins";
 
+// Import Local Files:
+
+@import "variables";
+@import "mixins";
+
 // Import Component Styles:
 
-@import "./components/ImageComponent";
-@import "./components/ListComponent";
-@import "./components/MediaComponent";
-@import "./components/PageComponent";
-@import "./components/ScrollToTopButton";
+@import "components/ImageComponent";
+@import "components/ListComponent";
+@import "components/MediaComponent";
+@import "components/PageComponent";
+@import "components/ScrollToTopButton";
+
+// Import Model Styles:
+
+@import "model/Link";

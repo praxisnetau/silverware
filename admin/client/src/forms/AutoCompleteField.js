@@ -1,9 +1,11 @@
 /* Auto Complete Field
 ===================================================================================================================== */
 
-import $ from 'jQuery';
+import $ from 'jquery';
 
 $.entwine('ss.autocompletefield', function($) {
+  
+  // Handle Autocomplete Fields:
   
   $('.field.autocomplete input.text').entwine({
     

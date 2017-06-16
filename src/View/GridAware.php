@@ -36,7 +36,7 @@ trait GridAware
      *
      * @return SilverWare\Grid\Framework
      */
-    protected function grid()
+    public function grid()
     {
         return Grid::framework();
     }
@@ -49,7 +49,7 @@ trait GridAware
      *
      * @return string
      */
-    protected function style($name, $subname = null)
+    public function style($name, $subname = null)
     {
         return $this->grid()->getStyle($name, $subname);
     }
@@ -59,7 +59,7 @@ trait GridAware
      *
      * @return array|string
      */
-    protected function styles()
+    public function styles()
     {
         // Obtain Arguments:
         

@@ -8,46 +8,45 @@
  * For full copyright and license information, please view the
  * LICENSE.md file that was distributed with this source code.
  *
- * @package SilverWare\Forms\GridField
+ * @package SilverWare\Forms
  * @author Colin Tucker <colin@praxis.net.au>
  * @copyright 2017 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
 
-namespace SilverWare\Forms\GridField;
+namespace SilverWare\Forms;
 
-use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\GridFieldExtensions\GridFieldOrderableRows;
+use SilverStripe\Forms\TreeMultiselectField;
+use Page;
 
 /**
- * An extension of the grid field config record editor class for an orderable editor config.
+ * An extension of the tree dropdown field which shows pages only.
  *
- * @package SilverWare\Forms\GridField
+ * @package SilverWare\Forms
  * @author Colin Tucker <colin@praxis.net.au>
  * @copyright 2017 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class GridFieldConfig_OrderableEditor extends GridFieldConfig_RecordEditor
+class PageMultiselectField extends TreeMultiselectField
 {
     /**
      * Constructs the object upon instantiation.
      *
-     * @param integer $itemsPerPage
+     * @param string $name
+     * @param string $title
      */
-    public function __construct($itemsPerPage = null)
+    public function __construct($name, $title = null)
     {
         // Construct Parent:
         
-        parent::__construct($itemsPerPage);
+        parent::__construct($name, $title, Page::class);
         
-        // Construct Object:
+        // Define Filter Function:
         
-        $this->addComponent(GridFieldOrderableRows::create());
-        
-        // Apply Extensions:
-        
-        $this->extend('updateConfig');
+        $this->setFilterFunction(function ($node) {
+            return ($node instanceof Page);
+        });
     }
 }

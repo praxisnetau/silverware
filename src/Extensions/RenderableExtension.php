@@ -18,13 +18,13 @@
 namespace SilverWare\Extensions;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\SelectionGroup;
 use SilverStripe\Forms\SelectionGroup_Item;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use SilverWare\Forms\FieldSection;
 
 /**
  * A data extension class which allows extended objects to become template renderable.
@@ -93,26 +93,30 @@ class RenderableExtension extends DataExtension
         $fields->addFieldsToTab(
             'Root.Style',
             [
-                CompositeField::create([
-                    TextField::create(
-                        'StyleID',
-                        $this->owner->fieldLabel('StyleID')
-                    )->setRightTitle(
-                        _t(
-                            __CLASS__ . '.STYLEIDRIGHTTITLE',
-                            'Allows you to define a custom style ID for the component.'
+                FieldSection::create(
+                    'SelectorStyle',
+                    $this->owner->fieldLabel('Selectors'),
+                    [
+                        TextField::create(
+                            'StyleID',
+                            $this->owner->fieldLabel('StyleID')
+                        )->setRightTitle(
+                            _t(
+                                __CLASS__ . '.STYLEIDRIGHTTITLE',
+                                'Allows you to define a custom style ID for the component.'
+                            )
+                        ),
+                        TextField::create(
+                            'StyleClasses',
+                            $this->owner->fieldLabel('StyleClasses')
+                        )->setRightTitle(
+                            _t(
+                                __CLASS__ . '.STYLECLASSESRIGHTTITLE',
+                                'Allows you to add additional style classes for the component (separated by spaces).'
+                            )
                         )
-                    ),
-                    TextField::create(
-                        'StyleClasses',
-                        $this->owner->fieldLabel('StyleClasses')
-                    )->setRightTitle(
-                        _t(
-                            __CLASS__ . '.STYLECLASSESRIGHTTITLE',
-                            'Allows you to add additional style classes for the component (separated by spaces).'
-                        )
-                    )
-                ])->setName('ComponentStyle')->setTitle($this->owner->fieldLabel('ComponentStyle'))
+                    ]
+                )
             ]
         );
         
@@ -121,12 +125,16 @@ class RenderableExtension extends DataExtension
         $fields->addFieldsToTab(
             'Root.Options',
             [
-                CompositeField::create([
-                    CheckboxField::create(
-                        'Disabled',
-                        $this->owner->fieldLabel('Disabled')
-                    )
-                ])->setName('ComponentOptions')->setTitle($this->owner->fieldLabel('ComponentOptions')),
+                FieldSection::create(
+                    'StatusOptions',
+                    $this->owner->fieldLabel('Status'),
+                    [
+                        CheckboxField::create(
+                            'Disabled',
+                            $this->owner->fieldLabel('Disabled')
+                        )
+                    ]
+                ),
                 SelectionGroup::create(
                     'Cached',
                     [
@@ -160,13 +168,14 @@ class RenderableExtension extends DataExtension
     {
         $labels['Style'] = _t(__CLASS__ . '.STYLE', 'Style');
         $labels['Cached'] = _t(__CLASS__ . '.CACHE', 'Cache');
+        $labels['Status'] = _t(__CLASS__ . '.STATUS', 'Status');
         $labels['StyleID'] = _t(__CLASS__ . '.STYLEID', 'Style ID');
         $labels['Options'] = _t(__CLASS__ . '.OPTIONS', 'Options');
         $labels['Enabled'] = _t(__CLASS__ . '.ENABLED', 'Enabled');
+        $labels['Selectors'] = _t(__CLASS__ . '.SELECTORS', 'Selectors');
         $labels['StyleClasses'] = _t(__CLASS__ . '.STYLECLASSES', 'Style Classes');
         $labels['CacheLifetime'] = _t(__CLASS__ . '.CACHELIFETIMEINSECONDS', 'Cache lifetime (in seconds)');
         $labels['Disabled'] = $labels['Disabled.Nice'] = _t(__CLASS__ . '.DISABLED', 'Disabled');
-        $labels['ComponentStyle'] = $labels['ComponentOptions'] = _t(__CLASS__ . '.COMPONENT', 'Component');
     }
     
     /**

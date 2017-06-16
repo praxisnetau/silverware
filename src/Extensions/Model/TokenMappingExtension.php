@@ -66,10 +66,10 @@ class TokenMappingExtension extends Extension
     /**
      * Replaces tokens found within the given text with their mapped value.
      *
-     * @throws Exception
-     *
      * @param string $text Text with tokens to replace.
      * @param array $tokens Array of tokens mapped to values (optional).
+     *
+     * @throws Exception
      *
      * @return string
      */

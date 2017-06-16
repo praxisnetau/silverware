@@ -40,6 +40,8 @@ class CropPriorityFileFormExtension extends Extension
      * @param Controller $controller
      * @param string $name
      * @param array $context
+     *
+     * @return void
      */
     public function updateFormFields(FieldList $fields, Controller $controller, $name, $context)
     {

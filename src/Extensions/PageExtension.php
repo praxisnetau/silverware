@@ -18,7 +18,6 @@
 namespace SilverWare\Extensions;
 
 use SilverStripe\Control\Controller;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\ArrayList;
@@ -26,7 +25,9 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Model\Layout;
+use SilverWare\Model\Link;
 use SilverWare\Model\Template;
 use Page;
 
@@ -105,18 +106,22 @@ class PageExtension extends DataExtension implements PermissionProvider
         
         $fields->addFieldToTab(
             'Root.Settings',
-            $settings = CompositeField::create([
-                $template = DropdownField::create(
-                    'MyTemplateID',
-                    $this->owner->fieldLabel('MyTemplateID'),
-                    Template::get()->map()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                $layout = DropdownField::create(
-                    'MyLayoutID',
-                    $this->owner->fieldLabel('MyLayoutID'),
-                    Layout::get()->map()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
-            ])->setName('AppearanceSettings')->setTitle($this->owner->fieldLabel('AppearanceSettings'))
+            FieldSection::create(
+                'AppearanceSettings',
+                $this->owner->fieldLabel('AppearanceSettings'),
+                [
+                    $template = DropdownField::create(
+                        'MyTemplateID',
+                        $this->owner->fieldLabel('MyTemplateID'),
+                        Template::get()->map()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    $layout = DropdownField::create(
+                        'MyLayoutID',
+                        $this->owner->fieldLabel('MyLayoutID'),
+                        Layout::get()->map()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                ]
+            )
         );
         
         // Check Permissions and Modify Fields:
@@ -378,5 +383,17 @@ class PageExtension extends DataExtension implements PermissionProvider
     public function getFieldFromHierarchy($name)
     {
         return ($value = $this->owner->$name) ? $value : $this->owner->getFieldFromParent($name);
+    }
+    
+    /**
+     * Converts the extended object into a link object.
+     *
+     * @param string $nameField
+     *
+     * @return Link
+     */
+    public function toLink($nameField = 'MenuTitle')
+    {
+        return Link::create()->fromPage($this->owner, $nameField);
     }
 }

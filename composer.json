@@ -24,13 +24,12 @@
     "silverstripe/asset-admin": "^1@dev",
     "silverstripe/cms": "^4@dev",
     "silverstripe/framework": "^4@dev",
-    "silverware/colorpicker": "~0.1@dev",
-    "silverware/font-icons": "~0.1@dev",
-    "silverware/theme": "~0.1@dev"
+    "silverware/colorpicker": "^1.0",
+    "silverware/font-icons": "^1.0",
+    "silverware/theme": "^1.0"
   },
   "autoload": {
     "psr-4": {
-      "SilverWare\\Admin\\": "src/Admin/",
       "SilverWare\\Components\\": "src/Components/",
       "SilverWare\\Core\\": "src/Core/",
       "SilverWare\\Dev\\": "src/Dev/",
@@ -42,6 +41,7 @@
       "SilverWare\\Model\\": "src/Model/",
       "SilverWare\\ORM\\": "src/ORM/",
       "SilverWare\\Sections\\": "src/Sections/",
+      "SilverWare\\Security\\": "src/Security/",
       "SilverWare\\Tags\\": "src/Sections/",
       "SilverWare\\Tools\\": "src/Tools/",
       "SilverWare\\View\\": "src/View/"
@@ -49,7 +49,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "0.3.x-dev"
+      "dev-master": "1.0.x-dev"
     },
     "installer-name": "silverware"
   },

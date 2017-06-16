@@ -19,7 +19,6 @@ namespace SilverWare\Components;
 
 use Embed\Embed;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\SelectionGroup;
@@ -27,6 +26,7 @@ use SilverStripe\Forms\SelectionGroup_Item;
 use SilverStripe\Forms\TextField;
 use SilverStripe\View\ArrayData;
 use SilverWare\FontIcons\Forms\FontIconField;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\Validators\MediaURLValidator;
 
 /**
@@ -187,17 +187,21 @@ class MediaComponent extends BaseComponent
         $fields->addFieldsToTab(
             'Root.Main',
             [
-                CompositeField::create([
-                    TextField::create(
-                        'MediaURL',
-                        ''
-                    )->setRightTitle(
-                        _t(
-                            __CLASS__ . '.MEDIAURLRIGHTTITLE',
-                            'Paste the complete URL of the media you wish to embed (e.g. https://youtu.be/dQw4w9WgXcQ)'
+                FieldSection::create(
+                    'MediaURLSection',
+                    $this->fieldLabel('MediaURL'),
+                    [
+                        TextField::create(
+                            'MediaURL',
+                            ''
+                        )->setRightTitle(
+                            _t(
+                                __CLASS__ . '.MEDIAURLRIGHTTITLE',
+                                'Paste the complete URL of the media you wish to embed (e.g. https://youtu.be/dQw4w9WgXcQ)'
+                            )
                         )
-                    )
-                ])->setName('MediaURLComposite')->setTitle($this->fieldLabel('MediaURL')),
+                    ]
+                ),
                 SelectionGroup::create(
                     'CaptionMode',
                     [
@@ -242,42 +246,50 @@ class MediaComponent extends BaseComponent
         
         $fields->addFieldToTab(
             'Root.Style',
-            CompositeField::create([
-                FontIconField::create(
-                    'TextLinkIcon',
-                    $this->fieldLabel('TextLinkIcon')
-                )
-            ])->setName('MediaComponentStyle')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'MediaComponentStyle',
+                $this->i18n_singular_name(),
+                [
+                    FontIconField::create(
+                        'TextLinkIcon',
+                        $this->fieldLabel('TextLinkIcon')
+                    )
+                ]
+            )
         );
         
         // Create Options Fields:
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                DropdownField::create(
-                    'ImageTitle',
-                    $this->fieldLabel('ImageTitle'),
-                    $this->getImageTitleOptions()
-                ),
-                DropdownField::create(
-                    'ImageCaption',
-                    $this->fieldLabel('ImageCaption'),
-                    $this->getImageCaptionOptions()
-                ),
-                CheckboxField::create(
-                    'LinkImage',
-                    $this->fieldLabel('LinkImage')
-                ),
-                CheckboxField::create(
-                    'ShowTextLink',
-                    $this->fieldLabel('ShowTextLink')
-                ),
-                CheckboxField::create(
-                    'ShowIcon',
-                    $this->fieldLabel('ShowIcon')
-                )
-            ])->setName('MediaComponentOptions')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'MediaComponentOptions',
+                $this->i18n_singular_name(),
+                [
+                    DropdownField::create(
+                        'ImageTitle',
+                        $this->fieldLabel('ImageTitle'),
+                        $this->getImageTitleOptions()
+                    ),
+                    DropdownField::create(
+                        'ImageCaption',
+                        $this->fieldLabel('ImageCaption'),
+                        $this->getImageCaptionOptions()
+                    ),
+                    CheckboxField::create(
+                        'LinkImage',
+                        $this->fieldLabel('LinkImage')
+                    ),
+                    CheckboxField::create(
+                        'ShowTextLink',
+                        $this->fieldLabel('ShowTextLink')
+                    ),
+                    CheckboxField::create(
+                        'ShowIcon',
+                        $this->fieldLabel('ShowIcon')
+                    )
+                ]
+            )
         );
         
         // Answer Field Objects:

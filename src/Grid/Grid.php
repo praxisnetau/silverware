@@ -56,7 +56,7 @@ class Grid extends Component
         
         // Define Field Labels:
         
-        $labels['Title'] = sprintf('%s %s', $this->i18n_singular_name(), _t(__CLASS__ . '.NAME', 'name'));
+        $labels['Title'] = _t(__CLASS__ . '.NAME', 'Name');
         
         // Answer Field Labels:
         

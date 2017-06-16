@@ -1,0 +1,20 @@
+/* Icon Size Mixin
+===================================================================================================================== */
+
+@mixin icon-size($size) {
+  
+  &.size-#{$size} {
+    
+    width: #{$size}px;
+    height: #{$size}px;
+    font-size: #{$size * 0.66}px;
+    line-height: #{$size}px;
+    
+    > i.fa {
+      height: #{$size}px;
+      line-height: #{$size}px;
+    }
+    
+  }
+  
+}

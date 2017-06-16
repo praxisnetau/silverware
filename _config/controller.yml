@@ -28,6 +28,7 @@ SilverStripe\CMS\Controllers\ContentController:
     port: 8080
     https: false
     timeout: 10
+    fallback: true
   load_js: true
   load_css: true
   load_themed_js: true

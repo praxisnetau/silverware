@@ -32,8 +32,10 @@ use SilverStripe\View\ViewableData;
 class ListWrapper extends ViewableData implements ListSource
 {
     /**
-    * @var SS_List
-    */
+     * List object being wrapped.
+     *
+     * @var SS_List
+     */
     protected $list;
     
     /**

@@ -17,14 +17,13 @@
 
 namespace SilverWare\Model;
 
-use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\SelectionGroup;
 use SilverStripe\Forms\SelectionGroup_Item;
-use SilverStripe\Forms\TreeMultiselectField;
 use SilverWare\Components\AreaComponent;
 use SilverWare\Components\BaseComponent;
 use SilverWare\Folders\PanelFolder;
+use SilverWare\Forms\PageMultiselectField;
 use Page;
 
 /**
@@ -173,7 +172,7 @@ class Panel extends Component
                         ),
                         SelectionGroup_Item::create(
                             'OnlyThesePages',
-                            TreeMultiselectField::create('Pages', '', 'Page'),
+                            PageMultiselectField::create('Pages', ''),
                             $this->fieldLabel('OnlyThesePages')
                         )
                     ]
@@ -203,8 +202,8 @@ class Panel extends Component
         
         // Define Field Labels:
         
+        $labels['Title'] = _t(__CLASS__ . '.NAME', 'Name');
         $labels['Areas'] = _t(__CLASS__ . '.AREAS', 'Areas');
-        $labels['Title'] = _t(__CLASS__ . '.PANELNAME', 'Panel name');
         $labels['ShowOn'] = _t(__CLASS__ . '.SHOWON', 'Show on');
         $labels['AllPages'] = _t(__CLASS__ . '.ALLPAGES', 'All pages');
         $labels['OnlyThesePages'] = _t(__CLASS__ . '.ONLYTHESEPAGES', 'Only these pages');
@@ -216,6 +215,8 @@ class Panel extends Component
     
     /**
      * Answers true if the panel is associated with the given area component.
+     *
+     * @param AreaComponent $area
      *
      * @return boolean
      */

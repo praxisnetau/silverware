@@ -1,0 +1,55 @@
+/* Link Styles
+===================================================================================================================== */
+
+.component.link {
+  
+  display: inline-block;
+  text-decoration: none;
+  
+  > i.fa {
+    display: inline-block;
+  }
+  
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
+  
+}
+
+.show-icons.hide-text {
+  
+  .component.link {
+    
+    overflow: hidden;
+    text-align: center;
+    transition: color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s;
+    
+    > i.fa {
+      display: block;
+    }
+    
+    @each $size in $icon-size-list {
+      @include icon-size($size);
+    }
+    
+  }
+  
+}
+
+.hide-icons {
+  
+  .component.link > i.fa {
+    display: none;
+  }
+  
+}
+
+.hide-text {
+  
+  .component.link > span.text {
+    display: none;
+  }
+  
+}

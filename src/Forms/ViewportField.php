@@ -43,6 +43,8 @@ class ViewportField extends DropdownField
     /**
      * Defines the source options for the receiver.
      *
+     * @param array|ArrayAccess $source
+     *
      * @return $this
      */
     public function setSource($source)

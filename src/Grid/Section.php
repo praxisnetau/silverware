@@ -18,7 +18,7 @@
 namespace SilverWare\Grid;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
+use SilverWare\Forms\FieldSection;
 
 /**
  * An extension of the grid class for a section.
@@ -124,12 +124,16 @@ class Section extends Grid
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create(
-                CheckboxField::create(
-                    'FullWidth',
-                    $this->fieldLabel('FullWidth')
-                )
-            )->setName('SectionOptions')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'SectionOptions',
+                $this->i18n_singular_name(),
+                [
+                    CheckboxField::create(
+                        'FullWidth',
+                        $this->fieldLabel('FullWidth')
+                    )
+                ]
+            )
         );
         
         // Answer Field Objects:
@@ -152,7 +156,6 @@ class Section extends Grid
         
         // Define Field Labels:
         
-        $labels['Title'] = _t(__CLASS__ . '.SECTIONNAME', 'Section name');
         $labels['FullWidth'] = _t(__CLASS__ . '.USEFULLWIDTHCONTAINER', 'Use full width container');
         
         // Answer Field Labels:

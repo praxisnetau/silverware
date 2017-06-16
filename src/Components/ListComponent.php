@@ -18,9 +18,9 @@
 namespace SilverWare\Components;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\TextField;
+use SilverWare\Forms\FieldSection;
 
 /**
  * An extension of the base component class for a list component.
@@ -159,13 +159,17 @@ class ListComponent extends BaseListComponent
         
         $fields->addFieldToTab(
             'Root.Style',
-            CompositeField::create([
-                DropdownField::create(
-                    'HeadingLevel',
-                    $this->fieldLabel('HeadingLevel'),
-                    $this->getTitleLevelOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
-            ])->setName('ListComponentStyle')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'ListComponentStyle',
+                $this->i18n_singular_name(),
+                [
+                    DropdownField::create(
+                        'HeadingLevel',
+                        $this->fieldLabel('HeadingLevel'),
+                        $this->getTitleLevelOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
+                ]
+            )
         );
         
         // Create Options Fields:
@@ -173,55 +177,59 @@ class ListComponent extends BaseListComponent
         $fields->addFieldsToTab(
             'Root.Options',
             [
-                CompositeField::create([
-                    DropdownField::create(
-                        'ShowImage',
-                        $this->fieldLabel('ShowImage'),
-                        $this->getShowOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    DropdownField::create(
-                        'ShowHeader',
-                        $this->fieldLabel('ShowHeader'),
-                        $this->getShowOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    DropdownField::create(
-                        'ShowDetails',
-                        $this->fieldLabel('ShowDetails'),
-                        $this->getShowOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    DropdownField::create(
-                        'ShowSummary',
-                        $this->fieldLabel('ShowSummary'),
-                        $this->getShowOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    DropdownField::create(
-                        'ShowContent',
-                        $this->fieldLabel('ShowContent'),
-                        $this->getShowOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    DropdownField::create(
-                        'ShowFooter',
-                        $this->fieldLabel('ShowFooter'),
-                        $this->getShowOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    DropdownField::create(
-                        'ImageAlignment',
-                        $this->fieldLabel('ImageAlignment'),
-                        $this->getImageAlignmentOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
-                    TextField::create(
-                        'DateFormat',
-                        $this->fieldLabel('DateFormat')
-                    ),
-                    TextField::create(
-                        'ButtonLabel',
-                        $this->fieldLabel('ButtonLabel')
-                    ),
-                    CheckboxField::create(
-                        'LinkTitles',
-                        $this->fieldLabel('LinkTitles')
-                    )
-                ])->setName('ListComponentOptions')->setTitle($this->i18n_singular_name())
+                FieldSection::create(
+                    'ListComponentOptions',
+                    $this->i18n_singular_name(),
+                    [
+                        DropdownField::create(
+                            'ShowImage',
+                            $this->fieldLabel('ShowImage'),
+                            $this->getShowOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        DropdownField::create(
+                            'ShowHeader',
+                            $this->fieldLabel('ShowHeader'),
+                            $this->getShowOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        DropdownField::create(
+                            'ShowDetails',
+                            $this->fieldLabel('ShowDetails'),
+                            $this->getShowOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        DropdownField::create(
+                            'ShowSummary',
+                            $this->fieldLabel('ShowSummary'),
+                            $this->getShowOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        DropdownField::create(
+                            'ShowContent',
+                            $this->fieldLabel('ShowContent'),
+                            $this->getShowOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        DropdownField::create(
+                            'ShowFooter',
+                            $this->fieldLabel('ShowFooter'),
+                            $this->getShowOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        DropdownField::create(
+                            'ImageAlignment',
+                            $this->fieldLabel('ImageAlignment'),
+                            $this->getImageAlignmentOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        TextField::create(
+                            'DateFormat',
+                            $this->fieldLabel('DateFormat')
+                        ),
+                        TextField::create(
+                            'ButtonLabel',
+                            $this->fieldLabel('ButtonLabel')
+                        ),
+                        CheckboxField::create(
+                            'LinkTitles',
+                            $this->fieldLabel('LinkTitles')
+                        )
+                    ]
+                )
             ]
         );
         
@@ -435,6 +443,7 @@ class ListComponent extends BaseListComponent
     /**
      * Answers true if the part with the given name is shown.
      *
+     * @param string $name Name of part.
      * @param boolean $isFirst Item is first in the list.
      * @param boolean $isMiddle Item is in the middle of the list.
      * @param boolean $isLast Item is last in the list.

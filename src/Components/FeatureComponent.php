@@ -20,13 +20,13 @@ namespace SilverWare\Components;
 use SilverStripe\Assets\Image;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\TreeDropdownField;
 use SilverWare\Extensions\Model\ImageResizeExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Forms\FieldSection;
+use SilverWare\Forms\PageDropdownField;
 use Page;
 
 /**
@@ -187,10 +187,9 @@ class FeatureComponent extends BaseComponent
         $fields->addFieldsToTab(
             'Root.Main',
             [
-                TreeDropdownField::create(
+                PageDropdownField::create(
                     'FeaturedPageID',
-                    $this->fieldLabel('FeaturedPageID'),
-                    Page::class
+                    $this->fieldLabel('FeaturedPageID')
                 ),
                 UploadField::create(
                     'Image',
@@ -211,33 +210,41 @@ class FeatureComponent extends BaseComponent
         
         $fields->addFieldToTab(
             'Root.Style',
-            CompositeField::create([
-                DropdownField::create(
-                    'HeadingLevel',
-                    $this->fieldLabel('HeadingLevel'),
-                    $this->getTitleLevelOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-            ])->setName('FeatureComponentStyle')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'FeatureComponentStyle',
+                $this->i18n_singular_name(),
+                [
+                    DropdownField::create(
+                        'HeadingLevel',
+                        $this->fieldLabel('HeadingLevel'),
+                        $this->getTitleLevelOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                ]
+            )
         );
         
         // Create Options Fields:
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                TextField::create(
-                    'ButtonLabel',
-                    $this->fieldLabel('ButtonLabel')
-                ),
-                CheckboxField::create(
-                    'LinkHeading',
-                    $this->fieldLabel('LinkHeading')
-                ),
-                CheckboxField::create(
-                    'ShowImage',
-                    $this->fieldLabel('ShowImage')
-                )
-            ])->setName('FeatureComponentOptions')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'FeatureComponentOptions',
+                $this->i18n_singular_name(),
+                [
+                    TextField::create(
+                        'ButtonLabel',
+                        $this->fieldLabel('ButtonLabel')
+                    ),
+                    CheckboxField::create(
+                        'LinkHeading',
+                        $this->fieldLabel('LinkHeading')
+                    ),
+                    CheckboxField::create(
+                        'ShowImage',
+                        $this->fieldLabel('ShowImage')
+                    )
+                ]
+            )
         );
         
         // Answer Field Objects:

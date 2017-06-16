@@ -1,7 +1,7 @@
 /* Number Badges
 ===================================================================================================================== */
 
-import $ from 'jQuery';
+import $ from 'jquery';
 
 $.entwine('silverware.numberbadges', function($) {
   
@@ -69,6 +69,8 @@ $.entwine('silverware.numberbadges', function($) {
     }
     
   });
+  
+  // Handle Badge Values:
   
   $('span.status-number-badge-value').entwine({
     

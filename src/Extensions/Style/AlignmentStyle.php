@@ -17,10 +17,10 @@
 
 namespace SilverWare\Extensions\Style;
 
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverWare\Extensions\StyleExtension;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\ViewportsField;
 
 /**
@@ -62,13 +62,17 @@ class AlignmentStyle extends StyleExtension
         $fields->addFieldsToTab(
             'Root.Style',
             [
-                CompositeField::create([
-                    ViewportsField::create(
-                        'TextAlignment',
-                        $this->owner->fieldLabel('TextAlignment'),
-                        $this->getTextAlignmentOptions()
-                    )
-                ])->setName('AlignmentStyle')->setTitle($this->owner->fieldLabel('AlignmentStyle'))
+                FieldSection::create(
+                    'AlignmentStyle',
+                    $this->owner->fieldLabel('AlignmentStyle'),
+                    [
+                        ViewportsField::create(
+                            'TextAlignment',
+                            $this->owner->fieldLabel('TextAlignment'),
+                            $this->owner->getTextAlignmentOptions()
+                        )
+                    ]
+                )
             ]
         );
     }
@@ -95,6 +99,10 @@ class AlignmentStyle extends StyleExtension
      */
     public function updateContentClassNames(&$classes)
     {
+        if (!$this->apply()) {
+            return;
+        }
+        
         foreach ($this->getTextAlignmentClassNames() as $class) {
             $classes[] = $class;
         }

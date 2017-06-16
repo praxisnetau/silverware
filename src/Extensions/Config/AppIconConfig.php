@@ -130,6 +130,8 @@ class AppIconConfig extends ConfigExtension
     
     /**
      * Event method called before the extended object is written to the database.
+     *
+     * @return void
      */
     public function onBeforeWrite()
     {

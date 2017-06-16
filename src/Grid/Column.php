@@ -18,8 +18,8 @@
 namespace SilverWare\Grid;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverWare\Components\BaseComponent;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\ViewportsField;
 
 /**
@@ -128,30 +128,38 @@ class Column extends Grid
         
         $fields->addFieldToTab(
             'Root.Style',
-            CompositeField::create(
-                ViewportsField::create(
-                    'Span',
-                    $this->fieldLabel('Span'),
-                    $this->getColumnSpanOptions()
-                ),
-                ViewportsField::create(
-                    'Offset',
-                    $this->fieldLabel('Offset'),
-                    $this->getColumnOffsetOptions()
-                )
-            )->setName('ColumnStyle')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'ColumnStyle',
+                $this->i18n_singular_name(),
+                [
+                    ViewportsField::create(
+                        'Span',
+                        $this->fieldLabel('Span'),
+                        $this->getColumnSpanOptions()
+                    ),
+                    ViewportsField::create(
+                        'Offset',
+                        $this->fieldLabel('Offset'),
+                        $this->getColumnOffsetOptions()
+                    )
+                ]
+            )
         );
         
         // Create Options Fields:
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create(
-                CheckboxField::create(
-                    'Sidebar',
-                    $this->fieldLabel('Sidebar')
-                )
-            )->setName('ColumnOptions')->setTitle($this->i18n_singular_name())
+            FieldSection::create(
+                'ColumnOptions',
+                $this->i18n_singular_name(),
+                [
+                    CheckboxField::create(
+                        'Sidebar',
+                        $this->fieldLabel('Sidebar')
+                    )
+                ]
+            )
         );
         
         // Answer Field Objects:

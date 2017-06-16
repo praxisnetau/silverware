@@ -251,7 +251,7 @@ class FixtureBlueprint extends BaseBlueprint
         
         $title = $this->getIdentifierOrTitle($identifier, $data);
         
-        return $objects->filterByCallback(function($item, $list) use ($title) {
+        return $objects->filterByCallback(function ($item, $list) use ($title) {
             return ($item->Title == $title);
         });
     }
@@ -268,6 +268,8 @@ class FixtureBlueprint extends BaseBlueprint
     
     /**
      * Writes the given object to the database.
+     *
+     * @param DataObject $object
      *
      * @return DataObject
      */

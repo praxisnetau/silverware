@@ -1,4 +1,4 @@
-/* SilverWare Preview Bundle
+/* SilverWare Admin Preview Bundle
 ===================================================================================================================== */
 
 // Load Styles:

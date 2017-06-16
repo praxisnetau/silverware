@@ -24,8 +24,8 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Forms\TabSet;
-use SilverStripe\Security\Permission;
 use SilverStripe\ORM\DataObject;
+use SilverWare\Security\CMSMainPermissions;
 
 /**
  * An extension of the data object class for a multi-class object.
@@ -38,6 +38,8 @@ use SilverStripe\ORM\DataObject;
  */
 class MultiClassObject extends DataObject
 {
+    use CMSMainPermissions;
+    
     /**
      * Defines the summary fields of this object.
      *
@@ -149,55 +151,6 @@ class MultiClassObject extends DataObject
         // Answer Field Labels:
         
         return $labels;
-    }
-    
-    /**
-     * Answers true if the member can create a new instance of the receiver.
-     *
-     * @param Member $member Optional member object.
-     * @param array $context Context-specific data.
-     *
-     * @return boolean
-     */
-    public function canCreate($member = null, $context = [])
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can delete the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canDelete($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can edit the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canEdit($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can view the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canView($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
     }
     
     /**

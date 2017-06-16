@@ -28,8 +28,6 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\SiteConfig\SiteConfig;
-use SilverStripe\View\SSViewer;
-use SilverWare\Admin\PageIconFix;
 use SilverWare\Extensions\RenderableExtension;
 use SilverWare\Tools\ClassTools;
 use SilverWare\Tools\ViewTools;
@@ -52,7 +50,6 @@ class Component extends SiteTree implements Flushable, PermissionProvider
 {
     use GridAware;
     use Renderable;
-    use PageIconFix;
     use ViewClasses;
     use RequireFiles;
     
@@ -173,6 +170,11 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     
     /**
      * Constructs the object upon instantiation.
+     *
+     * @param array|null $record
+     * @param boolean $isSingleton
+     * @param DataModel $model
+     * @param array $queryParams
      */
     public function __construct($record = null, $isSingleton = false, $model = null, $queryParams = [])
     {
@@ -197,6 +199,12 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         // Obtain Field Objects (from parent):
         
         $fields = parent::getCMSFields();
+        
+        // Add Class Ancestry:
+        
+        foreach ($this->getAncestorClassNames(false) as $class) {
+            $fields->fieldByName('Root')->addExtraClass($class);
+        }
         
         // Remove Field Objects:
         
@@ -227,7 +235,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         
         // Define Field Labels:
         
-        $labels['Title'] = _t(__CLASS__ . '.COMPONENTTITLE', 'Component title');
+        $labels['Title'] = _t(__CLASS__ . '.TITLE', 'Title');
         
         // Answer Field Labels:
         
@@ -658,7 +666,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
      *
      * @return string
      */
-    public function getCurrentPageAncestry($asString = false)
+    public function getCurrentPageAncestry()
     {
         $ancestry = ViewTools::singleton()->convertClass(
             ClassTools::singleton()->getObjectAncestry($this->getCurrentPageClass(), Page::class, true)
@@ -723,48 +731,6 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     public function tag($content = null)
     {
         return $this->getOpeningTag() . $content . $this->getClosingTag();
-    }
-    
-    /**
-     * Answers an array of custom CSS required for the template.
-     *
-     * @return array
-     */
-    public function getCustomCSS()
-    {
-        // Create CSS Array:
-        
-        $css = [];
-        
-        // Merge Custom CSS from Template:
-        
-        $template = $this->getCustomCSSTemplate();
-        
-        if (SSViewer::hasTemplate($template)) {
-            $css = array_merge($css, preg_split('/\r\n|\n|\r/', $this->renderWith($template)));
-        }
-        
-        // Update CSS via Extensions:
-        
-        $this->extend('updateCustomCSS', $css);
-        
-        // Filter CSS Array:
-        
-        $css = array_filter($css);
-        
-        // Answer CSS Array:
-        
-        return $css;
-    }
-    
-    /**
-     * Answers the name of a template used to render custom CSS for the receiver.
-     *
-     * @return string
-     */
-    public function getCustomCSSTemplate()
-    {
-        return sprintf('%s\CustomCSS', static::class);
     }
     
     /**

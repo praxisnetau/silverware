@@ -25,9 +25,9 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Permission;
+use SilverWare\Forms\PageDropdownField;
+use SilverWare\Security\CMSMainPermissions;
 use Page;
 
 /**
@@ -41,6 +41,8 @@ use Page;
  */
 class Slide extends DataObject
 {
+    use CMSMainPermissions;
+    
     /**
      * Human-readable singular name.
      *
@@ -167,10 +169,9 @@ class Slide extends DataObject
                     'Caption',
                     $this->fieldLabel('Caption')
                 )->setRows(10),
-                TreeDropdownField::create(
+                PageDropdownField::create(
                     'LinkPageID',
-                    $this->fieldLabel('LinkPageID'),
-                    Page::class
+                    $this->fieldLabel('LinkPageID')
                 ),
                 TextField::create(
                     'LinkURL',
@@ -279,6 +280,8 @@ class Slide extends DataObject
     
     /**
      * Event method called before the receiver is written to the database.
+     *
+     * @return void
      */
     public function onBeforeWrite()
     {
@@ -291,55 +294,6 @@ class Slide extends DataObject
         if ($this->Image()->exists()) {
             $this->Image()->publishRecursive();
         }
-    }
-    
-    /**
-     * Answers true if the member can create a new instance of the receiver.
-     *
-     * @param Member $member Optional member object.
-     * @param array $context Context-specific data.
-     *
-     * @return boolean
-     */
-    public function canCreate($member = null, $context = [])
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can delete the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canDelete($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can edit the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canEdit($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
-    }
-    
-    /**
-     * Answers true if the member can view the receiver.
-     *
-     * @param Member $member
-     *
-     * @return boolean
-     */
-    public function canView($member = null)
-    {
-       return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
     }
     
     /**

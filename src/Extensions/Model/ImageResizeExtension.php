@@ -18,11 +18,11 @@
 namespace SilverWare\Extensions\Model;
 
 use SilverStripe\Assets\Image;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
 use SilverWare\Forms\DimensionsField;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Tools\ImageTools;
 
 /**
@@ -60,17 +60,21 @@ class ImageResizeExtension extends DataExtension
         
         $fields->addFieldToTab(
             'Root.Style',
-            CompositeField::create([
-                DimensionsField::create(
-                    'ImageResize',
-                    $this->owner->fieldLabel('ImageResize')
-                ),
-                DropdownField::create(
-                    'ImageResizeMethod',
-                    $this->owner->fieldLabel('ImageResizeMethod'),
-                    $this->tools()->getResizeMethods()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', _t(__CLASS__ . '.NONE', 'None'))
-            ])->setName('ImageResizeStyle')->setTitle($this->owner->fieldLabel('ImageResizeStyle'))
+            FieldSection::create(
+                'ImageResizeStyle',
+                $this->owner->fieldLabel('ImageResizeStyle'),
+                [
+                    DimensionsField::create(
+                        'ImageResize',
+                        $this->owner->fieldLabel('ImageResize')
+                    ),
+                    DropdownField::create(
+                        'ImageResizeMethod',
+                        $this->owner->fieldLabel('ImageResizeMethod'),
+                        $this->tools()->getResizeMethods()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', _t(__CLASS__ . '.NONE', 'None'))
+                ]
+            )
         );
     }
     

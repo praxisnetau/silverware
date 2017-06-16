@@ -23,6 +23,7 @@ use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\Debug;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\View\SSViewer;
 use SilverWare\Extensions\ControllerExtension;
 use SilverWare\Tools\ClassTools;
 use SilverWare\Tools\ViewTools;
@@ -149,6 +150,20 @@ trait Renderable
     public function getStyleClassNames()
     {
         return explode(' ', $this->getField('StyleClasses'));
+    }
+    
+    /**
+     * Answers an array of ancestor class names for the HTML template.
+     *
+     * @param boolean $removeNamespaces
+     *
+     * @return array
+     */
+    public function getAncestorClassNames($removeNamespaces = true)
+    {
+        return ViewTools::singleton()->convertClass(
+            ClassTools::singleton()->getObjectAncestry($this, self::class, $removeNamespaces)
+        );
     }
     
     /**
@@ -369,6 +384,48 @@ trait Renderable
     public function isDisabled()
     {
         return (boolean) $this->getField('Disabled');
+    }
+    
+    /**
+     * Answers an array of custom CSS required for the template.
+     *
+     * @return array
+     */
+    public function getCustomCSS()
+    {
+        // Create CSS Array:
+        
+        $css = [];
+        
+        // Merge Custom CSS from Template:
+        
+        $template = $this->getCustomCSSTemplate();
+        
+        if (SSViewer::hasTemplate($template)) {
+            $css = array_merge($css, preg_split('/\r\n|\n|\r/', $this->renderWith($template)));
+        }
+        
+        // Update CSS via Extensions:
+        
+        $this->extend('updateCustomCSS', $css);
+        
+        // Filter CSS Array:
+        
+        $css = array_filter($css);
+        
+        // Answer CSS Array:
+        
+        return $css;
+    }
+    
+    /**
+     * Answers the name of a template used to render custom CSS for the receiver.
+     *
+     * @return string
+     */
+    public function getCustomCSSTemplate()
+    {
+        return sprintf('%s\CustomCSS', static::class);
     }
     
     /**

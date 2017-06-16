@@ -18,10 +18,10 @@
 namespace SilverWare\Components;
 
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverWare\Extensions\Lists\ListSourceExtension;
 use SilverWare\Extensions\Model\ImageResizeExtension;
+use SilverWare\Forms\FieldSection;
 
 /**
  * An extension of the base component class for a base list component.
@@ -89,17 +89,21 @@ class BaseListComponent extends BaseComponent
         $fields->addFieldsToTab(
             'Root.Options',
             [
-                CompositeField::create([
-                    DropdownField::create(
-                        'ImageLinksTo',
-                        $this->fieldLabel('ImageLinksTo'),
-                        $this->getImageLinksToOptions()
-                    ),
-                    CheckboxField::create(
-                        'LinkImages',
-                        $this->fieldLabel('LinkImages')
-                    )
-                ])->setName('ListImageOptions')->setTitle($this->fieldLabel('ListImageOptions'))
+                FieldSection::create(
+                    'ListImageOptions',
+                    $this->fieldLabel('ListImageOptions'),
+                    [
+                        DropdownField::create(
+                            'ImageLinksTo',
+                            $this->fieldLabel('ImageLinksTo'),
+                            $this->getImageLinksToOptions()
+                        ),
+                        CheckboxField::create(
+                            'LinkImages',
+                            $this->fieldLabel('LinkImages')
+                        )
+                    ]
+                )
             ]
         );
         

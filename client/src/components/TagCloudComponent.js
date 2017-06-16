@@ -1,14 +1,18 @@
 /* Tag Cloud Component
 ===================================================================================================================== */
 
-import $ from 'jQuery';
+import $ from 'jquery';
 
 $(function() {
+  
+  // Handle Tag Cloud Components:
   
   $('.tagcloudcomponent').each(function() {
     
     var $self   = $(this);
     var $canvas = $($self.data('canvas'));
+    
+    // Initialise Tag Canvas:
     
     $canvas.tagcanvas({
       depth: parseFloat($self.data('depth')),

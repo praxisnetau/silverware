@@ -37,7 +37,7 @@ class ComponentController extends ContentController
     /**
      * Answers a viewer object to render the template for the current page.
      *
-     * @param $action string
+     * @param string $action
      *
      * @return SSViewer
      */

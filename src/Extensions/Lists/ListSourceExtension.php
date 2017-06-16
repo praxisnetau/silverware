@@ -20,7 +20,6 @@ namespace SilverWare\Extensions\Lists;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\SelectionGroup;
@@ -30,6 +29,7 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\SS_List;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Lists\ListFilter;
 use SilverWare\Lists\ListSource;
 use SilverWare\Lists\ListWrapper;
@@ -116,20 +116,24 @@ class ListSourceExtension extends DataExtension
         
         $fields->addFieldToTab(
             'Root.Options',
-            CompositeField::create([
-                TextField::create(
-                    'NumberOfItems',
-                    $this->owner->fieldLabel('NumberOfItems')
-                ),
-                CheckboxField::create(
-                    'ReverseItems',
-                    $this->owner->fieldLabel('ReverseItems')
-                ),
-                CheckboxField::create(
-                    'ImageItems',
-                    $this->owner->fieldLabel('ImageItems')
-                )
-            ])->setName('ListSourceOptions')->setTitle($this->owner->fieldLabel('ListSourceOptions'))
+            FieldSection::create(
+                'ListSourceOptions',
+                $this->owner->fieldLabel('ListSourceOptions'),
+                [
+                    TextField::create(
+                        'NumberOfItems',
+                        $this->owner->fieldLabel('NumberOfItems')
+                    ),
+                    CheckboxField::create(
+                        'ReverseItems',
+                        $this->owner->fieldLabel('ReverseItems')
+                    ),
+                    CheckboxField::create(
+                        'ImageItems',
+                        $this->owner->fieldLabel('ImageItems')
+                    )
+                ]
+            )
         );
         
         // Create Pagination Options (if permitted):
@@ -226,7 +230,7 @@ class ListSourceExtension extends DataExtension
         
         if ($this->owner->ImageItems) {
             
-            $items = $items->filterByCallback(function($item) {
+            $items = $items->filterByCallback(function ($item) {
                 return $item->hasMetaImage();
             });
             
