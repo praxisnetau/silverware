@@ -71,6 +71,26 @@ class ViewTools
     }
     
     /**
+     * Answers an array of ancestor class names for the given object.
+     *
+     * @param string|object $nameOrObject Class name or object.
+     * @param string $stopAt Ancestor class to stop at.
+     * @param boolean $removeNamespaces If true, remove namespaces from class names.
+     *
+     * @return array
+     */
+    public function getAncestorClassNames($nameOrObject, $stopAt = null, $removeNamespaces = true)
+    {
+        return $this->convertClass(
+            ClassTools::singleton()->getObjectAncestry(
+                $nameOrObject,
+                $stopAt,
+                $removeNamespaces
+            )
+        );
+    }
+    
+    /**
      * Loads the specified JavaScript template (with a provision for handling JSON variables).
      *
      * @param string $file

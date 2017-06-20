@@ -161,9 +161,7 @@ trait Renderable
      */
     public function getAncestorClassNames($removeNamespaces = true)
     {
-        return ViewTools::singleton()->convertClass(
-            ClassTools::singleton()->getObjectAncestry($this, self::class, $removeNamespaces)
-        );
+        return ViewTools::singleton()->getAncestorClassNames($this, self::class, $removeNamespaces);
     }
     
     /**

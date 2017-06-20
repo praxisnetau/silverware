@@ -77,7 +77,7 @@ trait ListItem
     {
         $classes = ['item'];
         
-        $classes[] = $this->getAncestorClass();
+        $classes = array_merge($classes, ViewTools::singleton()->getAncestorClassNames($this, self::class));
         
         if ($this->hasMethod('getMetaClassNames')) {
             $classes = array_merge($classes, $this->getMetaClassNames());
