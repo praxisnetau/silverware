@@ -32,6 +32,7 @@
     "psr-4": {
       "SilverWare\\Components\\": "src/Components/",
       "SilverWare\\Core\\": "src/Core/",
+      "SilverWare\\Crumbs\\": "src/Crumbs/",
       "SilverWare\\Dev\\": "src/Dev/",
       "SilverWare\\Extensions\\": "src/Extensions/",
       "SilverWare\\Folders\\": "src/Folders/",
