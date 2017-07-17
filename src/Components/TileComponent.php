@@ -17,13 +17,8 @@
 
 namespace SilverWare\Components;
 
-use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\TextField;
-use SilverWare\Forms\FieldSection;
-
 /**
- * An extension of the base list component class for a list component.
+ * An extension of the list component class for a tile component.
  *
  * @package SilverWare\Components
  * @author Colin Tucker <colin@praxis.net.au>
@@ -31,7 +26,7 @@ use SilverWare\Forms\FieldSection;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class ListComponent extends BaseListComponent
+class TileComponent extends BaseListComponent
 {
     /**
      * Human-readable singular name.
@@ -39,7 +34,7 @@ class ListComponent extends BaseListComponent
      * @var string
      * @config
      */
-    private static $singular_name = 'List Component';
+    private static $singular_name = 'Tile Component';
     
     /**
      * Human-readable plural name.
@@ -47,7 +42,7 @@ class ListComponent extends BaseListComponent
      * @var string
      * @config
      */
-    private static $plural_name = 'List Components';
+    private static $plural_name = 'Tile Components';
     
     /**
      * Description of this object.
@@ -55,7 +50,7 @@ class ListComponent extends BaseListComponent
      * @var string
      * @config
      */
-    private static $description = 'A component to show a list of items';
+    private static $description = 'A component to show a list of items as tiles';
     
     /**
      * Icon file for this object.
@@ -63,13 +58,5 @@ class ListComponent extends BaseListComponent
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/ListComponent.png';
-    
-    /**
-     * Defines an ancestor class to hide from the admin interface.
-     *
-     * @var string
-     * @config
-     */
-    private static $hide_ancestor = BaseListComponent::class;
+    private static $icon = 'silverware/admin/client/dist/images/icons/TileComponent.png';
 }

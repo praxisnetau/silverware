@@ -1,4 +1,4 @@
-<% if $ListComponent.isSummaryShown($isFirst, $isMiddle, $isLast) && $HasMetaSummary %>
+<% if $Renderer.isSummaryShown($isFirst, $isMiddle, $isLast) && $HasMetaSummary %>
   <div class="summary">
     $MetaSummary
   </div>

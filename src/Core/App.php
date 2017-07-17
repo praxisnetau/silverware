@@ -21,6 +21,7 @@ use SilverStripe\Control\Director;
 use SilverStripe\Dev\YamlFixture;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
+use SilverStripe\SiteConfig\SiteConfig;
 use SilverWare\Model\Folder;
 use InvalidArgumentException;
 use Exception;
@@ -137,9 +138,83 @@ class App extends DataObject
         
         $app = self::instance();
         
+        // Load Defaults:
+        
+        $app->loadDefaults();
+        
         // Load Fixtures:
         
         $app->loadFixtures();
+    }
+    
+    /**
+     * Loads the defaults defined by application configuration.
+     *
+     * @return void
+     */
+    public function loadDefaults()
+    {
+        // Obtain Default and Current Site Config:
+        
+        $default = SiteConfig::create();
+        $current = SiteConfig::current_site_config();
+        
+        // Check App Title:
+        
+        if (!is_null($this->config()->title)) {
+            
+            // Update Site Title:
+            
+            if ($current->Title == $default->Title) {
+                $current->Title = $this->config()->title;
+            }
+            
+        }
+        
+        // Check App Tagline:
+        
+        if (!is_null($this->config()->tagline)) {
+            
+            // Update Site Tagline:
+            
+            if ($current->Tagline == $default->Tagline) {
+                $current->Tagline = $this->config()->tagline;
+            }
+            
+        }
+        
+        // Save Site Config Changes:
+        
+        if ($current->isChanged('Title') || $current->isChanged('Tagline')) {
+            
+            if ($current->isChanged('Title')) {
+                
+                DB::alteration_message(
+                    sprintf(
+                        'Updating App Title to "%s"',
+                        $current->Title
+                    ),
+                    'changed'
+                );
+                
+            }
+            
+            if ($current->isChanged('Tagline')) {
+                
+                DB::alteration_message(
+                    sprintf(
+                        'Updating App Tagline to "%s"',
+                        $current->Tagline
+                    ),
+                    'changed'
+                );
+                
+            }
+            
+            $current->write();
+            
+        }
+        
     }
     
     /**

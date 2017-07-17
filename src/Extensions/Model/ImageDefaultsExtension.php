@@ -56,20 +56,20 @@ class ImageDefaultsExtension extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        // Create Options Tab:
+        // Create Style Tab:
         
-        $fields->findOrMakeTab('Root.Options', $this->owner->fieldLabel('Options'));
+        $fields->findOrMakeTab('Root.Style', $this->owner->fieldLabel('Style'));
         
         // Define Placeholder:
         
         $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
         
-        // Create Options Fields:
+        // Create Style Fields:
         
         $fields->addFieldToTab(
-            'Root.Options',
+            'Root.Style',
             FieldSection::create(
-                'ImageDefaultsOptions',
+                'ImageDefaultsStyle',
                 $this->owner->fieldLabel('ImageDefaults'),
                 [
                     DropdownField::create(
@@ -100,7 +100,7 @@ class ImageDefaultsExtension extends DataExtension
      */
     public function updateFieldLabels(&$labels)
     {
-        $labels['Options'] = _t(__CLASS__ . '.OPTIONS', 'Options');
+        $labels['Style'] = _t(__CLASS__ . '.STYLE', 'Style');
         $labels['ImageDefaults'] = _t(__CLASS__ . '.IMAGEDEFAULTS', 'Image defaults');
         $labels['ImageDefaultResize'] = _t(__CLASS__ . '.DIMENSIONS', 'Dimensions');
         $labels['ImageDefaultResizeMethod'] = _t(__CLASS__ . '.RESIZEMETHOD', 'Resize method');

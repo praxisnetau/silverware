@@ -17,16 +17,10 @@
 
 namespace SilverWare\Model;
 
-use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\RequiredFields;
-use SilverStripe\Forms\SelectionGroup;
-use SilverStripe\Forms\SelectionGroup_Item;
-use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayLib;
+use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Extensions\Style\LinkColorStyle;
 use SilverWare\FontIcons\Extensions\FontIconExtension;
-use SilverWare\Forms\FieldSection;
-use SilverWare\Forms\PageDropdownField;
 use Page;
 
 /**
@@ -40,12 +34,6 @@ use Page;
  */
 class Link extends Component
 {
-    /**
-     * Define constants.
-     */
-    const MODE_PAGE = 'page';
-    const MODE_URL  = 'url';
-    
     /**
      * Human-readable singular name.
      *
@@ -95,39 +83,6 @@ class Link extends Component
     private static $allowed_children = 'none';
     
     /**
-     * Maps field names to field types for this object.
-     *
-     * @var array
-     * @config
-     */
-    private static $db = [
-        'LinkTo' => 'Varchar(8)',
-        'LinkURL' => 'Varchar(2048)',
-        'OpenLinkInNewTab' => 'Boolean'
-    ];
-    
-    /**
-     * Defines the has-one associations for this object.
-     *
-     * @var array
-     * @config
-     */
-    private static $has_one = [
-        'LinkPage' => Page::class
-    ];
-    
-    /**
-     * Defines the default values for the fields of this object.
-     *
-     * @var array
-     * @config
-     */
-    private static $defaults = [
-        'LinkTo' => 'page',
-        'OpenLinkInNewTab' => 0
-    ];
-    
-    /**
      * Defines the extension classes to apply to this object.
      *
      * @var array
@@ -135,6 +90,7 @@ class Link extends Component
      */
     private static $extensions = [
         FontIconExtension::class,
+        LinkToExtension::class,
         LinkColorStyle::class
     ];
     
@@ -155,102 +111,6 @@ class Link extends Component
     private static $default_icon_size = 32;
     
     /**
-     * Answers a list of field objects for the CMS interface.
-     *
-     * @return FieldList
-     */
-    public function getCMSFields()
-    {
-        // Obtain Field Objects (from parent):
-        
-        $fields = parent::getCMSFields();
-        
-        // Create Main Fields:
-        
-        $fields->addFieldsToTab(
-            'Root.Main',
-            [
-                SelectionGroup::create(
-                    'LinkTo',
-                    [
-                        SelectionGroup_Item::create(
-                            self::MODE_PAGE,
-                            PageDropdownField::create(
-                                'LinkPageID',
-                                ''
-                            ),
-                            $this->fieldLabel('Page')
-                        ),
-                        SelectionGroup_Item::create(
-                            self::MODE_URL,
-                            TextField::create(
-                                'LinkURL',
-                                ''
-                            ),
-                            $this->fieldLabel('URL')
-                        )
-                    ]
-                )->setTitle($this->fieldLabel('LinkTo'))
-            ]
-        );
-        
-        // Create Options Fields:
-        
-        $fields->addFieldsToTab(
-            'Root.Options',
-            [
-                FieldSection::create(
-                    'LinkOptions',
-                    $this->i18n_singular_name(),
-                    [
-                        CheckboxField::create(
-                            'OpenLinkInNewTab',
-                            $this->fieldLabel('OpenLinkInNewTab')
-                        )
-                    ]
-                )
-            ]
-        );
-        
-        // Answer Field Objects:
-        
-        return $fields;
-    }
-    
-    /**
-     * Answers the labels for the fields of the receiver.
-     *
-     * @param boolean $includerelations Include labels for relations.
-     *
-     * @return array
-     */
-    public function fieldLabels($includerelations = true)
-    {
-        // Obtain Field Labels (from parent):
-        
-        $labels = parent::fieldLabels($includerelations);
-        
-        // Define Field Labels:
-        
-        $labels['URL'] = _t(__CLASS__ . '.URL', 'URL');
-        $labels['Page'] = _t(__CLASS__ . '.PAGE', 'Page');
-        $labels['LinkTo'] = _t(__CLASS__ . '.LINKTO', 'Link to');
-        $labels['LinkURL'] = _t(__CLASS__ . '.LINKURL', 'Link URL');
-        $labels['LinkPageID'] = _t(__CLASS__ . '.LINKPAGE', 'Link page');
-        $labels['OpenLinkInNewTab'] = _t(__CLASS__ . '.OPENLINKINNEWTAB', 'Open link in new tab');
-        
-        // Define Relation Labels:
-        
-        if ($includerelations) {
-            $labels['LinkPage'] = _t(__CLASS__ . '.has_one_LinkPage', 'Page');
-        }
-        
-        // Answer Field Labels:
-        
-        return $labels;
-    }
-    
-    /**
      * Answers an array of HTML tag attributes for the object.
      *
      * @return array
@@ -259,15 +119,8 @@ class Link extends Component
     {
         $attributes = array_merge(
             parent::getAttributes(),
-            [
-                'href' => $this->Link,
-                'title' => $this->Title
-            ]
+            $this->getLinkAttributes()
         );
-        
-        if ($this->OpenLinkInNewTab) {
-            $attributes['target'] = '_blank';
-        }
         
         return $attributes;
     }
@@ -288,42 +141,6 @@ class Link extends Component
         );
         
         return $classes;
-    }
-    
-    /**
-     * Answers the link for the template.
-     *
-     * @return string
-     */
-    public function getLink()
-    {
-        if ($this->isURL() && $this->LinkURL) {
-            return $this->dbObject('LinkURL')->URL();
-        }
-        
-        if ($this->isPage() && $this->LinkPageID) {
-            return $this->LinkPage()->Link();
-        }
-    }
-    
-    /**
-     * Answers true if the link is to a page.
-     *
-     * @return boolean
-     */
-    public function isPage()
-    {
-        return ($this->LinkTo == self::MODE_PAGE);
-    }
-    
-    /**
-     * Answers true if the link is to a URL.
-     *
-     * @return boolean
-     */
-    public function isURL()
-    {
-        return ($this->LinkTo == self::MODE_URL);
     }
     
     /**
@@ -408,18 +225,5 @@ class Link extends Component
     public function getIconSizeOptions()
     {
         return ArrayLib::valuekey($this->config()->icon_sizes);
-    }
-    
-    /**
-     * Renders the object for the HTML template.
-     *
-     * @param string $layout Page layout passed from template.
-     * @param string $title Page title passed from template.
-     *
-     * @return DBHTMLText|string
-     */
-    public function renderSelf($layout = null, $title = null)
-    {
-        return $this->renderWith(static::class);
     }
 }

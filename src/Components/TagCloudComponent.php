@@ -171,8 +171,8 @@ class TagCloudComponent extends BaseComponent
         $fields->addFieldToTab(
             'Root.Style',
             FieldSection::create(
-                'TagCloudComponentStyle',
-                $this->i18n_singular_name(),
+                'TagCloudStyle',
+                $this->fieldLabel('TagCloudStyle'),
                 [
                     ColorField::create(
                         'ColorText',
@@ -191,8 +191,8 @@ class TagCloudComponent extends BaseComponent
         $fields->addFieldToTab(
             'Root.Options',
             FieldSection::create(
-                'TagCloudComponentOptions',
-                $this->i18n_singular_name(),
+                'TagCloudOptions',
+                $this->fieldLabel('TagCloudOptions'),
                 [
                     FieldGroup::create(
                         $this->fieldLabel('Zoom'),
@@ -302,6 +302,7 @@ class TagCloudComponent extends BaseComponent
         $labels['WeightSize'] = _t(__CLASS__ . '.WEIGHTEDFONTSIZES', 'Weighted font sizes');
         $labels['Weight'] = _t(__CLASS__ . '.ENABLETAGWEIGHTING', 'Enable tag weighting');
         $labels['TagSource'] = $labels['TagSourceID'] = _t(__CLASS__ . '.TAGSOURCE', 'Tag source');
+        $labels['TagCloudStyle'] = $labels['TagCloudOptions'] = _t(__CLASS__ . '.TAGCLOUD', 'Tag Cloud');
         
         // Answer Field Labels:
         

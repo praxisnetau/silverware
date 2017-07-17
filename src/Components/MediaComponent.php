@@ -247,8 +247,8 @@ class MediaComponent extends BaseComponent
         $fields->addFieldToTab(
             'Root.Style',
             FieldSection::create(
-                'MediaComponentStyle',
-                $this->i18n_singular_name(),
+                'MediaStyle',
+                $this->fieldLabel('MediaStyle'),
                 [
                     FontIconField::create(
                         'TextLinkIcon',
@@ -263,8 +263,8 @@ class MediaComponent extends BaseComponent
         $fields->addFieldToTab(
             'Root.Options',
             FieldSection::create(
-                'MediaComponentOptions',
-                $this->i18n_singular_name(),
+                'MediaOptions',
+                $this->fieldLabel('MediaOptions'),
                 [
                     DropdownField::create(
                         'ImageTitle',
@@ -331,6 +331,7 @@ class MediaComponent extends BaseComponent
         $labels['ShowTextLink'] = _t(__CLASS__ . '.SHOWTEXTLINK', 'Show text link');
         $labels['ForceUpdate'] = _t(__CLASS__ . '.FORCEUPDATEUPONSAVE', 'Force update upon save');
         $labels['ShowIcon'] = _t(__CLASS__ . '.SHOWICONWITHTEXTLINK', 'Show icon with text link');
+        $labels['MediaStyle'] = $labels['MediaOptions'] = _t(__CLASS__ . '.MEDIA', 'Media');
         
         // Answer Field Labels:
         

@@ -230,8 +230,8 @@ class CopyrightComponent extends BaseComponent
             'Root.Options',
             [
                 FieldSection::create(
-                    'CopyrightComponentOptions',
-                    $this->i18n_singular_name(),
+                    'CopyrightOptions',
+                    $this->fieldLabel('CopyrightOptions'),
                     [
                         TextField::create(
                             'CopyrightNoun',
@@ -306,6 +306,7 @@ class CopyrightComponent extends BaseComponent
         $labels['CopyrightURL'] = _t(__CLASS__ . '.COPYRIGHTURL', 'Copyright URL');
         $labels['CopyrightNoun'] = _t(__CLASS__ . '.COPYRIGHTNOUN', 'Copyright noun');
         $labels['CopyrightText'] = _t(__CLASS__ . '.COPYRIGHTTEXT', 'Copyright text');
+        $labels['CopyrightOptions'] = _t(__CLASS__ . '.COPYRIGHT', 'Copyright');
         
         // Define Checkbox Field Labels:
         

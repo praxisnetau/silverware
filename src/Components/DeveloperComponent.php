@@ -193,8 +193,8 @@ class DeveloperComponent extends BaseComponent
             'Root.Options',
             [
                 FieldSection::create(
-                    'DeveloperComponentOptions',
-                    $this->i18n_singular_name(),
+                    'DeveloperOptions',
+                    $this->fieldLabel('DeveloperOptions'),
                     [
                         TextField::create(
                             'DeveloperText',
@@ -250,6 +250,7 @@ class DeveloperComponent extends BaseComponent
         $labels['DeveloperPageID'] = _t(__CLASS__ . '.DEVELOPERPAGE', 'Developer page');
         $labels['DeveloperURL'] = _t(__CLASS__ . '.DEVELOPERURL',  'Developer URL');
         $labels['DeveloperText'] = _t(__CLASS__ . '.DEVELOPERTEXT', 'Developer text');
+        $labels['DeveloperOptions'] = _t(__CLASS__ . '.DEVELOPER', 'Developer');
         
         // Define Checkbox Field Labels:
         

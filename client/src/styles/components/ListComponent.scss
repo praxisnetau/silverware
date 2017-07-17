@@ -1,64 +1,6 @@
 /* List Component Styles
 ===================================================================================================================== */
 
-.listcomponent {
-  
-  .items {
-    
-    > article.item {
-      
-      margin-bottom: $spacer-double;
-      
-      > div.image {
-        
-        margin-bottom: $spacer;
-        
-        a {
-          display: block;
-        }
-        
-      }
-      
-      > section.content {
-        
-        header a {
-          color: inherit;
-        }
-        
-        div.details {
-          
-          color: $gray-light;
-          
-          a {
-            color: inherit;
-          }
-          
-          > span {
-            margin-right: $spacer-half;
-          }
-          
-        }
-        
-        footer {
-          margin-top: $spacer;
-        }
-        
-        > div {
-          margin-bottom: $spacer-half;
-        }
-        
-      }
-      
-      &:last-child {
-        margin-bottom: 0;
-      }
-      
-    }
-    
-  }
-  
-}
-
 // Media Queries:
 
 @media (min-width: map-get($grid-breakpoints, md)) {

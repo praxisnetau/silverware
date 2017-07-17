@@ -22,6 +22,7 @@ use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
 use SilverWare\Extensions\Style\CornerStyle;
 use SilverWare\Extensions\Style\LinkColorStyle;
+use SilverWare\Extensions\Style\ThemeStyle;
 use SilverWare\FontIcons\Forms\FontIconField;
 use SilverWare\Forms\FieldSection;
 
@@ -108,7 +109,9 @@ class ScrollToTopButton extends BaseComponent
         'ButtonIcon' => 'chevron-up',
         'OffsetShow' => 300,
         'OffsetOpacity' => 1000,
-        'ScrollDuration' => 800
+        'ScrollDuration' => 800,
+        'ColorBackgroundTheme' => 'background.primary',
+        'ColorForegroundTheme' => 'text.white'
     ];
     
     /**
@@ -118,6 +121,7 @@ class ScrollToTopButton extends BaseComponent
      * @config
      */
     private static $extensions = [
+        ThemeStyle::class,
         LinkColorStyle::class,
         CornerStyle::class
     ];
@@ -154,8 +158,8 @@ class ScrollToTopButton extends BaseComponent
         $fields->addFieldToTab(
             'Root.Options',
             FieldSection::create(
-                'ScrollToTopButtonOptions',
-                $this->i18n_singular_name(),
+                'ScrollToTopOptions',
+                $this->fieldLabel('ScrollToTopOptions'),
                 [
                     NumericField::create(
                         'OffsetShow',
@@ -198,6 +202,7 @@ class ScrollToTopButton extends BaseComponent
         $labels['OffsetShow'] = _t(__CLASS__ . '.OFFSETSHOWINPIXELS', 'Show offset (in pixels)');
         $labels['OffsetOpacity'] = _t(__CLASS__ . '.OFFSETOPACITYINPIXELS', 'Opacity offset (in pixels)');
         $labels['ScrollDuration'] = _t(__CLASS__ . '.SCROLLDURATIONINMS', 'Scroll duration (in milliseconds)');
+        $labels['ScrollToTopOptions'] = _t(__CLASS__ . '.SCROLLTOTOP', 'Scroll to Top');
         
         // Answer Field Labels:
         

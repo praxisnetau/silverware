@@ -28,6 +28,7 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\SSViewer;
 use SilverWare\Extensions\RenderableExtension;
 use SilverWare\Tools\ClassTools;
 use SilverWare\Tools\ViewTools;
@@ -187,6 +188,10 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         if ($defaultClasses = $this->config()->get('default_classes')) {
             $this->extraClasses = $defaultClasses;
         };
+        
+        // Initialise:
+        
+        $this->doInit();
     }
     
     /**
@@ -370,6 +375,26 @@ class Component extends SiteTree implements Flushable, PermissionProvider
                 'sort' => 300
             ]
         ];
+    }
+    
+    /**
+     * Initialises the component (with extension hooks).
+     *
+     * @return void
+     */
+    public function doInit()
+    {
+        // Trigger Before Init Hook:
+        
+        $this->extend('onBeforeInit');
+        
+        // Perform Initialisation:
+        
+        $this->init();
+        
+        // Trigger After Init Hook:
+        
+        $this->extend('onAfterInit');
     }
     
     /**
@@ -604,6 +629,16 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     }
     
     /**
+     * Answers an array containing the class names of the ancestral components of the object.
+     *
+     * @return array
+     */
+    public function getComponentAncestry()
+    {
+        return ClassTools::singleton()->getObjectAncestry($this, self::class);
+    }
+    
+    /**
      * Answers the current site configuration object.
      *
      * @return SiteConfig
@@ -734,6 +769,22 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     }
     
     /**
+     * Answers the template used to render the receiver.
+     *
+     * @return string|array|SSViewer
+     */
+    public function getTemplate()
+    {
+        foreach ($this->getComponentAncestry() as $template) {
+            
+            if (SSViewer::hasTemplate($template)) {
+                return $template;
+            }
+            
+        }
+    }
+    
+    /**
      * Renders the component for the HTML template.
      *
      * @param string $layout Page layout passed from template.
@@ -747,7 +798,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
             'Self' => $this,
             'Title' => $title,
             'Layout' => $layout
-        ])->renderWith(static::class);
+        ])->renderWith($this->getTemplate());
     }
     
     /**
@@ -777,5 +828,14 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     public function renderPreview()
     {
         return $this->renderSelf();
+    }
+    
+    /**
+     * Initialises the component.
+     *
+     * @return void
+     */
+    protected function init()
+    {
     }
 }

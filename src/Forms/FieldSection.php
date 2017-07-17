@@ -48,4 +48,18 @@ class FieldSection extends CompositeField
         $this->setName($name);
         $this->setTitle($title);
     }
+    
+    /**
+     * Merges the given array or list of fields with the receiver.
+     *
+     * @param array|ArrayAccess $with
+     *
+     * @return $this
+     */
+    public function merge($with)
+    {
+        $this->children->merge($with);
+        
+        return $this;
+    }
 }

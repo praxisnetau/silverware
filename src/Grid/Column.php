@@ -130,7 +130,7 @@ class Column extends Grid
             'Root.Style',
             FieldSection::create(
                 'ColumnStyle',
-                $this->i18n_singular_name(),
+                $this->fieldLabel('ColumnStyle'),
                 [
                     ViewportsField::create(
                         'Span',
@@ -152,7 +152,7 @@ class Column extends Grid
             'Root.Options',
             FieldSection::create(
                 'ColumnOptions',
-                $this->i18n_singular_name(),
+                $this->fieldLabel('ColumnOptions'),
                 [
                     CheckboxField::create(
                         'Sidebar',
@@ -185,6 +185,7 @@ class Column extends Grid
         $labels['Span'] = _t(__CLASS__ . '.SPAN', 'Span');
         $labels['Offset'] = _t(__CLASS__ . '.OFFSET', 'Offset');
         $labels['Sidebar'] = _t(__CLASS__ . '.SIDEBAR', 'Sidebar');
+        $labels['ColumnStyle'] = $labels['ColumnOptions'] = _t(__CLASS__ . '.COLUMN', 'Column');
         
         // Answer Field Labels:
         

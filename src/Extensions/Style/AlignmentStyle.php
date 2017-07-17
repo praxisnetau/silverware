@@ -35,13 +35,22 @@ use SilverWare\Forms\ViewportsField;
 class AlignmentStyle extends StyleExtension
 {
     /**
+     * Define align constants.
+     */
+    const ALIGN_LEFT    = 'left';
+    const ALIGN_CENTER  = 'center';
+    const ALIGN_RIGHT   = 'right';
+    const ALIGN_JUSTIFY = 'justify';
+    
+    /**
      * Maps field names to field types for the extended object.
      *
      * @var array
      * @config
      */
     private static $db = [
-        'TextAlignment' => 'Viewports'
+        'TextAlignment' => 'Viewports',
+        'ImageAlignment' => 'Viewports'
     ];
     
     /**
@@ -70,6 +79,11 @@ class AlignmentStyle extends StyleExtension
                             'TextAlignment',
                             $this->owner->fieldLabel('TextAlignment'),
                             $this->owner->getTextAlignmentOptions()
+                        ),
+                        ViewportsField::create(
+                            'ImageAlignment',
+                            $this->owner->fieldLabel('ImageAlignment'),
+                            $this->owner->getImageAlignmentOptions()
                         )
                     ]
                 )
@@ -87,6 +101,7 @@ class AlignmentStyle extends StyleExtension
     public function updateFieldLabels(&$labels)
     {
         $labels['TextAlignment']  = _t(__CLASS__ . '.TEXT', 'Text');
+        $labels['ImageAlignment'] = _t(__CLASS__ . '.IMAGES', 'Images');
         $labels['AlignmentStyle'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');
     }
     
@@ -104,6 +119,10 @@ class AlignmentStyle extends StyleExtension
         }
         
         foreach ($this->getTextAlignmentClassNames() as $class) {
+            $classes[] = $class;
+        }
+        
+        foreach ($this->getImageAlignmentClassNames() as $class) {
             $classes[] = $class;
         }
     }
@@ -127,6 +146,24 @@ class AlignmentStyle extends StyleExtension
     }
     
     /**
+     * Answers an array of classes for image alignment.
+     *
+     * @return array
+     */
+    public function getImageAlignmentClassNames()
+    {
+        $classes = [];
+        
+        $alignment = $this->owner->dbObject('ImageAlignment');
+        
+        foreach ($alignment->getViewports() as $viewport) {
+            $classes[] = $this->getImageAlignmentClass($viewport, $alignment->getField($viewport));
+        }
+        
+        return $classes;
+    }
+    
+    /**
      * Answers an array of options for text alignment fields.
      *
      * @return array
@@ -134,9 +171,24 @@ class AlignmentStyle extends StyleExtension
     public function getTextAlignmentOptions()
     {
         return [
-            'left'   => _t(__CLASS__ . '.LEFT', 'Left'),
-            'center' => _t(__CLASS__ . '.CENTER', 'Center'),
-            'right'  => _t(__CLASS__ . '.RIGHT', 'Right'),
+            self::ALIGN_LEFT    => _t(__CLASS__ . '.LEFT', 'Left'),
+            self::ALIGN_CENTER  => _t(__CLASS__ . '.CENTER', 'Center'),
+            self::ALIGN_RIGHT   => _t(__CLASS__ . '.RIGHT', 'Right'),
+            self::ALIGN_JUSTIFY => _t(__CLASS__ . '.JUSTIFY', 'Justify')
+        ];
+    }
+    
+    /**
+     * Answers an array of options for image alignment fields.
+     *
+     * @return array
+     */
+    public function getImageAlignmentOptions()
+    {
+        return [
+            self::ALIGN_LEFT   => _t(__CLASS__ . '.LEFT', 'Left'),
+            self::ALIGN_CENTER => _t(__CLASS__ . '.CENTER', 'Center'),
+            self::ALIGN_RIGHT  => _t(__CLASS__ . '.RIGHT', 'Right')
         ];
     }
     
@@ -151,5 +203,18 @@ class AlignmentStyle extends StyleExtension
     protected function getTextAlignmentClass($viewport, $value)
     {
         return $this->grid()->getTextAlignmentClass($viewport, $value);
+    }
+    
+    /**
+     * Answers the image alignment class for the specified viewport and value.
+     *
+     * @param string $viewport
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function getImageAlignmentClass($viewport, $value)
+    {
+        return $this->grid()->getImageAlignmentClass($viewport, $value);
     }
 }

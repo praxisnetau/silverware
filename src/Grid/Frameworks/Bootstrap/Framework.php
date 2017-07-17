@@ -67,4 +67,27 @@ class Framework extends GridFramework
             
         }
     }
+    
+    /**
+     * Answers the image alignment class for the specified viewport and value.
+     *
+     * @param string $viewport
+     * @param string $value
+     *
+     * @return string
+     */
+    public function getImageAlignmentClass($viewport, $value)
+    {
+        if ($value) {
+            
+            $class = [$this->getStyle('image')];
+            
+            $class[] = $this->getStyle('viewport', $viewport);
+            
+            $class[] = $this->getStyle('align', $value);
+            
+            return implode('-', array_filter($class));
+            
+        }
+    }
 }

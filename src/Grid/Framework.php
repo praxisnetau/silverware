@@ -74,6 +74,16 @@ abstract class Framework extends ViewableData
     abstract public function getTextAlignmentClass($viewport, $value);
     
     /**
+     * Answers the image alignment class for the specified viewport and value.
+     *
+     * @param string $viewport
+     * @param string $value
+     *
+     * @return string
+     */
+    abstract public function getImageAlignmentClass($viewport, $value);
+    
+    /**
      * Answers the style mapped to the given name.
      *
      * @param string $name Name of style.
@@ -103,6 +113,8 @@ abstract class Framework extends ViewableData
             }
             
         }
+        
+        return $name;
     }
     
     /**

@@ -17,17 +17,20 @@
 
 namespace SilverWare\Extensions\Lists;
 
-use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\SelectionGroup;
-use SilverStripe\Forms\SelectionGroup_Item;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use SilverWare\Components\BaseListComponent;
 use SilverWare\Components\ListComponent;
 use SilverWare\Forms\DimensionsField;
 use SilverWare\Forms\FieldSection;
+use SilverWare\Forms\ViewportsField;
+use SilverWare\ORM\FieldType\DBViewports;
 use SilverWare\Tools\ImageTools;
+use SilverWare\Tools\ViewTools;
 
 /**
  * A data extension class to add list view functionality to the extended object.
@@ -50,29 +53,24 @@ class ListViewExtension extends DataExtension
         'ListTitle' => 'Varchar(255)',
         'ListImageResize' => 'Dimensions',
         'ListImageResizeMethod' => 'Varchar(32)',
-        'ListImageAlignment' => 'Varchar(16)',
         'ListImageLinksTo' => 'Varchar(8)',
+        'ListImageAlignment' => 'Viewports',
+        'ListTextAlignment' => 'Viewports',
         'ListItemsPerPage' => 'AbsoluteInt',
         'ListHeadingLevel' => 'Varchar(2)',
         'ListButtonLabel' => 'Varchar(128)',
-        'ListPaginateItems' => 'Boolean',
-        'ListLinkTitles' => 'Boolean',
-        'ListTitleHidden' => 'Boolean'
+        'ListPaginateItems' => 'Varchar(1)',
+        'ListLinkTitles' => 'Varchar(1)',
+        'ListTitleHidden' => 'Varchar(1)'
     ];
     
     /**
-     * Defines the default values for the fields of this object.
+     * Defines the default list component class to use.
      *
-     * @var array
+     * @var string
      * @config
      */
-    private static $defaults = [
-        'ListImageLinksTo' => 'item',
-        'ListItemsPerPage' => 10,
-        'ListPaginateItems' => 1,
-        'ListLinkTitles' => 1,
-        'ListTitleHidden' => 1
-    ];
+    private static $default_list_component_class = ListComponent::class;
     
     /**
      * Updates the CMS fields of the extended object.
@@ -88,9 +86,17 @@ class ListViewExtension extends DataExtension
         $fields->findOrMakeTab('Root.Style', $this->owner->fieldLabel('Style'));
         $fields->findOrMakeTab('Root.Options', $this->owner->fieldLabel('Options'));
         
+        // Add Extension Class:
+        
+        $fields->fieldByName('Root')->addExtraClass(ViewTools::singleton()->convertClass(self::class));
+        
         // Define Placeholder:
         
         $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
+        
+        // Create List Component:
+        
+        $list = Injector::inst()->get($this->owner->getListComponentClass());
         
         // Create Style Fields:
         
@@ -103,7 +109,26 @@ class ListViewExtension extends DataExtension
                     DropdownField::create(
                         'ListHeadingLevel',
                         $this->owner->fieldLabel('ListHeadingLevel'),
-                        ListComponent::singleton()->getTitleLevelOptions()
+                        $list->getTitleLevelOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    ViewportsField::create(
+                        'ListTextAlignment',
+                        $this->owner->fieldLabel('ListTextAlignment'),
+                        $list->getTextAlignmentOptions()
+                    ),
+                    ViewportsField::create(
+                        'ListImageAlignment',
+                        $this->owner->fieldLabel('ListImageAlignment'),
+                        $list->getImageAlignmentOptions()
+                    ),
+                    DimensionsField::create(
+                        'ListImageResize',
+                        $this->owner->fieldLabel('ListImageResize')
+                    ),
+                    DropdownField::create(
+                        'ListImageResizeMethod',
+                        $this->owner->fieldLabel('ListImageResizeMethod'),
+                        ImageTools::singleton()->getResizeMethods()
                     )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                 ]
             )
@@ -117,43 +142,20 @@ class ListViewExtension extends DataExtension
                 'ListViewOptions',
                 $this->owner->fieldLabel('ListView'),
                 [
-                    SelectionGroup::create(
+                    DropdownField::create(
                         'ListPaginateItems',
-                        [
-                            SelectionGroup_Item::create(
-                                '0',
-                                null,
-                                $this->owner->fieldLabel('Disabled')
-                            ),
-                            SelectionGroup_Item::create(
-                                '1',
-                                TextField::create(
-                                    'ListItemsPerPage',
-                                    $this->owner->fieldLabel('ListItemsPerPage')
-                                ),
-                                $this->owner->fieldLabel('Enabled')
-                            )
-                        ]
-                    )->setTitle($this->owner->fieldLabel('ListPaginateItems')),
-                    DimensionsField::create(
-                        'ListImageResize',
-                        $this->owner->fieldLabel('ListImageResize')
+                        $this->owner->fieldLabel('ListPaginateItems'),
+                        $this->getToggleOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    TextField::create(
+                        'ListItemsPerPage',
+                        $this->owner->fieldLabel('ListItemsPerPage')
                     ),
-                    DropdownField::create(
-                        'ListImageResizeMethod',
-                        $this->owner->fieldLabel('ListImageResizeMethod'),
-                        ImageTools::singleton()->getResizeMethods()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                    DropdownField::create(
-                        'ListImageAlignment',
-                        $this->owner->fieldLabel('ListImageAlignment'),
-                        ListComponent::singleton()->getImageAlignmentOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                     DropdownField::create(
                         'ListImageLinksTo',
                         $this->owner->fieldLabel('ListImageLinksTo'),
-                        ListComponent::singleton()->getImageLinksToOptions()
-                    ),
+                        $list->getImageLinksToOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                     TextField::create(
                         'ListTitle',
                         $this->owner->fieldLabel('ListTitle')
@@ -162,14 +164,16 @@ class ListViewExtension extends DataExtension
                         'ListButtonLabel',
                         $this->owner->fieldLabel('ListButtonLabel')
                     ),
-                    CheckboxField::create(
+                    DropdownField::create(
                         'ListLinkTitles',
-                        $this->owner->fieldLabel('ListLinkTitles')
-                    ),
-                    CheckboxField::create(
+                        $this->owner->fieldLabel('ListLinkTitles'),
+                        $this->getToggleOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    DropdownField::create(
                         'ListTitleHidden',
-                        $this->owner->fieldLabel('ListTitleHidden')
-                    )
+                        $this->owner->fieldLabel('ListTitleHidden'),
+                        $this->getToggleOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
                 ]
             )
         );
@@ -199,17 +203,20 @@ class ListViewExtension extends DataExtension
         $labels['ListImageResize'] = _t(__CLASS__ . '.IMAGEDIMENSIONS', 'Image dimensions');
         $labels['ListImageResizeMethod'] = _t(__CLASS__ . '.IMAGERESIZEMETHOD', 'Image resize method');
         $labels['ListImageAlignment'] = _t(__CLASS__ . '.IMAGEALIGNMENT', 'Image alignment');
+        $labels['ListTextAlignment'] = _t(__CLASS__ . '.TEXTALIGNMENT', 'Text alignment');
         $labels['ListTitleHidden'] = _t(__CLASS__ . '.HIDELISTTITLE', 'Hide list title');
     }
     
     /**
-     * Populates the default values for the fields of the receiver.
+     * Event method called before the extended object is written to the database.
      *
      * @return void
      */
-    public function populateDefaults()
+    public function onBeforeWrite()
     {
-        $this->owner->ListButtonLabel = _t(__CLASS__ . '.DEFAULTBUTTONLABEL', 'Read More');
+        if (!$this->owner->ListPaginateItems) {
+            $this->owner->ListItemsPerPage = null;
+        }
     }
     
     /**
@@ -223,46 +230,113 @@ class ListViewExtension extends DataExtension
     }
     
     /**
+     * Answers the class to use for the list component.
+     *
+     * @return string
+     */
+    public function getListComponentClass()
+    {
+        return Config::inst()->get(self::class, 'default_list_component_class');
+    }
+    
+    /**
      * Answers the list component for the template.
      *
-     * @return ListComponent
+     * @return BaseListComponent
      */
     public function getListComponent()
     {
         // Create List Component:
         
-        $list = ListComponent::create();
+        $list = Injector::inst()->create($this->owner->getListComponentClass());
         
         // Define List Component:
         
         $list->setStyleIDFrom($this->owner);
         
-        $list->Title = $this->owner->getFieldFromHierarchy('ListTitle');
-        $list->HideTitle = $this->owner->getFieldFromHierarchy('ListTitleHidden');
+        $this->setListField($list, 'Title', 'ListTitle');
+        $this->setListField($list, 'HideTitle', 'ListTitleHidden');
         
-        $list->HeadingLevel = $this->owner->getFieldFromHierarchy('ListHeadingLevel');
-        $list->LinkTitles   = $this->owner->getFieldFromHierarchy('ListLinkTitles');
+        $this->setListField($list, 'HeadingLevel', 'ListHeadingLevel');
+        $this->setListField($list, 'LinkTitles', 'ListLinkTitles');
         
-        $list->PaginateItems = $this->owner->getFieldFromHierarchy('ListPaginateItems');
-        $list->ItemsPerPage  = $this->owner->getFieldFromHierarchy('ListItemsPerPage');
+        $this->setListField($list, 'PaginateItems', 'ListPaginateItems');
+        $this->setListField($list, 'ItemsPerPage', 'ListItemsPerPage');
         
-        $list->ImageResizeWidth  = $this->owner->getFieldFromHierarchy('ListImageResizeWidth');
-        $list->ImageResizeHeight = $this->owner->getFieldFromHierarchy('ListImageResizeHeight');
-        $list->ImageResizeMethod = $this->owner->getFieldFromHierarchy('ListImageResizeMethod');
+        $this->setListField($list, 'ImageResizeWidth', 'ListImageResizeWidth');
+        $this->setListField($list, 'ImageResizeHeight', 'ListImageResizeHeight');
+        $this->setListField($list, 'ImageResizeMethod', 'ListImageResizeMethod');
+        $this->setListField($list, 'ImageLinksTo', 'ListImageLinksTo');
         
-        $list->ImageAlignment = $this->owner->getFieldFromHierarchy('ListImageAlignment');
-        $list->ImageLinksTo = $this->owner->getFieldFromHierarchy('ListImageLinksTo');
+        $this->setListField($list, 'ButtonLabel', 'ListButtonLabel');
         
-        $list->ButtonLabel = $this->owner->getFieldFromHierarchy('ListButtonLabel');
+        // Define Text and Image Alignment:
+        
+        foreach (DBViewports::singleton()->getViewports() as $viewport) {
+            
+            $textField  = "TextAlignment{$viewport}";
+            $imageField = "ImageAlignment{$viewport}";
+            
+            $this->setListField($list, $textField, "List{$textField}");
+            $this->setListField($list, $imageField, "List{$imageField}");
+            
+        }
+        
+        // Define List Parent:
+        
+        $list->setParent($this->owner);
         
         // Define List Source:
         
         $list->setSource($this->owner->getListSource());
         
-        $list->ID = 99999;
+        // Initialise Component:
+        
+        $list->doInit();
         
         // Answer List Component:
         
         return $list;
+    }
+    
+    /**
+     * Answers true if the extended object provides a list component for the template.
+     *
+     * @return boolean
+     */
+    public function hasListComponent()
+    {
+        return ($this->owner->ListComponent instanceof BaseListComponent);
+    }
+    
+    /**
+     * Defines the specified field for the given list component using a value from the hierarchy.
+     *
+     * @param BaseListComponent $list
+     * @param string $field
+     * @param string $value
+     *
+     * @return void
+     */
+    protected function setListField(BaseListComponent $list, $field, $value)
+    {
+        $value = $this->owner->getFieldFromHierarchy($value);
+        
+        if (!is_null($value)) {
+            $list->$field = $value;
+        }
+    }
+    
+    /**
+     * Answers an array of options for a toggle dropdown field.
+     *
+     * @return array
+     */
+    protected function getToggleOptions()
+    {
+        return [
+            0 => _t(__CLASS__ . '.TOGGLENO', 'No'),
+            1 => _t(__CLASS__ . '.TOGGLEYES', 'Yes')
+        ];
     }
 }

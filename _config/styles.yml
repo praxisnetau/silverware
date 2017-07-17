@@ -21,9 +21,15 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       left: left
       center: center
       right: right
+      justify: justify
     background:
       primary: bg-primary
+      success: bg-success
+      info: bg-info
+      warning: bg-warning
+      danger: bg-danger
       inverse: bg-inverse
+      faded: bg-faded
     feature:
       block: card-block
       feature: card
@@ -34,7 +40,11 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       image: figure-img
       caption: figure-caption
     image:
+      image: image
       fluid: img-fluid
+    pagination:
+      small: pagination-sm
+      large: pagination-lg
     position:
       fixed-top: fixed-top
       fixed-bottom: fixed-bottom
@@ -48,6 +58,12 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       circle: rounded-circle
     text:
       text: text
+      primary: text-primary
+      success: text-success
+      info: text-info
+      warning: text-warning
+      danger: text-danger
+      white: text-white
     viewport:
       small: sm
       medium: md

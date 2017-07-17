@@ -8,6 +8,7 @@ require('styles/bundle.scss');
 // Load Scripts:
 
 require('entwine/NumberBadges.js');
+require('entwine/ListViewExtension.js');
 
 // Load Form Fields:
 

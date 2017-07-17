@@ -1,9 +1,9 @@
-<% if $ListComponent.isImageShown($isFirst, $isMiddle, $isLast) && $HasMetaImage %>
+<% if $Renderer.isImageShown($isFirst, $isMiddle, $isLast) && $HasMetaImage %>
   <div class="image">
-    <% if $ListComponent.LinkImages %><a $MetaImageLinkAttributesHTML><% end_if %>
-    <% with $getMetaImageResized($ListComponent.ImageResizeWidth, $ListComponent.ImageResizeHeight, $ListComponent.ImageResizeMethod) %>
-      <img src="$URL" alt="$Title">
+    <% if $Renderer.LinkImages %><a $MetaImageLinkAttributesHTML><% end_if %>
+    <% with $getMetaImageResized($Renderer.ImageResizeWidth, $Renderer.ImageResizeHeight, $Renderer.ImageResizeMethod) %>
+      <img src="$URL" class="$Up.MetaImageClass" alt="$Title">
     <% end_with %>
-    <% if $ListComponent.LinkImages %></a><% end_if %>
+    <% if $Renderer.LinkImages %></a><% end_if %>
   </div>
 <% end_if %>

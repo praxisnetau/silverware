@@ -1,11 +1,11 @@
-<% if $ListComponent.isHeaderShown($isFirst, $isMiddle, $isLast) %>
+<% if $Renderer.isHeaderShown($isFirst, $isMiddle, $isLast) %>
   <header>
-    <$ListComponent.HeadingTag>
-      <% if $ListComponent.LinkTitles %>
+    <$Renderer.HeadingTag>
+      <% if $Renderer.LinkTitles %>
         <a href="$MetaLink" title="$MetaTitle">$MetaTitle</a>
       <% else %>
         $MetaTitle
       <% end_if %>
-    </$ListComponent.HeadingTag>
+    </$Renderer.HeadingTag>
   </header>
 <% end_if %>

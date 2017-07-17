@@ -186,8 +186,8 @@ class ImageComponent extends BaseComponent
         $fields->addFieldToTab(
             'Root.Options',
             FieldSection::create(
-                'ImageComponentOptions',
-                $this->i18n_singular_name(),
+                'ImageOptions',
+                $this->fieldLabel('ImageOptions'),
                 [
                     CheckboxField::create(
                         'LinkImage',
@@ -225,6 +225,7 @@ class ImageComponent extends BaseComponent
         $labels['ImageID'] = _t(__CLASS__ . '.IMAGE', 'Image');
         $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['LinkImage'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
+        $labels['ImageOptions'] = _t(__CLASS__ . '.IMAGE', 'Image');
         
         // Define Relation Labels:
         

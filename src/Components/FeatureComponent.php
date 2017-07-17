@@ -211,8 +211,8 @@ class FeatureComponent extends BaseComponent
         $fields->addFieldToTab(
             'Root.Style',
             FieldSection::create(
-                'FeatureComponentStyle',
-                $this->i18n_singular_name(),
+                'FeatureStyle',
+                $this->fieldLabel('FeatureStyle'),
                 [
                     DropdownField::create(
                         'HeadingLevel',
@@ -228,8 +228,8 @@ class FeatureComponent extends BaseComponent
         $fields->addFieldToTab(
             'Root.Options',
             FieldSection::create(
-                'FeatureComponentOptions',
-                $this->i18n_singular_name(),
+                'FeatureOptions',
+                $this->fieldLabel('FeatureOptions'),
                 [
                     TextField::create(
                         'ButtonLabel',
@@ -273,6 +273,7 @@ class FeatureComponent extends BaseComponent
         $labels['LinkHeading'] = _t(__CLASS__ . '.LINKHEADING', 'Link heading');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['FeaturedPageID'] = _t(__CLASS__ . '.FEATUREDPAGE', 'Featured page');
+        $labels['FeatureStyle'] = $labels['FeatureOptions'] = _t(__CLASS__ . '.FEATURE', 'Feature');
         
         // Define Relation Labels:
         
@@ -299,7 +300,7 @@ class FeatureComponent extends BaseComponent
         
         // Populate Defaults:
         
-        $this->ButtonLabel = _t(__CLASS__ . '.DEFAULTBUTTONLABEL', 'Read More');
+        $this->ButtonLabel = _t(__CLASS__ . '.DEFAULTBUTTONLABEL', 'More');
     }
     
     /**

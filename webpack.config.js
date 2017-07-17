@@ -201,7 +201,7 @@ const config = (env) => {
       plugins: plugins(env, PATHS.MODULE.SRC, PATHS.MODULE.DIST),
       resolve: {
         alias: {
-          'theme': path.resolve(process.env.PWD, '../themes/silverware-theme/source')
+          'silverware-theme': path.resolve(process.env.PWD, '../themes/silverware-theme/source')
         },
         modules: [
           PATHS.MODULE.SRC,

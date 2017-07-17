@@ -187,6 +187,20 @@ class ViewTools
             
             $field = ltrim($value, '$');
             
+            // Detect Object Relationship Format:
+            
+            if (strpos($field, '.') !== false) {
+                
+                list($name, $prop) = explode('.', $field);
+                
+                if ($object->hasMethod("get{$name}")) {
+                    return $object->{"get{$name}"}()->{$prop};
+                } elseif ($object->hasField($name)) {
+                    return $object->relField($field);
+                }
+                
+            }
+            
             // Obtain Field Value:
             
             if ($object->hasMethod("get{$field}")) {

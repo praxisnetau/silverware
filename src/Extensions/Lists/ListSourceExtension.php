@@ -56,8 +56,6 @@ class ListSourceExtension extends DataExtension
     private static $db = [
         'ItemsPerPage' => 'AbsoluteInt',
         'NumberOfItems' => 'AbsoluteInt',
-        'ImageResize' => 'Dimensions',
-        'ImageResizeMethod' => 'Varchar(32)',
         'PaginateItems' => 'Boolean',
         'ReverseItems' => 'Boolean',
         'ImageItems' => 'Boolean'
@@ -176,13 +174,13 @@ class ListSourceExtension extends DataExtension
     {
         $labels['Enabled'] = _t(__CLASS__ . '.ENABLED', 'Enabled');
         $labels['Disabled'] = _t(__CLASS__ . '.DISABLED', 'Disabled');
-        $labels['ListSource'] = $labels['ListSourceID'] = _t(__CLASS__ . '.LISTSOURCE', 'List source');
+        $labels['ListSource'] = $labels['ListSourceID'] = _t(__CLASS__ . '.LISTSOURCE', 'List Source');
         $labels['ImageItems'] = _t(__CLASS__ . '.IMAGEITEMS', 'Show only items with images');
         $labels['ReverseItems'] = _t(__CLASS__ . '.REVERSEITEMS', 'Reverse items');
         $labels['ItemsPerPage'] = _t(__CLASS__ . '.ITEMSPERPAGE', 'Items per page');
         $labels['PaginateItems'] = _t(__CLASS__ . '.PAGINATEITEMS', 'Paginate items');
         $labels['NumberOfItems'] = _t(__CLASS__ . '.NUMBEROFITEMS', 'Number of items');
-        $labels['ListSourceOptions'] = _t(__CLASS__ . '.LISTSOURCE', 'List source');
+        $labels['ListSourceOptions'] = _t(__CLASS__ . '.LISTSOURCE', 'List Source');
     }
     
     /**
@@ -260,15 +258,25 @@ class ListSourceExtension extends DataExtension
             
         }
         
-        // Associate Items with List Component:
+        // Associate Items with Rendering Component:
         
         foreach ($items as $item) {
-            $item->setListComponent($this->owner);
+            $item->setRenderer($this->owner);
         }
         
         // Answer List:
         
         return $items;
+    }
+    
+    /**
+     * Answers true if the extended object has list items available.
+     *
+     * @return boolean
+     */
+    public function hasListItems()
+    {
+        return $this->owner->getListItems()->exists();
     }
     
     /**

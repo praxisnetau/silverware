@@ -245,7 +245,7 @@ class BaseComponent extends Component
      */
     public function getShowTitle()
     {
-        return !$this->HideTitle;
+        return !$this->HideTitle && $this->Title;
     }
     
     /**

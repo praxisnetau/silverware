@@ -3,9 +3,6 @@
 
 .scrolltotopbutton {
   
-  color: $white;
-  background-color: $brand-primary;
-  
   opacity: 0;
   outline: 0;
   right: $spacer;
@@ -35,12 +32,7 @@
     opacity: 0.5;
   }
   
-  &:focus {
-    color: $white;
-  }
-  
   &:hover {
-    color: $white;
     opacity: 1;
   }
   

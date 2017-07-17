@@ -1,4 +1,4 @@
-<% if $ListComponent.isContentShown($isFirst, $isMiddle, $isLast) && $HasMetaContent %>
+<% if $Renderer.isContentShown($isFirst, $isMiddle, $isLast) && $HasMetaContent %>
   <div class="content">
     $MetaContent
   </div>

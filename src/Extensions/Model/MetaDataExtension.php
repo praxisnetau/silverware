@@ -32,6 +32,7 @@ use SilverWare\Forms\DimensionsField;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Tools\ImageTools;
 use SilverWare\Tools\ViewTools;
+use SilverWare\View\GridAware;
 
 /**
  * A data extension class to add meta data functionality to the extended object.
@@ -44,6 +45,8 @@ use SilverWare\Tools\ViewTools;
  */
 class MetaDataExtension extends DataExtension
 {
+    use GridAware;
+    
     /**
      * Maps field names to field types for the extended object.
      *
@@ -105,16 +108,31 @@ class MetaDataExtension extends DataExtension
     ];
     
     /**
-     * Defines the list item details to show for the extended object.
+     * Defines the default list item details to show for the extended object.
      *
      * @var array
      * @config
      */
-    private static $list_item_details = [
+    private static $default_list_item_details = [
         'date' => [
             'icon' => 'calendar',
-            'text' => '$MetaDateFormatted',
-            'args' => '$DateFormat'
+            'text' => [
+                '$MetaDateFormatted',
+                '$DateFormat'
+            ]
+        ]
+    ];
+    
+    /**
+     * Defines the default list item buttons to show for the extended object.
+     *
+     * @var array
+     * @config
+     */
+    private static $default_list_item_buttons = [
+        'link' => [
+            'href' => '$MetaLink',
+            'text' => '$Renderer.ButtonLabel'
         ]
     ];
     
@@ -590,6 +608,18 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
+     * Answers the ID for the meta image for the extended object.
+     *
+     * @return integer
+     */
+    public function getMetaImageID()
+    {
+        if ($this->owner->hasMetaImage()) {
+            return $this->owner->getMetaImage()->ID;
+        }
+    }
+    
+    /**
      * Answers the name of the asset folder used for uploading images.
      *
      * @return string
@@ -622,9 +652,9 @@ class MetaDataExtension extends DataExtension
     {
         if ($this->owner->hasMetaImage()) {
             
-            if ($list = $this->owner->getListComponent()) {
+            if ($renderer = $this->owner->Renderer) {
                 
-                switch ($list->ImageLinksTo) {
+                switch ($renderer->ImageLinksTo) {
                     
                     case BaseListComponent::IMAGE_LINK_ITEM:
                         return $this->owner->getMetaLink();
@@ -660,7 +690,7 @@ class MetaDataExtension extends DataExtension
                 $attributes[$name] = ViewTools::singleton()->processAttribute(
                     $value,
                     $this->owner,
-                    $this->getListComponent()
+                    $this->owner->Renderer
                 );
                 
             }
@@ -687,8 +717,8 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageGroup()
     {
-        if ($list = $this->owner->getListComponent()) {
-            return $list->getHTMLID();
+        if ($renderer = $this->owner->Renderer) {
+            return $renderer->getHTMLID();
         }
     }
     
@@ -852,7 +882,7 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageClassNames()
     {
-        $classes = ['image'];
+        $classes = $this->styles('image.fluid');
         
         if ($alignment = $this->owner->getMetaImageAlignment()) {
             $classes[] = $alignment;
@@ -880,9 +910,9 @@ class MetaDataExtension extends DataExtension
     {
         $classes = ['image-link'];
         
-        if ($list = $this->owner->getListComponent()) {
+        if ($renderer = $this->owner->Renderer) {
             
-            if ($to = strtolower($list->ImageLinksTo)) {
+            if ($to = strtolower($renderer->ImageLinksTo)) {
                 $classes[] = sprintf('to-%s', $to);
             }
         
@@ -966,15 +996,5 @@ class MetaDataExtension extends DataExtension
         }
         
         return $value;
-    }
-    
-    /**
-     * Answers a list component associated with the extended object (if it exists).
-     *
-     * @return BaseListComponent
-     */
-    protected function getListComponent()
-    {
-        return $this->owner->ListComponent;
     }
 }

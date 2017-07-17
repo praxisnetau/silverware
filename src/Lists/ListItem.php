@@ -20,7 +20,7 @@ namespace SilverWare\Lists;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\View\SSViewer;
-use SilverWare\Components\BaseListComponent;
+use SilverWare\Model\Component;
 use SilverWare\Tools\ViewTools;
 use SilverWare\View\ViewClasses;
 
@@ -40,32 +40,32 @@ trait ListItem
     /**
      * The component instance responsible for rendering the list item.
      *
-     * @var BaseListComponent
+     * @var Component
      */
-    protected $listComponent;
+    protected $renderer;
     
     /**
-     * Defines the value of the listComponent attribute.
+     * Defines the value of the renderer attribute.
      *
-     * @param BaseListComponent $listComponent
+     * @param Component $renderer
      *
      * @return $this
      */
-    public function setListComponent(BaseListComponent $listComponent)
+    public function setRenderer(Component $renderer)
     {
-        $this->listComponent = $listComponent;
+        $this->renderer = $renderer;
         
         return $this;
     }
     
     /**
-     * Answers the value of the listComponent attribute.
+     * Answers the value of the renderer attribute.
      *
-     * @return BaseListComponent
+     * @return Component
      */
-    public function getListComponent()
+    public function getRenderer()
     {
-        return $this->listComponent;
+        return $this->renderer;
     }
     
     /**
@@ -94,6 +94,10 @@ trait ListItem
     public function getListItemTemplate()
     {
         $template = sprintf('%s\ListItem', static::class);
+        
+        if ($this->getRenderer()->hasMethod('getListItemTemplate')) {
+            $template = $this->getRenderer()->getListItemTemplate(static::class);
+        }
         
         if (SSViewer::hasTemplate($template)) {
             return $template;
@@ -129,20 +133,28 @@ trait ListItem
     {
         $details = ArrayList::create();
         
-        if (is_array($this->config()->list_item_details)) {
+        foreach ($this->getListItemDetailsConfig() as $name => $spec) {
             
-            foreach ($this->config()->list_item_details as $name => $spec) {
+            if ($spec) {
                 
-                $icon = isset($spec['icon']) ? $spec['icon'] : null;
-                $text = isset($spec['text']) ? $spec['text'] : null;
-                
-                $text = $this->processListItemText($text, isset($spec['args']) ? $spec['args'] : []);
+                foreach ($spec as $item => $value) {
+                    
+                    $args = [];
+                    
+                    if (is_array($value)) {
+                        $args  = $value;
+                        $value = array_shift($args);
+                    }
+                    
+                    $spec[$item] = $this->processListItemValue($value, $args);
+                    
+                }
                 
                 $details->push(
                     ArrayData::create([
                         'Name' => $name,
-                        'Icon' => $icon,
-                        'Text' => $text
+                        'Icon' => isset($spec['icon']) ? $spec['icon'] : null,
+                        'Text' => isset($spec['text']) ? $spec['text'] : null
                     ])
                 );
                 
@@ -154,15 +166,118 @@ trait ListItem
     }
     
     /**
-     * Processes the given string of text which references methods / fields of the receiver and List Component.
+     * Answers the list item details config for the receiver.
      *
-     * @param string $text
+     * @return array
+     */
+    public function getListItemDetailsConfig()
+    {
+        $config = [];
+        
+        if (is_array($this->config()->default_list_item_details)) {
+            $config = $this->config()->default_list_item_details;
+        }
+        
+        if (is_array($this->config()->list_item_details)) {
+            
+            foreach ($this->config()->list_item_details as $name => $spec) {
+                
+                if (!$spec) {
+                    unset($config[$name]);
+                }
+                
+            }
+            
+            $config = array_merge_recursive($config, $this->config()->list_item_details);
+            
+        }
+        
+        return $config;
+    }
+    
+    /**
+     * Answers an array list object containing the item buttons for the template.
+     *
+     * @return ArrayList
+     */
+    public function getListItemButtons()
+    {
+        $buttons = ArrayList::create();
+        
+        foreach ($this->getListItemButtonsConfig() as $name => $spec) {
+            
+            if ($spec) {
+                
+                foreach ($spec as $item => $value) {
+                    
+                    $args = [];
+                    
+                    if (is_array($value)) {
+                        $args  = $value;
+                        $value = array_shift($args);
+                    }
+                    
+                    $spec[$item] = $this->processListItemValue($value, $args);
+                    
+                }
+                
+                $buttons->push(
+                    ArrayData::create([
+                        'Icon' => isset($spec['icon']) ? $spec['icon'] : null,
+                        'Type' => isset($spec['type']) ? $spec['type'] : null,
+                        'HREF' => isset($spec['href']) ? $spec['href'] : null,
+                        'Text' => isset($spec['text']) ? $spec['text'] : null,
+                        'ExtraClass' => isset($spec['extraClass']) ? $spec['extraClass'] : null
+                    ])
+                );
+                
+            }
+            
+        }
+        
+        return $buttons;
+    }
+    
+    /**
+     * Answers the list item buttons config for the receiver.
+     *
+     * @return array
+     */
+    public function getListItemButtonsConfig()
+    {
+        $config = [];
+        
+        if (is_array($this->config()->default_list_item_buttons)) {
+            $config = $this->config()->default_list_item_buttons;
+        }
+        
+        if (is_array($this->config()->list_item_buttons)) {
+            
+            foreach ($this->config()->list_item_buttons as $name => $spec) {
+                
+                if (!$spec) {
+                    unset($config[$name]);
+                }
+                
+            }
+            
+            $config = array_merge_recursive($config, $this->config()->list_item_buttons);
+            
+        }
+            
+        return $config;
+    }
+    
+    /**
+     * Processes the given value which references methods / fields of the receiver and List Component.
+     *
+     * @param string $value
      * @param array $args
      *
      * @return string
      */
-    public function processListItemText($text, $args = [])
+    public function processListItemValue($value, $args = [])
     {
-        return ViewTools::singleton()->processAttribute($text, $this, $this->getListComponent(), $args);
+        return ViewTools::singleton()->processAttribute($value, $this, $this->getRenderer(), $args);
     }
 }

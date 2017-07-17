@@ -126,7 +126,7 @@ class Section extends Grid
             'Root.Options',
             FieldSection::create(
                 'SectionOptions',
-                $this->i18n_singular_name(),
+                $this->fieldLabel('SectionOptions'),
                 [
                     CheckboxField::create(
                         'FullWidth',
@@ -157,6 +157,7 @@ class Section extends Grid
         // Define Field Labels:
         
         $labels['FullWidth'] = _t(__CLASS__ . '.USEFULLWIDTHCONTAINER', 'Use full width container');
+        $labels['SectionOptions'] = _t(__CLASS__ . '.SECTION', 'Section');
         
         // Answer Field Labels:
         

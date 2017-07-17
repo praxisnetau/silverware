@@ -1,0 +1,67 @@
+/* Tile Component Styles
+===================================================================================================================== */
+
+.tilecomponent {
+  
+  .items {
+    
+    display: flex;
+    flex-flow: row wrap;
+    align-items: stretch;
+    
+    > article.item {
+      
+      display: flex;
+      flex-direction: column;
+      
+      flex: 1 100%;
+      padding: 2%;
+      
+      > section.content {
+        
+        margin-top: auto;
+        
+        header > * {
+          font-size: 1rem;
+          line-height: 1.2;
+        }
+        
+        div.details > span {
+          display: block;
+          margin-right: 0;
+          margin-bottom: $spacer-half;
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+}
+
+// Media Queries:
+
+@media (min-width: map-get($grid-breakpoints, sm)) {
+  
+  .tilecomponent {
+    
+    .items > article.item {
+      flex: 1 50%;
+    }
+    
+  }
+  
+}
+
+@media (min-width: map-get($grid-breakpoints, md)) {
+  
+  .tilecomponent {
+    
+    .items > article.item {
+      flex: 1 25%;
+    }
+    
+  }
+  
+}
