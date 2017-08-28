@@ -1,0 +1,9 @@
+---
+Name: silverware-assets
+---
+
+# Configure Allowed Extensions:
+
+SilverStripe\Assets\File:
+  allowed_extensions:
+    - svg
