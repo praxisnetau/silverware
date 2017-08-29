@@ -195,7 +195,7 @@ class ViewTools
                 
                 if ($object->hasMethod("get{$name}")) {
                     return $object->{"get{$name}"}()->{$prop};
-                } elseif ($object->hasField($name)) {
+                } elseif ($object->hasField($name) || $object->hasField($name . 'ID')) {
                     return $object->relField($field);
                 }
                 

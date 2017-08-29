@@ -59,6 +59,18 @@
   .tilecomponent {
     
     .items > article.item {
+      flex: 1 33.3%;
+    }
+    
+  }
+  
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  
+  .tilecomponent {
+    
+    .items > article.item {
       flex: 1 25%;
     }
     

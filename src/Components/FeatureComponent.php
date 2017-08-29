@@ -25,6 +25,7 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverWare\Extensions\Model\ImageResizeExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\FontIcons\Extensions\FontIconExtension;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\PageDropdownField;
 use Page;
@@ -80,10 +81,17 @@ class FeatureComponent extends BaseComponent
      */
     private static $db = [
         'Summary' => 'HTMLText',
+        'CustomHeading' => 'Varchar(255)',
+        'CustomSubHeading' => 'Varchar(255)',
         'HeadingLevel' => 'Varchar(2)',
+        'SubHeadingLevel' => 'Varchar(2)',
         'ButtonLabel' => 'Varchar(128)',
         'LinkHeading' => 'Boolean',
-        'ShowImage' => 'Boolean'
+        'ShowIcon' => 'Boolean',
+        'ShowImage' => 'Boolean',
+        'ShowHeader' => 'Boolean',
+        'ShowSummary' => 'Boolean',
+        'ShowFooter' => 'Boolean'
     ];
     
     /**
@@ -115,7 +123,11 @@ class FeatureComponent extends BaseComponent
      */
     private static $defaults = [
         'LinkHeading' => 1,
-        'ShowImage' => 1
+        'ShowIcon' => 1,
+        'ShowImage' => 1,
+        'ShowHeader' => 1,
+        'ShowSummary' => 1,
+        'ShowFooter' => 1
     ];
     
     /**
@@ -152,6 +164,7 @@ class FeatureComponent extends BaseComponent
      */
     private static $extensions = [
         AlignmentStyle::class,
+        FontIconExtension::class,
         ImageResizeExtension::class
     ];
     
@@ -172,6 +185,14 @@ class FeatureComponent extends BaseComponent
     private static $heading_level_default = 'h4';
     
     /**
+     * Defines the default sub-heading level to use.
+     *
+     * @var array
+     * @config
+     */
+    private static $sub_heading_level_default = 'h5';
+    
+    /**
      * Answers a list of field objects for the CMS interface.
      *
      * @return FieldList
@@ -190,6 +211,20 @@ class FeatureComponent extends BaseComponent
                 PageDropdownField::create(
                     'FeaturedPageID',
                     $this->fieldLabel('FeaturedPageID')
+                ),
+                FieldSection::create(
+                    'HeadingSection',
+                    $this->fieldLabel('HeadingSection'),
+                    [
+                        TextField::create(
+                            'CustomHeading',
+                            $this->fieldLabel('CustomHeading')
+                        ),
+                        TextField::create(
+                            'CustomSubHeading',
+                            $this->fieldLabel('CustomSubHeading')
+                        )
+                    ]
                 ),
                 UploadField::create(
                     'Image',
@@ -231,6 +266,26 @@ class FeatureComponent extends BaseComponent
                 'FeatureOptions',
                 $this->fieldLabel('FeatureOptions'),
                 [
+                    CheckboxField::create(
+                        'ShowIcon',
+                        $this->fieldLabel('ShowIcon')
+                    ),
+                    CheckboxField::create(
+                        'ShowImage',
+                        $this->fieldLabel('ShowImage')
+                    ),
+                    CheckboxField::create(
+                        'ShowHeader',
+                        $this->fieldLabel('ShowHeader')
+                    ),
+                    CheckboxField::create(
+                        'ShowSummary',
+                        $this->fieldLabel('ShowSummary')
+                    ),
+                    CheckboxField::create(
+                        'ShowFooter',
+                        $this->fieldLabel('ShowFooter')
+                    ),
                     TextField::create(
                         'ButtonLabel',
                         $this->fieldLabel('ButtonLabel')
@@ -238,10 +293,6 @@ class FeatureComponent extends BaseComponent
                     CheckboxField::create(
                         'LinkHeading',
                         $this->fieldLabel('LinkHeading')
-                    ),
-                    CheckboxField::create(
-                        'ShowImage',
-                        $this->fieldLabel('ShowImage')
                     )
                 ]
             )
@@ -269,10 +320,19 @@ class FeatureComponent extends BaseComponent
         
         $labels['ImageID'] = _t(__CLASS__ . '.IMAGE', 'Image');
         $labels['Summary'] = _t(__CLASS__ . '.SUMMARY', 'Summary');
+        $labels['ShowIcon'] = _t(__CLASS__ . '.SHOWICON', 'Show icon');
         $labels['ShowImage'] = _t(__CLASS__ . '.SHOWIMAGE', 'Show image');
+        $labels['ShowHeader'] = _t(__CLASS__ . '.SHOWHEADER', 'Show header');
+        $labels['ShowSummary'] = _t(__CLASS__ . '.SHOWSUMMARY', 'Show summary');
+        $labels['ShowFooter'] = _t(__CLASS__ . '.SHOWFOOTER', 'Show footer');
         $labels['LinkHeading'] = _t(__CLASS__ . '.LINKHEADING', 'Link heading');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['FeaturedPageID'] = _t(__CLASS__ . '.FEATUREDPAGE', 'Featured page');
+        $labels['CustomHeading'] = _t(__CLASS__ . '.CUSTOMHEADING', 'Custom heading');
+        $labels['CustomSubHeading'] = _t(__CLASS__ . '.CUSTOMSUBHEADING', 'Custom sub-heading');
+        $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
+        $labels['SubHeadingLevel'] = _t(__CLASS__ . '.SUBHEADINGLEVEL', 'Sub-heading level');
+        $labels['HeadingSection'] = _t(__CLASS__ . '.HEADINGS', 'Headings');
         $labels['FeatureStyle'] = $labels['FeatureOptions'] = _t(__CLASS__ . '.FEATURE', 'Feature');
         
         // Define Relation Labels:
@@ -344,23 +404,23 @@ class FeatureComponent extends BaseComponent
     }
     
     /**
-     * Answers an array of block class names for the HTML template.
+     * Answers an array of body class names for the HTML template.
      *
      * @return array
      */
-    public function getBlockClassNames()
+    public function getBodyClassNames()
     {
-        $classes = ['block'];
+        $classes = ['body'];
         
-        $classes[] = $this->style('feature.block');
+        $classes[] = $this->style('feature.body');
         
-        $this->extend('updateBlockClassNames', $classes);
+        $this->extend('updateBodyClassNames', $classes);
         
         return $classes;
     }
     
     /**
-     * Answers an array of header class names for the HTML template.
+     * Answers an array of heading class names for the HTML template.
      *
      * @return array
      */
@@ -369,6 +429,20 @@ class FeatureComponent extends BaseComponent
         $classes = $this->styles('feature.heading');
         
         $this->extend('updateHeadingClassNames', $classes);
+        
+        return $classes;
+    }
+    
+    /**
+     * Answers an array of sub-heading class names for the HTML template.
+     *
+     * @return array
+     */
+    public function getSubHeadingClassNames()
+    {
+        $classes = $this->styles('feature.sub-heading');
+        
+        $this->extend('updateSubHeadingClassNames', $classes);
         
         return $classes;
     }
@@ -388,6 +462,52 @@ class FeatureComponent extends BaseComponent
     }
     
     /**
+     * Answers the heading text for the receiver.
+     *
+     * @return string
+     */
+    public function getHeadingText()
+    {
+        if ($this->hasPage()) {
+            return $this->CustomHeading ? $this->CustomHeading : $this->FeaturedPage()->MetaTitle;
+        }
+    }
+    
+    /**
+     * Answers the sub-heading tag for the receiver.
+     *
+     * @return string
+     */
+    public function getSubHeadingTag()
+    {
+        if ($tag = $this->getField('SubHeadingLevel')) {
+            return $tag;
+        }
+        
+        return $this->config()->sub_heading_level_default;
+    }
+    
+    /**
+     * Answers the sub-heading text for the receiver.
+     *
+     * @return string
+     */
+    public function getSubHeadingText()
+    {
+        return $this->CustomSubHeading;
+    }
+    
+    /**
+     * Answers true of the feature page exists.
+     *
+     * @return boolean
+     */
+    public function hasPage()
+    {
+        return $this->FeaturedPage()->isInDB();
+    }
+    
+    /**
      * Answers true if the receiver has an image.
      *
      * @return boolean
@@ -395,6 +515,16 @@ class FeatureComponent extends BaseComponent
     public function hasImage()
     {
         return ($this->Image()->exists() || $this->FeaturedPage()->hasMetaImage());
+    }
+    
+    /**
+     * Answers true if the icon is to be shown in the template.
+     *
+     * @return boolean
+     */
+    public function getIconShown()
+    {
+        return ($this->hasFontIcon() && $this->ShowIcon);
     }
     
     /**
@@ -414,7 +544,7 @@ class FeatureComponent extends BaseComponent
      */
     public function getHeaderShown()
     {
-        return true;
+        return (boolean) $this->ShowHeader;
     }
     
     /**
@@ -424,7 +554,7 @@ class FeatureComponent extends BaseComponent
      */
     public function getSummaryShown()
     {
-        return true;
+        return (boolean) $this->ShowSummary;
     }
     
     /**
@@ -434,7 +564,7 @@ class FeatureComponent extends BaseComponent
      */
     public function getFooterShown()
     {
-        return true;
+        return (boolean) $this->ShowFooter;
     }
     
     /**
@@ -470,7 +600,7 @@ class FeatureComponent extends BaseComponent
      */
     public function isDisabled()
     {
-        if (!$this->FeaturedPageID) {
+        if (!$this->hasPage()) {
             return true;
         }
         

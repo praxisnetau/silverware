@@ -352,17 +352,21 @@ class FixtureBlueprint extends BaseBlueprint
      */
     public function populateObject(DataObject $object, $data, $fixtures)
     {
-        // Populate Fields:
-        
-        $this->populateFields($object, $data, $fixtures);
-        
-        // Populate Children:
-        
-        $this->populateChildren($object, $data, $fixtures);
-        
-        // Populate Relations:
-        
-        $this->populateRelations($object, $data, $fixtures);
+        if (is_array($data)) {
+            
+            // Populate Fields:
+            
+            $this->populateFields($object, $data, $fixtures);
+            
+            // Populate Children:
+            
+            $this->populateChildren($object, $data, $fixtures);
+            
+            // Populate Relations:
+            
+            $this->populateRelations($object, $data, $fixtures);
+            
+        }
         
         // Answer Object:
         

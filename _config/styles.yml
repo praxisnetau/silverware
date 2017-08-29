@@ -24,16 +24,19 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       justify: justify
     background:
       primary: bg-primary
+      secondary: bg-secondary
       success: bg-success
       info: bg-info
       warning: bg-warning
       danger: bg-danger
-      inverse: bg-inverse
-      faded: bg-faded
+      white: bg-white
+      light: bg-light
+      dark: bg-dark
     feature:
-      block: card-block
+      body: card-body
       feature: card
       heading: card-title
+      sub-heading: card-subtitle
       image-top: card-img-top
     figure:
       figure: figure
@@ -59,11 +62,14 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
     text:
       text: text
       primary: text-primary
+      secondary: text-secondary
       success: text-success
       info: text-info
       warning: text-warning
       danger: text-danger
       white: text-white
+      light: text-light
+      dark: text-dark
     viewport:
       small: sm
       medium: md

@@ -8,16 +8,21 @@ SilverWare\Extensions\Style\ThemeStyle:
   theme_styles:
     ColorBackground:
       background.primary: Primary
+      background.secondary: Secondary
       background.success: Success
       background.info: Info
       background.warning: Warning
       background.danger: Danger
-      background.inverse: Inverse
-      background.faded: Faded
+      background.white: White
+      background.light: Light
+      background.dark: Dark
     ColorForeground:
       text.primary: Primary
+      text.secondary: Secondary
       text.success: Success
       text.info: Info
       text.warning: Warning
       text.danger: Danger
       text.white: White
+      text.light: Light
+      text.dark: Dark

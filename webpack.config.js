@@ -201,6 +201,7 @@ const config = (env) => {
       plugins: plugins(env, PATHS.MODULE.SRC, PATHS.MODULE.DIST),
       resolve: {
         alias: {
+          'bootstrap': path.resolve(process.env.PWD, '../themes/silverware-theme/node_modules/bootstrap'),
           'silverware-theme': path.resolve(process.env.PWD, '../themes/silverware-theme/source')
         },
         modules: [

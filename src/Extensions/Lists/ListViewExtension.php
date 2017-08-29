@@ -60,6 +60,7 @@ class ListViewExtension extends DataExtension
         'ListHeadingLevel' => 'Varchar(2)',
         'ListButtonLabel' => 'Varchar(128)',
         'ListPaginateItems' => 'Varchar(1)',
+        'ListDateFormat' => 'Varchar(32)',
         'ListLinkTitles' => 'Varchar(1)',
         'ListTitleHidden' => 'Varchar(1)'
     ];
@@ -161,6 +162,10 @@ class ListViewExtension extends DataExtension
                         $this->owner->fieldLabel('ListTitle')
                     ),
                     TextField::create(
+                        'ListDateFormat',
+                        $this->owner->fieldLabel('ListDateFormat')
+                    ),
+                    TextField::create(
                         'ListButtonLabel',
                         $this->owner->fieldLabel('ListButtonLabel')
                     ),
@@ -194,6 +199,7 @@ class ListViewExtension extends DataExtension
         $labels['Disabled'] = _t(__CLASS__ . '.DISABLED', 'Disabled');
         $labels['ListView'] = _t(__CLASS__ . '.LISTVIEW', 'List view');
         $labels['ListTitle'] = _t(__CLASS__ . '.LISTTITLE', 'List title');
+        $labels['ListDateFormat'] = _t(__CLASS__ . '.DATEFORMAT', 'Date format');
         $labels['ListLinkTitles'] = _t(__CLASS__ . '.LINKTITLES', 'Link titles');
         $labels['ListButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['ListHeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
@@ -269,6 +275,7 @@ class ListViewExtension extends DataExtension
         $this->setListField($list, 'ImageLinksTo', 'ListImageLinksTo');
         
         $this->setListField($list, 'ButtonLabel', 'ListButtonLabel');
+        $this->setListField($list, 'DateFormat', 'ListDateFormat');
         
         // Define Text and Image Alignment:
         

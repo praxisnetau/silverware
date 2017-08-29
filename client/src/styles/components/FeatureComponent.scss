@@ -1,0 +1,22 @@
+/* Feature Component Styles
+===================================================================================================================== */
+
+.featurecomponent {
+  
+  article.feature {
+    
+    div.icon {
+      margin-bottom: $spacer-half;
+    }
+    
+    div.summary > p:last-child {
+      margin-bottom: 0;
+    }
+    
+    footer {
+      margin-top: $spacer;
+    }
+    
+  }
+  
+}

@@ -20,8 +20,10 @@ namespace SilverWare\Lists;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\View\SSViewer;
+use SilverWare\Components\BaseListComponent;
 use SilverWare\Model\Component;
 use SilverWare\Tools\ViewTools;
+use SilverWare\View\GridAware;
 use SilverWare\View\ViewClasses;
 
 /**
@@ -35,6 +37,7 @@ use SilverWare\View\ViewClasses;
  */
 trait ListItem
 {
+    use GridAware;
     use ViewClasses;
     
     /**
@@ -69,6 +72,28 @@ trait ListItem
     }
     
     /**
+     * Answers the renderer object only if it is a list component.
+     *
+     * @return BaseListComponent
+     */
+    public function getListComponent()
+    {
+        if ($this->hasListComponent()) {
+            return $this->renderer;
+        }
+    }
+    
+    /**
+     * Answers true if the renderer is a list component.
+     *
+     * @return boolean
+     */
+    public function hasListComponent()
+    {
+        return ($this->renderer instanceof BaseListComponent);
+    }
+    
+    /**
      * Answers an array of list item class names for the HTML template.
      *
      * @return array
@@ -84,6 +109,16 @@ trait ListItem
         }
         
         return $classes;
+    }
+    
+    /**
+     * Answers an array of list item image class names for the HTML template.
+     *
+     * @return array
+     */
+    public function getListItemImageClassNames()
+    {
+        return $this->styles('image.fluid');
     }
     
     /**
@@ -221,15 +256,21 @@ trait ListItem
                     
                 }
                 
-                $buttons->push(
-                    ArrayData::create([
-                        'Icon' => isset($spec['icon']) ? $spec['icon'] : null,
-                        'Type' => isset($spec['type']) ? $spec['type'] : null,
-                        'HREF' => isset($spec['href']) ? $spec['href'] : null,
-                        'Text' => isset($spec['text']) ? $spec['text'] : null,
-                        'ExtraClass' => isset($spec['extraClass']) ? $spec['extraClass'] : null
-                    ])
-                );
+                $href = isset($spec['href']) ? $spec['href'] : null;
+                
+                if ($href) {
+                    
+                    $buttons->push(
+                        ArrayData::create([
+                            'Icon' => isset($spec['icon']) ? $spec['icon'] : null,
+                            'Type' => isset($spec['type']) ? $spec['type'] : null,
+                            'HREF' => isset($spec['href']) ? $spec['href'] : null,
+                            'Text' => isset($spec['text']) ? $spec['text'] : null,
+                            'ExtraClass' => isset($spec['extraClass']) ? $spec['extraClass'] : null
+                        ])
+                    );
+                    
+                }
                 
             }
             
