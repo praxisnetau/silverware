@@ -15,7 +15,7 @@
  * @link https://github.com/praxisnetau/silverware
  */
 
-namespace SilverWare\Extensions;
+namespace SilverWare\Extensions\Control;
 
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Extension;

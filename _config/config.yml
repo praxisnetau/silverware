@@ -16,7 +16,7 @@ Page:
 SilverStripe\CMS\Controllers\ContentController:
   extensions:
     - SilverWare\Extensions\ControllerExtension
-    - SilverWare\Extensions\BreadcrumbsExtension
+    - SilverWare\Extensions\Control\BreadcrumbsExtension
 
 # Configure Admin Extensions:
 
