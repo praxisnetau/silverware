@@ -160,6 +160,13 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     protected $cacheEnabledComponents;
     
     /**
+     * Holds the parent instance of the receiver.
+     *
+     * @var SiteTree
+     */
+    protected $parentInstance;
+    
+    /**
      * Clears the component render cache upon flush.
      *
      * @return void
@@ -245,6 +252,36 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         // Answer Field Labels:
         
         return $labels;
+    }
+    
+    /**
+     * Defines the parent of the receiver.
+     *
+     * @param SiteTree|int $item
+     *
+     * @return void
+     */
+    public function setParent($item)
+    {
+        // Record Parent Instance:
+        
+        if ($item instanceof SiteTree) {
+            $this->parentInstance = $item;
+        }
+        
+        // Call Parent Method:
+        
+        return parent::setParent($item);
+    }
+    
+    /**
+     * Answers the parent instance of the receiver (if available).
+     *
+     * @return SiteTree
+     */
+    public function getParentInstance()
+    {
+        return $this->parentInstance;
     }
     
     /**
@@ -763,7 +800,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
      *
      * @return string
      */
-    public function tag($content = null)
+    public function renderTag($content = null)
     {
         return $this->getOpeningTag() . $content . $this->getClosingTag();
     }

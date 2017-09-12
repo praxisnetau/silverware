@@ -18,6 +18,7 @@
 namespace SilverWare\Model;
 
 use SilverStripe\CMS\Controllers\ContentController;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\View\Requirements;
 use SilverStripe\View\SSViewer;
 use Page;
@@ -34,6 +35,32 @@ use PageController;
  */
 class ComponentController extends ContentController
 {
+    /**
+     * Defines the allowed actions for this controller.
+     *
+     * @var array
+     * @config
+     */
+    private static $allowed_actions = [
+        'index'
+    ];
+    
+    /**
+     * Default action for a component controller.
+     *
+     * @param HTTPRequest $request
+     *
+     * @return HTTPResponse
+     */
+    public function index(HTTPRequest $request)
+    {
+        if (!$this->isCMSPreview()) {
+            $this->httpError(404);
+        }
+        
+        return $this->render();
+    }
+    
     /**
      * Answers a viewer object to render the template for the current page.
      *

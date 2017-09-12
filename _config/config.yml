@@ -9,6 +9,7 @@ Page:
     - SilverWare\Extensions\PageExtension
     - SilverWare\Extensions\AreaExtension
     - SilverWare\Extensions\Model\MetaDataExtension
+    - SilverWare\Extensions\Lists\ListItemExtension
   disable_metadata_toggle: true
 
 # Controller Extensions:
@@ -27,6 +28,8 @@ SilverStripe\Admin\LeftAndMain:
     - silverware/admin/client/dist/styles/bundle.css
   extra_requirements_javascript:
     - silverware/admin/client/dist/js/bundle.js
+  themed_editor_css:
+    - production/styles/editor.css
 
 # Site Configuration Extensions:
 

@@ -20,10 +20,12 @@ namespace SilverWare\Components;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\TextField;
+use SilverWare\Colorpicker\Forms\ColorField;
 use SilverWare\Extensions\Lists\ListSourceExtension;
 use SilverWare\Extensions\Model\ImageResizeExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
 use SilverWare\Extensions\Style\PaginationStyle;
+use SilverWare\FontIcons\Forms\FontIconField;
 use SilverWare\Forms\FieldSection;
 
 /**
@@ -82,6 +84,9 @@ class BaseListComponent extends BaseComponent
         'HeadingLevel' => 'Varchar(2)',
         'ImageLinksTo' => 'Varchar(8)',
         'DateFormat' => 'Varchar(32)',
+        'OverlayIcon' => 'FontIcon',
+        'OverlayIconColor' => 'Color',
+        'OverlayImages' => 'Boolean',
         'LinkImages' => 'Boolean',
         'LinkTitles' => 'Boolean'
     ];
@@ -100,6 +105,8 @@ class BaseListComponent extends BaseComponent
         'ShowFooter' => 'all',
         'ImageLinksTo' => 'item',
         'DateFormat' => 'd MMMM Y',
+        'OverlayIcon' => 'search',
+        'OverlayImages' => 0,
         'LinkImages' => 1,
         'LinkTitles' => 1
     ];
@@ -151,19 +158,29 @@ class BaseListComponent extends BaseComponent
         
         // Create Style Fields:
         
-        $fields->addFieldToTab(
+        $fields->addFieldsToTab(
             'Root.Style',
-            FieldSection::create(
-                'ListStyle',
-                $this->fieldLabel('ListStyle'),
-                [
-                    DropdownField::create(
-                        'HeadingLevel',
-                        $this->fieldLabel('HeadingLevel'),
-                        $this->getTitleLevelOptions()
-                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
-                ]
-            )
+            [
+                FieldSection::create(
+                    'ListStyle',
+                    $this->fieldLabel('ListStyle'),
+                    [
+                        DropdownField::create(
+                            'HeadingLevel',
+                            $this->fieldLabel('HeadingLevel'),
+                            $this->getTitleLevelOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
+                        FontIconField::create(
+                            'OverlayIcon',
+                            $this->fieldLabel('OverlayIcon')
+                        ),
+                        ColorField::create(
+                            'OverlayIconColor',
+                            $this->fieldLabel('OverlayIconColor')
+                        )
+                    ]
+                )
+            ]
         );
         
         // Create Options Fields:
@@ -229,6 +246,10 @@ class BaseListComponent extends BaseComponent
                             $this->getImageLinksToOptions()
                         ),
                         CheckboxField::create(
+                            'OverlayImages',
+                            $this->fieldLabel('OverlayImages')
+                        ),
+                        CheckboxField::create(
                             'LinkImages',
                             $this->fieldLabel('LinkImages')
                         )
@@ -269,7 +290,10 @@ class BaseListComponent extends BaseComponent
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['ImageLinksTo'] = _t(__CLASS__ . '.IMAGELINKSTO', 'Image links to');
+        $labels['OverlayImages'] = _t(__CLASS__ . '.OVERLAYIMAGES', 'Overlay images');
         $labels['ListImageOptions'] = _t(__CLASS__ . '.LISTIMAGES', 'List images');
+        $labels['OverlayIcon'] = _t(__CLASS__ . '.OVERLAYICON', 'Overlay icon');
+        $labels['OverlayIconColor'] = _t(__CLASS__ . '.OVERLAYICONCOLOR', 'Overlay icon color');
         $labels['ListStyle'] = $labels['ListOptions'] = _t(__CLASS__ . '.LIST', 'List');
         
         // Answer Field Labels:

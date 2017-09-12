@@ -177,6 +177,16 @@ class BaseComponent extends Component
     }
     
     /**
+     * Answers null to avoid problems with '$Content' double-ups in the template.
+     *
+     * @return null
+     */
+    public function getContent()
+    {
+        return null;
+    }
+    
+    /**
      * Answers an array of content class names for the HTML template.
      *
      * @return array
@@ -273,6 +283,8 @@ class BaseComponent extends Component
      */
     public function renderContent($layout = null, $title = null)
     {
-        return parent::renderSelf($layout, $title);
+        if ($this->getTemplate() != self::class) {
+            return parent::renderSelf($layout, $title);
+        }
     }
 }

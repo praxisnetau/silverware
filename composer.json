@@ -26,6 +26,7 @@
     "silverstripe/framework": "^4@dev",
     "silverware/colorpicker": "^1.0",
     "silverware/font-icons": "^1.0",
+    "silverware/select2": "^1.0",
     "silverware/theme": "^1.0"
   },
   "autoload": {
@@ -41,6 +42,7 @@
       "SilverWare\\Lists\\": "src/Lists/",
       "SilverWare\\Model\\": "src/Model/",
       "SilverWare\\ORM\\": "src/ORM/",
+      "SilverWare\\Pages\\": "src/Pages/",
       "SilverWare\\Sections\\": "src/Sections/",
       "SilverWare\\Security\\": "src/Security/",
       "SilverWare\\Tags\\": "src/Sections/",

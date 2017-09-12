@@ -18,6 +18,9 @@
 namespace SilverWare\Extensions\Admin;
 
 use SilverStripe\Admin\LeftAndMainExtension as BaseExtension;
+use SilverStripe\Forms\HTMLEditor\TinyMCEConfig;
+use SilverStripe\View\SSViewer;
+use SilverStripe\View\ThemeResourceLoader;
 use SilverWare\Grid\Grid;
 
 /**
@@ -41,5 +44,45 @@ class LeftAndMainExtension extends BaseExtension
         // Initialise Grid Framework:
         
         Grid::framework()->doInit();
+        
+        // Initialise Themed Editor CSS:
+        
+        $this->initThemedEditorCSS();
+    }
+    
+    /**
+     * Merges configured editor CSS from the theme into HTML editor config.
+     *
+     * @return void
+     */
+    protected function initThemedEditorCSS()
+    {
+        // Initialise:
+        
+        $paths = [];
+        
+        // Iterate Themed Editor CSS Files:
+        
+        foreach ($this->getThemedEditorCSS() as $name) {
+            
+            if ($path = ThemeResourceLoader::inst()->findThemedCSS($name, SSViewer::get_themes())) {
+                $paths[] = $path;
+            }
+            
+        }
+        
+        // Merge Themed Editor CSS Paths into HTML Editor Config:
+        
+        TinyMCEConfig::config()->merge('editor_css', $paths);
+    }
+    
+    /**
+     * Answers an array of the themed editor CSS required for the HTML editor.
+     *
+     * @return array
+     */
+    protected function getThemedEditorCSS()
+    {
+        return (array) $this->owner->config()->themed_editor_css;
     }
 }

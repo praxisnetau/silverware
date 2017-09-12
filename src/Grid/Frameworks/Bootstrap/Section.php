@@ -31,12 +31,32 @@ use SilverWare\Grid\Extensions\SectionExtension;
 class Section extends SectionExtension
 {
     /**
+     * Updates the given array of class names from the extended object.
+     *
+     * @param array $classes
+     *
+     * @return void
+     */
+    public function updateClassNames(&$classes)
+    {
+        if ($position = $this->owner->Position) {
+            $classes[] = $this->style('position', $position);
+        }
+    }
+    
+    /**
      * Answers the container class names for the extended object.
      *
      * @return array
      */
     public function getClassNamesForContainer()
     {
-        return [$this->owner->isFullWidth() ? 'container-fluid' : 'container'];
+        $classes = [$this->owner->isFullWidth() ? 'container-fluid' : 'container'];
+        
+        if ($this->owner->isEdgeToEdge()) {
+            $classes[] = $this->style('section.edge-to-edge');
+        }
+        
+        return $classes;
     }
 }

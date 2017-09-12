@@ -1,4 +1,5 @@
 <% if $ListItems %>
+  <% include SilverWare\Components\BaseListComponent\Alerts %>
   <div class="$WrapperClass">
     <% loop $ListItems %>
       $renderListItem($First, $Middle, $Last)

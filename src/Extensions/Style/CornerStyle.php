@@ -19,7 +19,6 @@ namespace SilverWare\Extensions\Style;
 
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
-use SilverWare\Colorpicker\Forms\ColorField;
 use SilverWare\Extensions\StyleExtension;
 use SilverWare\Forms\FieldSection;
 

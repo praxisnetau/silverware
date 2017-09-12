@@ -30,9 +30,7 @@ $(function() {
     
   });
   
-  // Detect Browser Resize:
-  
-  var id = null;
+  // Define Resize Handler:
   
   var resizeTagCloud = function() {
     
@@ -49,16 +47,19 @@ $(function() {
     
   };
   
+  // Attach Resize Handler:
+  
+  var id = null;
+  
   $(window).resize(function() {
-    
-    if (id !== null) {
-      clearTimeout(id);
-    }
-    
+    if (id !== null) clearTimeout(id);
     id = setTimeout(resizeTagCloud, 500);
-    
   });
   
-  resizeTagCloud();
+  // Perform Initial Resize:
+  
+  $(window).on('load', function() {
+    resizeTagCloud();
+  });
   
 });

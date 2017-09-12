@@ -476,7 +476,9 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaDateFormatted($format)
     {
-        return $this->owner->getMetaDate()->Format($format);
+        if ($this->owner->hasMetaDate()) {
+            return $this->owner->getMetaDate()->Format($format);
+        }
     }
     
     /**

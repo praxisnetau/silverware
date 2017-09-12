@@ -11,10 +11,44 @@
       
       > div.image {
         
+        position: relative;
         margin-bottom: $spacer;
         
         a {
-          display: inline-block;
+          display: block;
+        }
+        
+        div.image-overlay {
+          
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          position: absolute;
+          transition: .5s ease;
+          background-color: rgba(0, 0, 0, 0.5);
+          
+          > i {
+            top: 50%;
+            left: 50%;
+            color: $white;
+            position: absolute;
+            font-size: 32px;
+            transform: translate(-50%, -50%);
+          }
+          
+        }
+        
+        &:hover,
+        a:focus {
+          
+          div.image-overlay {
+            opacity: 1;
+          }
+          
         }
         
       }

@@ -59,6 +59,10 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       bottom: rounded-bottom
       left: rounded-left
       circle: rounded-circle
+    row:
+      no-gutters: no-gutters
+    section:
+      edge-to-edge: pl-0 pr-0
     text:
       text: text
       primary: text-primary

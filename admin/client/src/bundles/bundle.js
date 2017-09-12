@@ -12,4 +12,4 @@ require('entwine/ListViewExtension.js');
 
 // Load Form Fields:
 
-require('forms/AutoCompleteField.js');
+require('forms/ToggleGroup.js');

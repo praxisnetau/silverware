@@ -17,6 +17,9 @@
 
 namespace SilverWare\Grid;
 
+use SilverStripe\Forms\CheckboxField;
+use SilverWare\Forms\FieldSection;
+
 /**
  * An extension of the grid class for a row.
  *
@@ -77,6 +80,26 @@ class Row extends Grid
     private static $default_child = Column::class;
     
     /**
+     * Maps field names to field types for this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $db = [
+        'NoGutters' => 'Boolean'
+    ];
+    
+    /**
+     * Defines the default values for the fields of this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $defaults = [
+        'NoGutters' => 0
+    ];
+    
+    /**
      * Defines the allowed children for this object.
      *
      * @var array|string
@@ -85,6 +108,71 @@ class Row extends Grid
     private static $allowed_children = [
         Column::class
     ];
+    
+    /**
+     * Answers a list of field objects for the CMS interface.
+     *
+     * @return FieldList
+     */
+    public function getCMSFields()
+    {
+        // Obtain Field Objects (from parent):
+        
+        $fields = parent::getCMSFields();
+        
+        // Create Options Fields:
+        
+        $fields->addFieldToTab(
+            'Root.Options',
+            FieldSection::create(
+                'RowOptions',
+                $this->fieldLabel('RowOptions'),
+                [
+                    CheckboxField::create(
+                        'NoGutters',
+                        $this->fieldLabel('NoGutters')
+                    )
+                ]
+            )
+        );
+        
+        // Answer Field Objects:
+        
+        return $fields;
+    }
+    
+    /**
+     * Answers the labels for the fields of the receiver.
+     *
+     * @param boolean $includerelations Include labels for relations.
+     *
+     * @return array
+     */
+    public function fieldLabels($includerelations = true)
+    {
+        // Obtain Field Labels (from parent):
+        
+        $labels = parent::fieldLabels($includerelations);
+        
+        // Define Field Labels:
+        
+        $labels['NoGutters'] = _t(__CLASS__ . '.NOGUTTERS', 'No gutters');
+        $labels['RowOptions'] = _t(__CLASS__ . '.ROW', 'Row');
+        
+        // Answer Field Labels:
+        
+        return $labels;
+    }
+    
+    /**
+     * Answers true if the row does not use gutters.
+     *
+     * @return boolean
+     */
+    public function isNoGutters()
+    {
+        return (boolean) $this->NoGutters;
+    }
     
     /**
      * Renders the component for the HTML template.
@@ -96,6 +184,6 @@ class Row extends Grid
      */
     public function renderSelf($layout = null, $title = null)
     {
-        return $this->tag($this->renderChildren($layout, $title));
+        return $this->renderTag($this->renderChildren($layout, $title));
     }
 }

@@ -9,6 +9,11 @@ require('styles/bundle.scss');
 
 require('jquery/tagcanvas.js');
 
+// Load Form Scripts:
+
+require('forms/MessageHandler.js');
+require('forms/ToggleGroup.js');
+
 // Load Components:
 
 require('components/ScrollToTopButton.js');

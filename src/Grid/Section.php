@@ -18,6 +18,7 @@
 namespace SilverWare\Grid;
 
 use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\DropdownField;
 use SilverWare\Forms\FieldSection;
 
 /**
@@ -31,6 +32,13 @@ use SilverWare\Forms\FieldSection;
  */
 class Section extends Grid
 {
+    /**
+     * Define position constants.
+     */
+    const POSITION_FIXED_TOP    = 'fixed-top';
+    const POSITION_FIXED_BOTTOM = 'fixed-bottom';
+    const POSITION_STICKY_TOP   = 'sticky-top';
+    
     /**
      * Human-readable singular name.
      *
@@ -86,7 +94,9 @@ class Section extends Grid
      * @config
      */
     private static $db = [
-        'FullWidth' => 'Boolean'
+        'Position' => 'Varchar(16)',
+        'FullWidth' => 'Boolean',
+        'EdgeToEdge' => 'Boolean'
     ];
     
     /**
@@ -96,7 +106,8 @@ class Section extends Grid
      * @config
      */
     private static $defaults = [
-        'FullWidth' => 0
+        'FullWidth' => 0,
+        'EdgeToEdge' => 0
     ];
     
     /**
@@ -120,6 +131,27 @@ class Section extends Grid
         
         $fields = parent::getCMSFields();
         
+        // Define Placeholder:
+        
+        $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
+        
+        // Create Style Fields:
+        
+        $fields->addFieldToTab(
+            'Root.Style',
+            FieldSection::create(
+                'SectionStyle',
+                $this->fieldLabel('SectionStyle'),
+                [
+                    DropdownField::create(
+                        'Position',
+                        $this->fieldLabel('Position'),
+                        $this->getPositionOptions()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                ]
+            )
+        );
+        
         // Create Options Fields:
         
         $fields->addFieldToTab(
@@ -131,6 +163,10 @@ class Section extends Grid
                     CheckboxField::create(
                         'FullWidth',
                         $this->fieldLabel('FullWidth')
+                    ),
+                    CheckboxField::create(
+                        'EdgeToEdge',
+                        $this->fieldLabel('EdgeToEdge')
                     )
                 ]
             )
@@ -156,8 +192,10 @@ class Section extends Grid
         
         // Define Field Labels:
         
+        $labels['Position'] = _t(__CLASS__ . '.POSITION', 'Position');
         $labels['FullWidth'] = _t(__CLASS__ . '.USEFULLWIDTHCONTAINER', 'Use full width container');
-        $labels['SectionOptions'] = _t(__CLASS__ . '.SECTION', 'Section');
+        $labels['EdgeToEdge'] = _t(__CLASS__ . '.EDGETOEDGE', 'Edge-to-edge (remove padding)');
+        $labels['SectionStyle'] = $labels['SectionOptions'] = _t(__CLASS__ . '.SECTION', 'Section');
         
         // Answer Field Labels:
         
@@ -176,6 +214,16 @@ class Section extends Grid
         $this->extend('updateContainerClassNames', $classes);
         
         return $classes;
+    }
+    
+    /**
+     * Answers true if the section uses an edge-to-edge container.
+     *
+     * @return boolean
+     */
+    public function isEdgeToEdge()
+    {
+        return (boolean) $this->EdgeToEdge;
     }
     
     /**
@@ -198,7 +246,7 @@ class Section extends Grid
      */
     public function renderSelf($layout = null, $title = null)
     {
-        return $this->tag($this->renderContainer($layout, $title));
+        return $this->renderTag($this->renderContainer($layout, $title));
     }
     
     /**
@@ -216,5 +264,19 @@ class Section extends Grid
             $this->getContainerClass(),
             $this->renderChildren($layout, $title)
         );
+    }
+    
+    /**
+     * Answers an array of options for the position field.
+     *
+     * @return array
+     */
+    public function getPositionOptions()
+    {
+        return [
+            self::POSITION_FIXED_TOP    => _t(__CLASS__ . '.FIXEDTOP', 'Fixed Top'),
+            self::POSITION_FIXED_BOTTOM => _t(__CLASS__ . '.FIXEDBOTTOM', 'Fixed Bottom'),
+            self::POSITION_STICKY_TOP   => _t(__CLASS__ . '.STICKYTOP', 'Sticky Top')
+        ];
     }
 }

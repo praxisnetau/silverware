@@ -141,6 +141,7 @@ class LayoutSection extends Section
      */
     public function renderSelf($layout = null, $title = null)
     {
-        return $this->tag($this->getPageLayout()->render($layout, $title));
+        return $this->renderTag($this->getPageLayout()->render($layout, $title));
     }
 }
+

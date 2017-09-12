@@ -198,6 +198,7 @@ class Link extends Component
     public function fromPage(Page $page, $nameField = 'MenuTitle')
     {
         $this->Title = $page->{$nameField};
+        $this->LinkTo = LinkToExtension::MODE_PAGE;
         $this->LinkPageID = $page->ID;
         
         return $this;

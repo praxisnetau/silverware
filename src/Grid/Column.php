@@ -264,6 +264,6 @@ class Column extends Grid
      */
     public function renderSelf($layout = null, $title = null)
     {
-        return $this->tag($this->renderChildren($layout, $title));
+        return $this->renderTag($this->renderChildren($layout, $title));
     }
 }

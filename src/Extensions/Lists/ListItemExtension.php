@@ -8,15 +8,16 @@
  * For full copyright and license information, please view the
  * LICENSE.md file that was distributed with this source code.
  *
- * @package SilverWare\Lists
+ * @package SilverWare\Extensions\Lists
  * @author Colin Tucker <colin@praxis.net.au>
  * @copyright 2017 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
 
-namespace SilverWare\Lists;
+namespace SilverWare\Extensions\Lists;
 
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\View\SSViewer;
@@ -24,24 +25,27 @@ use SilverWare\Components\BaseListComponent;
 use SilverWare\Model\Component;
 use SilverWare\Tools\ViewTools;
 use SilverWare\View\GridAware;
-use SilverWare\View\ViewClasses;
 
 /**
- * Allows an object to become renderable within a list component.
+ * An extension class to add list item functionality to the extended object.
  *
- * @package SilverWare\Lists
+ * @package SilverWare\Extensions\Lists
  * @author Colin Tucker <colin@praxis.net.au>
  * @copyright 2017 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-trait ListItem
+class ListItemExtension extends Extension
 {
     use GridAware;
-    use ViewClasses;
     
     /**
-     * The component instance responsible for rendering the list item.
+     * Define constants.
+     */
+    const DEFAULT_LIST_ITEM_TEMPLATE = 'SilverWare\Lists\ListItem';
+    
+    /**
+     * Holds the component instance responsible for rendering the extended object.
      *
      * @var Component
      */
@@ -78,8 +82,8 @@ trait ListItem
      */
     public function getListComponent()
     {
-        if ($this->hasListComponent()) {
-            return $this->renderer;
+        if ($this->owner->hasListComponent()) {
+            return $this->owner->getRenderer();
         }
     }
     
@@ -90,7 +94,17 @@ trait ListItem
      */
     public function hasListComponent()
     {
-        return ($this->renderer instanceof BaseListComponent);
+        return ($this->owner->getRenderer() instanceof BaseListComponent);
+    }
+    
+    /**
+     * Answers an string of list item class names for the HTML template.
+     *
+     * @return string
+     */
+    public function getListItemClass()
+    {
+        return ViewTools::singleton()->array2att($this->owner->getListItemClassNames());
     }
     
     /**
@@ -100,15 +114,45 @@ trait ListItem
      */
     public function getListItemClassNames()
     {
+        // Initialise:
+        
         $classes = ['item'];
         
-        $classes = array_merge($classes, ViewTools::singleton()->getAncestorClassNames($this, self::class));
+        // Merge Ancestor Class Names:
         
-        if ($this->hasMethod('getMetaClassNames')) {
-            $classes = array_merge($classes, $this->getMetaClassNames());
+        $classes = array_merge(
+            $classes,
+            ViewTools::singleton()->getAncestorClassNames(
+                $this->owner,
+                $this->ownerBaseClass
+            )
+        );
+        
+        // Merge Meta Class Names:
+        
+        if ($this->owner->hasMethod('getMetaClassNames')) {
+            $classes = array_merge($classes, $this->owner->getMetaClassNames());
         }
         
+        // Update Class Names via Renderer:
+        
+        if ($this->owner->getRenderer()->hasMethod('updateListItemClassNames')) {
+            $this->owner->getRenderer()->updateListItemClassNames($classes);
+        }
+        
+        // Answer Classes:
+        
         return $classes;
+    }
+    
+    /**
+     * Answers an string of list item image class names for the HTML template.
+     *
+     * @return string
+     */
+    public function getListItemImageClass()
+    {
+        return ViewTools::singleton()->array2att($this->owner->getListItemImageClassNames());
     }
     
     /**
@@ -128,17 +172,35 @@ trait ListItem
      */
     public function getListItemTemplate()
     {
-        $template = sprintf('%s\ListItem', static::class);
+        // Define Template by Class:
         
-        if ($this->getRenderer()->hasMethod('getListItemTemplate')) {
-            $template = $this->getRenderer()->getListItemTemplate(static::class);
+        $template = sprintf('%s\ListItem', get_class($this->owner));
+        
+        // Define Template via Renderer:
+        
+        if ($this->owner->getRenderer()->hasMethod('getListItemTemplate')) {
+            $template = $this->owner->getRenderer()->getListItemTemplate(get_class($this->owner));
         }
+        
+        // Verify Template Exists:
         
         if (SSViewer::hasTemplate($template)) {
             return $template;
         }
         
-        return __TRAIT__;
+        // Answer Default Template:
+        
+        return $this->owner->getDefaultListItemTemplate();
+    }
+    
+    /**
+     * Answers the name of the default list item template.
+     *
+     * @return string
+     */
+    public function getDefaultListItemTemplate()
+    {
+        return self::DEFAULT_LIST_ITEM_TEMPLATE;
     }
     
     /**
@@ -150,13 +212,13 @@ trait ListItem
      *
      * @return DBHTMLText
      */
-    public function renderListItem($isFirst = false, $isMiddle = false, $isLast = false)
+    public function renderListItem($isFirst = false, $isMiddle = false, $isLast = false, $wtf = false)
     {
-        return $this->customise([
+        return $this->owner->customise([
             'isFirst' => $isFirst,
             'isMiddle' => $isMiddle,
             'isLast' => $isLast
-        ])->renderWith($this->getListItemTemplate());
+        ])->renderWith($this->owner->getListItemTemplate());
     }
     
     /**
@@ -168,7 +230,7 @@ trait ListItem
     {
         $details = ArrayList::create();
         
-        foreach ($this->getListItemDetailsConfig() as $name => $spec) {
+        foreach ($this->owner->getListItemDetailsConfig() as $name => $spec) {
             
             if ($spec) {
                 
@@ -209,13 +271,13 @@ trait ListItem
     {
         $config = [];
         
-        if (is_array($this->config()->default_list_item_details)) {
-            $config = $this->config()->default_list_item_details;
+        if (is_array($this->owner->config()->default_list_item_details)) {
+            $config = $this->owner->config()->default_list_item_details;
         }
         
-        if (is_array($this->config()->list_item_details)) {
+        if (is_array($this->owner->config()->list_item_details)) {
             
-            foreach ($this->config()->list_item_details as $name => $spec) {
+            foreach ($this->owner->config()->list_item_details as $name => $spec) {
                 
                 if (!$spec) {
                     unset($config[$name]);
@@ -223,7 +285,7 @@ trait ListItem
                 
             }
             
-            $config = array_merge_recursive($config, $this->config()->list_item_details);
+            $config = array_merge_recursive($config, $this->owner->config()->list_item_details);
             
         }
         
@@ -239,7 +301,7 @@ trait ListItem
     {
         $buttons = ArrayList::create();
         
-        foreach ($this->getListItemButtonsConfig() as $name => $spec) {
+        foreach ($this->owner->getListItemButtonsConfig() as $name => $spec) {
             
             if ($spec) {
                 
@@ -288,13 +350,13 @@ trait ListItem
     {
         $config = [];
         
-        if (is_array($this->config()->default_list_item_buttons)) {
-            $config = $this->config()->default_list_item_buttons;
+        if (is_array($this->owner->config()->default_list_item_buttons)) {
+            $config = $this->owner->config()->default_list_item_buttons;
         }
         
-        if (is_array($this->config()->list_item_buttons)) {
+        if (is_array($this->owner->config()->list_item_buttons)) {
             
-            foreach ($this->config()->list_item_buttons as $name => $spec) {
+            foreach ($this->owner->config()->list_item_buttons as $name => $spec) {
                 
                 if (!$spec) {
                     unset($config[$name]);
@@ -302,7 +364,7 @@ trait ListItem
                 
             }
             
-            $config = array_merge_recursive($config, $this->config()->list_item_buttons);
+            $config = array_merge_recursive($config, $this->owner->config()->list_item_buttons);
             
         }
             
@@ -310,15 +372,15 @@ trait ListItem
     }
     
     /**
-     * Processes the given value which references methods / fields of the receiver and List Component.
+     * Processes the given value which references methods / fields of the receiver and renderer.
      *
      * @param string $value
      * @param array $args
      *
      * @return string
      */
-    public function processListItemValue($value, $args = [])
+    protected function processListItemValue($value, $args = [])
     {
-        return ViewTools::singleton()->processAttribute($value, $this, $this->getRenderer(), $args);
+        return ViewTools::singleton()->processAttribute($value, $this->owner, $this->owner->getRenderer(), $args);
     }
 }

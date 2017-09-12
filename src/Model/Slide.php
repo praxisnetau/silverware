@@ -22,14 +22,16 @@ use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\ArrayList;
 use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\PageDropdownField;
+use SilverWare\Tools\ImageTools;
 use SilverWare\Tools\ViewTools;
 use Page;
 
 /**
- * An extension of the link class for a slide.
+ * An extension of the component class for a slide.
  *
  * @package SilverWare\Model
  * @author Colin Tucker <colin@praxis.net.au>
@@ -72,6 +74,22 @@ class Slide extends Component
     private static $icon = 'silverware/admin/client/dist/images/icons/Slide.png';
     
     /**
+     * Defines an ancestor class to hide from the admin interface.
+     *
+     * @var string
+     * @config
+     */
+    private static $hide_ancestor = Component::class;
+    
+    /**
+     * Defines the allowed children for this object.
+     *
+     * @var array|string
+     * @config
+     */
+    private static $allowed_children = 'none';
+    
+    /**
      * Maps field names to field types for this object.
      *
      * @var array
@@ -79,6 +97,7 @@ class Slide extends Component
      */
     private static $db = [
         'Caption' => 'HTMLText',
+        'HideImage' => 'Boolean',
         'HideTitle' => 'Boolean',
         'HideCaption' => 'Boolean',
         'LinkDisabled' => 'Boolean'
@@ -105,12 +124,23 @@ class Slide extends Component
     ];
     
     /**
+     * Maps field and method names to the class names of casting objects.
+     *
+     * @var array
+     * @config
+     */
+    private static $casting = [
+        'getSlideAttributesHTML' => 'HTMLFragment'
+    ];
+    
+    /**
      * Defines the default values for the fields of this object.
      *
      * @var array
      * @config
      */
     private static $defaults = [
+        'HideImage' => 0,
         'HideTitle' => 1,
         'HideCaption' => 0,
         'LinkDisabled' => 0
@@ -141,6 +171,14 @@ class Slide extends Component
      * @config
      */
     private static $heading_level_default = 'h4';
+    
+    /**
+     * Tag name to use when rendering this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $tag = 'div';
     
     /**
      * Answers a list of field objects for the CMS interface.
@@ -176,6 +214,10 @@ class Slide extends Component
             CheckboxField::create(
                 'HideTitle',
                 $this->fieldLabel('HideTitle')
+            ),
+            CheckboxField::create(
+                'HideImage',
+                $this->fieldLabel('HideImage')
             ),
             CheckboxField::create(
                 'HideCaption',
@@ -214,6 +256,7 @@ class Slide extends Component
         
         // Define Checkbox Field Labels:
         
+        $labels['HideImage'] = _t(__CLASS__ . '.HIDEIMAGE', 'Hide image');
         $labels['HideTitle'] = _t(__CLASS__ . '.HIDETITLE', 'Hide title');
         $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['LinkDisabled'] = _t(__CLASS__ . '.LINKDISABLED', 'Link disabled');
@@ -230,6 +273,20 @@ class Slide extends Component
     }
     
     /**
+     * Answers the tag for the receiver.
+     *
+     * @return string
+     */
+    public function getTag()
+    {
+        if ($tag = $this->getParent()->SlideTag) {
+            return $tag;
+        }
+        
+        return parent::getTag();
+    }
+    
+    /**
      * Answers the heading tag for the receiver.
      *
      * @return string
@@ -241,6 +298,52 @@ class Slide extends Component
         }
         
         return $this->config()->heading_level_default;
+    }
+    
+    /**
+     * Answers an array of HTML tag attributes for the slide.
+     *
+     * @param boolean $isFirst Slide is first in the list.
+     * @param boolean $isMiddle Slide is in the middle of the list.
+     * @param boolean $isLast Slide is last in the list.
+     *
+     * @return array
+     */
+    public function getSlideAttributes($isFirst = false, $isMiddle = false, $isLast = false)
+    {
+        $attributes = ['class' => $this->getSlideClass($isFirst, $isMiddle, $isLast)];
+        
+        if ($this->getParent()->hasMethod('getSlideAttributes')) {
+            
+            $attributes = array_merge(
+                $attributes,
+                $this->getParent()->getSlideAttributes(
+                    $this,
+                    $isFirst,
+                    $isMiddle,
+                    $isLast
+                )
+            );
+            
+        }
+        
+        $this->extend('updateSlideAttributes', $attributes);
+        
+        return $attributes;
+    }
+    
+    /**
+     * Answers the HTML tag attributes for the slide as a string.
+     *
+     * @param boolean $isFirst Slide is first in the list.
+     * @param boolean $isMiddle Slide is in the middle of the list.
+     * @param boolean $isLast Slide is last in the list.
+     *
+     * @return string
+     */
+    public function getSlideAttributesHTML($isFirst = false, $isMiddle = false, $isLast = false)
+    {
+        return $this->getAttributesHTML($this->getSlideAttributes($isFirst, $isMiddle, $isLast));
     }
     
     /**
@@ -270,6 +373,22 @@ class Slide extends Component
     {
         $classes = ViewTools::singleton()->getAncestorClassNames($this, self::class);
         
+        $classes[] = $this->ImageShown ? 'has-image' : 'no-image';
+        
+        if ($this->getParent()->hasMethod('getSlideClassNames')) {
+            
+            $classes = array_merge(
+                $classes,
+                $this->getParent()->getSlideClassNames(
+                    $this,
+                    $isFirst,
+                    $isMiddle,
+                    $isLast
+                )
+            );
+            
+        }
+        
         $this->extend('updateSlideClassNames', $classes, $isFirst, $isMiddle, $isLast);
         
         return $classes;
@@ -283,6 +402,10 @@ class Slide extends Component
     public function getImageClassNames()
     {
         $classes = ['slide-image'];
+        
+        if ($this->getParent()->hasMethod('getImageClassNames')) {
+            $classes = array_merge($classes, $this->getParent()->getImageClassNames($this));
+        }
         
         $this->extend('updateImageClassNames', $classes);
         
@@ -298,6 +421,10 @@ class Slide extends Component
     {
         $classes = ['slide-caption'];
         
+        if ($this->getParent()->hasMethod('getCaptionClassNames')) {
+            $classes = array_merge($classes, $this->getParent()->getCaptionClassNames($this));
+        }
+        
         $this->extend('updateCaptionClassNames', $classes);
         
         return $classes;
@@ -310,6 +437,10 @@ class Slide extends Component
      */
     public function getAssetFolder()
     {
+        if ($folder = $this->getParent()->AssetFolder) {
+            return $folder;
+        }
+        
         return $this->config()->asset_folder;
     }
     
@@ -362,22 +493,44 @@ class Slide extends Component
      */
     public function getImageShown()
     {
-        return $this->hasImage();
+        return ($this->hasImage() && !$this->HideImage);
+    }
+    
+    /**
+     * Answers the image for the slide.
+     *
+     * @return Image
+     */
+    public function getSlideImage()
+    {
+        if ($this->hasImage()) {
+            
+            if ($this->Image()->exists()) {
+                return $this->Image();
+            } elseif ($this->LinkPage()->hasMetaImage()) {
+                return $this->LinkPage()->getMetaImage();
+            }
+            
+        }
     }
     
     /**
      * Answers a resized image using the dimensions and resize method from the parent object.
      *
+     * @param integer $width
+     * @param integer $height
+     * @param string $method
+     *
      * @return Image
      */
-    public function getImageResized()
+    public function getImageResized($width = null, $height = null, $method = null)
     {
         if ($this->hasImage()) {
             
-            if ($this->Image()->exists()) {
-                $image = $this->Image();
-            } elseif ($this->LinkPage()->hasMetaImage()) {
-                $image = $this->LinkPage()->getMetaImage();
+            $image = $this->getSlideImage();
+            
+            if ($width || $height || $method) {
+                return ImageTools::singleton()->resize($image, $width, $height, $method);
             }
             
             if ($this->getParent()->hasMethod('performImageResize')) {
@@ -430,17 +583,33 @@ class Slide extends Component
     }
     
     /**
-     * Answers true if the slide is disabled within the template.
+     * Answers a list of the enabled slides within the receiver.
      *
-     * @return boolean
+     * @return ArrayList
      */
-    public function isDisabled()
+    public function getEnabledSlides()
     {
-        if (!$this->hasImage()) {
-            return true;
+        $slides = ArrayList::create();
+        
+        if ($this->isEnabled()) {
+            $slides->push($this);
         }
         
-        return parent::isDisabled();
+        return $slides;
+    }
+    
+    /**
+     * Answers the template used to render the receiver.
+     *
+     * @return string|array|SSViewer
+     */
+    public function getTemplate()
+    {
+        if ($template = $this->getParent()->SlideTemplate) {
+            return $template;
+        }
+        
+        return parent::getTemplate();
     }
     
     /**

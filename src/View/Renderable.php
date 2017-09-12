@@ -397,10 +397,14 @@ trait Renderable
         
         // Merge Custom CSS from Template:
         
-        $template = $this->getCustomCSSTemplate();
-        
-        if (SSViewer::hasTemplate($template)) {
-            $css = array_merge($css, preg_split('/\r\n|\n|\r/', $this->renderWith($template)));
+        foreach (ClassTools::singleton()->getObjectAncestry($this, self::class) as $class) {
+            
+            $template = $this->getCustomCSSTemplate($class);
+            
+            if (SSViewer::hasTemplate($template)) {
+                $css = array_merge($css, preg_split('/\r\n|\n|\r/', $this->renderWith($template)));
+            }
+            
         }
         
         // Update CSS via Extensions:
@@ -419,11 +423,13 @@ trait Renderable
     /**
      * Answers the name of a template used to render custom CSS for the receiver.
      *
+     * @param string $class
+     *
      * @return string
      */
-    public function getCustomCSSTemplate()
+    public function getCustomCSSTemplate($class = null)
     {
-        return sprintf('%s\CustomCSS', static::class);
+        return sprintf('%s\CustomCSS', $class ? $class : static::class);
     }
     
     /**

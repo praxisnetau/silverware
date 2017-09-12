@@ -256,7 +256,7 @@ class Tag extends DataObject
     {
         foreach ($this->manyMany() as $name => $class) {
             
-            if (self::getSchema()->manyManyComponent(static::class, $name)[1] === static::class) {
+            if (self::getSchema()->manyManyComponent(static::class, $name)['parentClass'] === static::class) {
                 return $this->getManyManyComponents($name);
             }
             

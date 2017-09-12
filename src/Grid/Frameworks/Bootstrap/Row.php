@@ -30,4 +30,17 @@ use SilverWare\Grid\Extensions\RowExtension;
  */
 class Row extends RowExtension
 {
+    /**
+     * Updates the given array of class names from the extended object.
+     *
+     * @param array $classes
+     *
+     * @return void
+     */
+    public function updateClassNames(&$classes)
+    {
+        if ($this->owner->isNoGutters()) {
+            $classes[] = $this->style('row.no-gutters');
+        }
+    }
 }

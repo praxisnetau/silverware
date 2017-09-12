@@ -7,7 +7,7 @@
     
     width: #{$size}px;
     height: #{$size}px;
-    font-size: #{$size * 0.66}px;
+    font-size: #{$size * $icon-size-multiplier}px;
     line-height: #{$size}px;
     
     > i.fa {

@@ -115,15 +115,13 @@ class ContentComponent extends BaseComponent
     }
     
     /**
-     * Renders the content for the HTML template.
+     * Answers the HTML content of the receiver (overrides method in BaseComponent).
      *
-     * @param string $layout Page layout passed from template.
-     * @param string $title Page title passed from template.
-     *
-     * @return DBHTMLText|string
+     * @return DBHTMLText
      */
-    public function renderContent($layout = null, $title = null)
+    public function getContent()
     {
         return $this->dbObject('Content');
     }
+
 }

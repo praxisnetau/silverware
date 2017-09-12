@@ -1,4 +1,4 @@
-<div class="$getSlideClass($isFirst, $isMiddle, $isLast)">
+<$Tag $getSlideAttributesHTML($isFirst, $isMiddle, $isLast)>
   <% if $LinkShown %><a $LinkAttributesHTML><% end_if %>
   <% if $ImageShown %>
     <img src="$ImageResized.URL" class="$ImageClass" alt="$Title">
@@ -14,4 +14,4 @@
     </div>
   <% end_if %>
   <% if $LinkShown %></a><% end_if %>
-</div>
+</$Tag>
