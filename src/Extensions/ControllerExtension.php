@@ -19,6 +19,7 @@ namespace SilverWare\Extensions;
 
 use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Security\Security;
@@ -123,6 +124,103 @@ class ControllerExtension extends Extension
         // Initialise Requirements:
         
         $this->initRequirements();
+    }
+    
+    /**
+     * Answers an array of all JavaScript files required by the content controllers of the app.
+     *
+     * @return array
+     */
+    public function getRequiredJSFiles()
+    {
+        $files = [];
+        
+        foreach (ClassInfo::subclassesFor(ContentController::class) as $controller) {
+            
+            if ($required_js = Config::inst()->get($controller, 'required_js')) {
+                
+                foreach ($required_js as $file) {
+                    
+                    if (!isset($files[$file])) {
+                        $files[$file] = file_get_contents(Director::getAbsFile($file));
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        return $files;
+    }
+    
+    /**
+    /**
+     * Answers an array of all CSS files required by the content controllers of the app.
+     *
+     * @return array
+     */
+    public function getRequiredCSSFiles()
+    {
+        $files = [];
+        
+        foreach (ClassInfo::subclassesFor(ContentController::class) as $controller) {
+            
+            if ($required_css = Config::inst()->get($controller, 'required_css')) {
+                
+                foreach ($required_css as $file) {
+                    
+                    if (!isset($files[$file])) {
+                        $files[$file] = file_get_contents(Director::getAbsFile($file));
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        return $files;
+    }
+    
+    /**
+     * Answers the custom CSS required for the template as a string.
+     *
+     * @return string
+     */
+    public function getCustomCSSAsString()
+    {
+        // Create CSS Array:
+        
+        $css = [];
+        
+        // Merge Custom CSS from Page Controller:
+        
+        if ($this->owner instanceof PageController) {
+            $css = array_merge($css, $this->owner->getCustomCSS());
+        }
+        
+        // Create CSS String:
+        
+        $css = implode("\n", $css);
+        
+        // Remove Empty Lines:
+        
+        $css = ViewTools::singleton()->removeEmptyLines($css);
+        
+        // Trim CSS String:
+        
+        $css = trim($css);
+        
+        // Minify CSS String:
+        
+        if (!Director::isDev()) {
+            $css = ViewTools::singleton()->minifyCSS($css);
+        }
+        
+        // Answer CSS String:
+        
+        return $css;
     }
     
     /**
@@ -281,6 +379,10 @@ class ControllerExtension extends Extension
             }
             
         }
+        
+        // Combine Files (dev only):
+        
+        $this->combineFiles();
     }
     
     /**
@@ -379,40 +481,6 @@ class ControllerExtension extends Extension
     }
     
     /**
-     * Answers the custom CSS required for the template as a string.
-     *
-     * @return string
-     */
-    public function getCustomCSSAsString()
-    {
-        // Create CSS Array:
-        
-        $css = [];
-        
-        // Merge Custom CSS from Page Controller:
-        
-        if ($this->owner instanceof PageController) {
-            $css = array_merge($css, $this->owner->getCustomCSS());
-        }
-        
-        // Create CSS String:
-        
-        $css = implode("\n", $css);
-        
-        // Remove Empty Lines:
-        
-        $css = ViewTools::singleton()->removeEmptyLines($css);
-        
-        // Trim CSS String:
-        
-        $css = trim($css);
-        
-        // Answer CSS String:
-        
-        return $css;
-    }
-    
-    /**
      * Loads the themed JavaScript with the given name.
      *
      * @param string $name Name of themed JavaScript file.
@@ -441,6 +509,27 @@ class ControllerExtension extends Extension
             Requirements::css($this->getDevServerURL($this->ext($name, 'css')));
         } else {
             Requirements::themedCSS($name);
+        }
+    }
+    
+    /**
+     * Combines required files together for bundling with the theme.
+     *
+     * @return void
+     */
+    protected function combineFiles()
+    {
+        if (Director::isDev() && $this->owner->config()->combine_files) {
+            
+            // Obtain Tools:
+            
+            $tools = ViewTools::singleton();
+            
+            // Combine Files:
+            
+            $tools->combineFiles($this->owner->config()->combined_js,  $this->owner->getRequiredJSFiles());
+            $tools->combineFiles($this->owner->config()->combined_css, $this->owner->getRequiredCSSFiles());
+            
         }
     }
     

@@ -35,6 +35,9 @@ SilverStripe\CMS\Controllers\ContentController:
   load_themed_css: false
   load_custom_css: true
   disable_cache: true
+  combine_files: true
+  combined_js: combined.js
+  combined_css: combined.css
 
 ---
 Name: silverware-controller-live

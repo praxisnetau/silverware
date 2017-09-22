@@ -641,6 +641,12 @@ trait Renderable
         
         $css = trim($css);
         
+        // Minify CSS String:
+        
+        if (!Director::isDev()) {
+            $css = ViewTools::singleton()->minifyCSS($css);
+        }
+        
         // Answer CSS String:
         
         return $css;

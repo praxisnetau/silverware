@@ -17,6 +17,7 @@
 
 namespace SilverWare\Tools;
 
+use SilverStripe\Assets\File;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injectable;
@@ -136,6 +137,61 @@ class ViewTools
         // Load Custom Script:
         
         Requirements::customScript($script, $uniquenessID);
+    }
+    
+    /**
+     * Combines the given array of files into a single file within the specified name and answers the URL.
+     *
+     * @param string $name
+     * @param array $files
+     *
+     * @return string
+     */
+    public function combineFiles($name, $files)
+    {
+        $backend = Requirements::backend();
+        
+        $path = File::join_paths($backend->getCombinedFilesFolder(), $name);
+        
+        return $backend->getAssetHandler()->getContentURL($path, function () use ($files) {
+            
+            $output = [];
+            
+            foreach ($files as $file => $data) {
+                $output[] = "/***** FILE: $file *****/";
+                $output[] = $data;
+            }
+            
+            return implode("\n", $output);
+            
+        });
+    }
+    
+    /**
+     * Minifies and wraps the given string of CSS.
+     *
+     * @param string $css
+     * @param integer $wrap
+     *
+     * @return string
+     */
+    public function minifyCSS($css, $wrap = 200)
+    {
+        // Remove Comments:
+        
+        $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
+        
+        // Remove Space Following Colons:
+        
+        $css = str_replace(': ', ':', $css);
+        
+        // Remove Whitespace:
+        
+        $css = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    '], '', $css);
+        
+        // Wrap and Answer:
+        
+        return wordwrap($css, $wrap);
     }
     
     /**
