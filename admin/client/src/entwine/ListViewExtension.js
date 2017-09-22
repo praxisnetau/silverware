@@ -36,11 +36,11 @@ $.entwine('silverware.listviewextension', function($) {
     },
     
     getPaginateItemsField: function() {
-      return $(this).find('#Form_EditForm_ListPaginateItems');
+      return $(this).find('#Form_EditForm_List_PaginateItems');
     },
     
     getPaginationHolder: function() {
-      return $(this).find('#Form_EditForm_ListItemsPerPage_Holder');
+      return $(this).find('#Form_EditForm_List_ItemsPerPage_Holder');
     }
     
   });

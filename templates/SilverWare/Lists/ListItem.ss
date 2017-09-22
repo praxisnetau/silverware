@@ -1,6 +1,6 @@
 <article class="$ListItemClass">
   <% include SilverWare\Lists\ListItem\Image %>
-  <section class="content">
+  <section class="$ListItemContentClass">
     <% include SilverWare\Lists\ListItem\Header %>
     <% include SilverWare\Lists\ListItem\Details %>
     <% include SilverWare\Lists\ListItem\Summary %>

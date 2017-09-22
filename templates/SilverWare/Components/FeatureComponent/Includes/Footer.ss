@@ -1,5 +1,5 @@
 <% if $FooterShown %>
   <footer>
-    <% include Button Tag='a', HREF=$FeaturedPage.MetaLink, Text=$ButtonLabel %>
+    <% include Button Tag='a', HREF=$FeatureLink, Text=$ButtonLabel %>
   </footer>
 <% end_if %>

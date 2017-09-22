@@ -121,16 +121,6 @@ class PageComponent extends BaseComponent
     ];
     
     /**
-     * Defines the default classes to use when rendering this object.
-     *
-     * @var array
-     * @config
-     */
-    private static $default_classes = [
-        'typography'
-    ];
-    
-    /**
      * Answers a list of field objects for the CMS interface.
      *
      * @return FieldList

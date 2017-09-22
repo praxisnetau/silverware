@@ -24,7 +24,9 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverWare\Extensions\Model\ImageResizeExtension;
+use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Extensions\Style\CornerStyle;
 use SilverWare\FontIcons\Extensions\FontIconExtension;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\PageDropdownField;
@@ -81,12 +83,13 @@ class FeatureComponent extends BaseComponent
      */
     private static $db = [
         'Summary' => 'HTMLText',
-        'CustomHeading' => 'Varchar(255)',
-        'CustomSubHeading' => 'Varchar(255)',
+        'Heading' => 'Varchar(255)',
+        'SubHeading' => 'Varchar(255)',
         'HeadingLevel' => 'Varchar(2)',
         'SubHeadingLevel' => 'Varchar(2)',
         'ButtonLabel' => 'Varchar(128)',
         'LinkHeading' => 'Boolean',
+        'LinkFeature' => 'Boolean',
         'ShowIcon' => 'Boolean',
         'ShowImage' => 'Boolean',
         'ShowHeader' => 'Boolean',
@@ -101,8 +104,7 @@ class FeatureComponent extends BaseComponent
      * @config
      */
     private static $has_one = [
-        'Image' => Image::class,
-        'FeaturedPage' => Page::class
+        'Image' => Image::class
     ];
     
     /**
@@ -122,6 +124,7 @@ class FeatureComponent extends BaseComponent
      * @config
      */
     private static $defaults = [
+        'LinkFeature' => 0,
         'LinkHeading' => 1,
         'ShowIcon' => 1,
         'ShowImage' => 1,
@@ -163,9 +166,21 @@ class FeatureComponent extends BaseComponent
      * @config
      */
     private static $extensions = [
+        CornerStyle::class,
         AlignmentStyle::class,
+        LinkToExtension::class,
         FontIconExtension::class,
         ImageResizeExtension::class
+    ];
+    
+    /**
+     * Defines the style extension classes to apply to this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $apply_styles = [
+        AlignmentStyle::class
     ];
     
     /**
@@ -208,21 +223,17 @@ class FeatureComponent extends BaseComponent
         $fields->addFieldsToTab(
             'Root.Main',
             [
-                PageDropdownField::create(
-                    'FeaturedPageID',
-                    $this->fieldLabel('FeaturedPageID')
-                ),
                 FieldSection::create(
                     'HeadingSection',
                     $this->fieldLabel('HeadingSection'),
                     [
                         TextField::create(
-                            'CustomHeading',
-                            $this->fieldLabel('CustomHeading')
+                            'Heading',
+                            $this->fieldLabel('Heading')
                         ),
                         TextField::create(
-                            'CustomSubHeading',
-                            $this->fieldLabel('CustomSubHeading')
+                            'SubHeading',
+                            $this->fieldLabel('SubHeading')
                         )
                     ]
                 ),
@@ -286,13 +297,17 @@ class FeatureComponent extends BaseComponent
                         'ShowFooter',
                         $this->fieldLabel('ShowFooter')
                     ),
-                    TextField::create(
-                        'ButtonLabel',
-                        $this->fieldLabel('ButtonLabel')
-                    ),
                     CheckboxField::create(
                         'LinkHeading',
                         $this->fieldLabel('LinkHeading')
+                    ),
+                    CheckboxField::create(
+                        'LinkFeature',
+                        $this->fieldLabel('LinkFeature')
+                    ),
+                    TextField::create(
+                        'ButtonLabel',
+                        $this->fieldLabel('ButtonLabel')
                     )
                 ]
             )
@@ -326,10 +341,10 @@ class FeatureComponent extends BaseComponent
         $labels['ShowSummary'] = _t(__CLASS__ . '.SHOWSUMMARY', 'Show summary');
         $labels['ShowFooter'] = _t(__CLASS__ . '.SHOWFOOTER', 'Show footer');
         $labels['LinkHeading'] = _t(__CLASS__ . '.LINKHEADING', 'Link heading');
+        $labels['LinkFeature'] = _t(__CLASS__ . '.LINKFEATURE', 'Link feature');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
-        $labels['FeaturedPageID'] = _t(__CLASS__ . '.FEATUREDPAGE', 'Featured page');
-        $labels['CustomHeading'] = _t(__CLASS__ . '.CUSTOMHEADING', 'Custom heading');
-        $labels['CustomSubHeading'] = _t(__CLASS__ . '.CUSTOMSUBHEADING', 'Custom sub-heading');
+        $labels['Heading'] = _t(__CLASS__ . '.HEADING', 'Heading');
+        $labels['SubHeading'] = _t(__CLASS__ . '.SUBHEADING', 'Sub-heading');
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['SubHeadingLevel'] = _t(__CLASS__ . '.SUBHEADINGLEVEL', 'Sub-heading level');
         $labels['HeadingSection'] = _t(__CLASS__ . '.HEADINGS', 'Headings');
@@ -339,7 +354,6 @@ class FeatureComponent extends BaseComponent
         
         if ($includerelations) {
             $labels['Image'] = _t(__CLASS__ . '.has_one_Image', 'Image');
-            $labels['EntityPage'] = _t(__CLASS__ . '.has_one_FeaturedPage', 'Featured Page');
         }
         
         // Answer Field Labels:
@@ -383,6 +397,10 @@ class FeatureComponent extends BaseComponent
         $classes = ['feature'];
         
         $classes[] = $this->style('feature');
+        
+        if ($this->CornerStyleClass) {
+            $classes[] = $this->CornerStyleClass;
+        }
         
         $this->extend('updateWrapperClassNames', $classes);
         
@@ -448,6 +466,20 @@ class FeatureComponent extends BaseComponent
     }
     
     /**
+     * Answers an array of link class names for the template.
+     *
+     * @return array
+     */
+    public function getLinkClassNames()
+    {
+        $classes = ['feature'];
+        
+        $this->extend('updateLinkClassNames', $classes);
+        
+        return $classes;
+    }
+    
+    /**
      * Answers the heading tag for the receiver.
      *
      * @return string
@@ -468,8 +500,12 @@ class FeatureComponent extends BaseComponent
      */
     public function getHeadingText()
     {
-        if ($this->hasPage()) {
-            return $this->CustomHeading ? $this->CustomHeading : $this->FeaturedPage()->MetaTitle;
+        if ($this->Heading) {
+            return $this->Heading;
+        }
+        
+        if ($this->hasLinkPage()) {
+            return $this->LinkPage()->MetaTitle;
         }
     }
     
@@ -494,17 +530,7 @@ class FeatureComponent extends BaseComponent
      */
     public function getSubHeadingText()
     {
-        return $this->CustomSubHeading;
-    }
-    
-    /**
-     * Answers true of the feature page exists.
-     *
-     * @return boolean
-     */
-    public function hasPage()
-    {
-        return $this->FeaturedPage()->isInDB();
+        return $this->SubHeading;
     }
     
     /**
@@ -514,7 +540,7 @@ class FeatureComponent extends BaseComponent
      */
     public function hasImage()
     {
-        return ($this->Image()->exists() || $this->FeaturedPage()->hasMetaImage());
+        return ($this->Image()->exists() || $this->LinkPage()->hasMetaImage());
     }
     
     /**
@@ -548,6 +574,46 @@ class FeatureComponent extends BaseComponent
     }
     
     /**
+     * Answers the link for the feature.
+     *
+     * @return string
+     */
+    public function getFeatureLink()
+    {
+        return $this->getLink();
+    }
+    
+    /**
+     * Answers the title for the link.
+     *
+     * @return string
+     */
+    public function getLinkTitle()
+    {
+        return $this->HeadingText ? $this->HeadingText : $this->Title;
+    }
+    
+    /**
+     * Answers true if the feature is to be linked.
+     *
+     * @return boolean
+     */
+    public function getFeatureLinked()
+    {
+        return ($this->LinkFeature && $this->hasLink());
+    }
+    
+    /**
+     * Answers true if the heading is to be linked.
+     *
+     * @return boolean
+     */
+    public function getHeadingLinked()
+    {
+        return ($this->LinkHeading && $this->hasLink() && !$this->LinkFeature);
+    }
+    
+    /**
      * Answers true if the summary is to be shown in the template.
      *
      * @return boolean
@@ -564,7 +630,7 @@ class FeatureComponent extends BaseComponent
      */
     public function getFooterShown()
     {
-        return (boolean) $this->ShowFooter;
+        return ($this->ShowFooter && $this->hasLink() && !$this->LinkFeature);
     }
     
     /**
@@ -574,7 +640,13 @@ class FeatureComponent extends BaseComponent
      */
     public function getSummaryText()
     {
-        return ($this->Summary) ? $this->Summary : $this->FeaturedPage()->getMetaSummary();
+        if ($this->Summary) {
+            return $this->Summary;
+        }
+        
+        if ($this->hasLinkPage()) {
+            return $this->LinkPage()->MetaSummary;
+        }
     }
     
     /**
@@ -586,24 +658,10 @@ class FeatureComponent extends BaseComponent
     {
         if ($this->Image()->exists()) {
             $image = $this->Image();
-        } elseif ($this->FeaturedPage()->hasMetaImage()) {
-            $image = $this->FeaturedPage()->getMetaImage();
+        } elseif ($this->LinkPage()->hasMetaImage()) {
+            $image = $this->LinkPage()->getMetaImage();
         }
         
         return $this->performImageResize($image);
-    }
-    
-    /**
-     * Answers true if the object is disabled within the template.
-     *
-     * @return boolean
-     */
-    public function isDisabled()
-    {
-        if (!$this->hasPage()) {
-            return true;
-        }
-        
-        return parent::isDisabled();
     }
 }

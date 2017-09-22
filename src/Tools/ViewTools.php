@@ -21,6 +21,7 @@ use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\View\Requirements;
+use SilverStripe\View\SSViewer;
 use SilverStripe\View\ViewableData;
 
 /**
@@ -218,7 +219,7 @@ class ViewTools
                 
                 return $object->$field;
                 
-            } elseif ($parent->hasField($field)) {
+            } elseif (is_object($parent) && $parent->hasField($field)) {
                 
                 // Finally, answer a field value from the given parent object:
                 
@@ -263,5 +264,28 @@ class ViewTools
     public function removeEmptyLines($string)
     {
         return preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $string);
+    }
+    
+    /**
+     * Renders the given object using the given CSS template.
+     *
+     * @param ViewableData $object
+     * @param string $template
+     * @param array $css
+     *
+     * @return array
+     */
+    public function renderCSS(ViewableData $object, $template, $css = [])
+    {
+        if (SSViewer::hasTemplate($template)) {
+            
+            return array_merge(
+                $css,
+                preg_split('/\r\n|\n|\r/', (string) $object->renderWith($template))
+            );
+            
+        }
+        
+        return $css;
     }
 }

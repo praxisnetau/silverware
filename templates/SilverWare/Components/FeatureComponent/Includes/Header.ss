@@ -1,8 +1,8 @@
 <% if $HeaderShown %>
   <header>
     <$HeadingTag class="$HeadingClass">
-      <% if $LinkHeading %>
-        <a href="$FeaturedPage.MetaLink">$HeadingText</a>
+      <% if $HeadingLinked %>
+        <a $LinkAttributesHTML>$HeadingText</a>
       <% else %>
         $HeadingText
       <% end_if %>

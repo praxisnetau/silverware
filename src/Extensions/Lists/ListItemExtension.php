@@ -146,6 +146,16 @@ class ListItemExtension extends Extension
     }
     
     /**
+     * Answers an string of list item content class names for the HTML template.
+     *
+     * @return string
+     */
+    public function getListItemContentClass()
+    {
+        return ViewTools::singleton()->array2att($this->owner->getListItemContentClassNames());
+    }
+    
+    /**
      * Answers an string of list item image class names for the HTML template.
      *
      * @return string
@@ -153,6 +163,16 @@ class ListItemExtension extends Extension
     public function getListItemImageClass()
     {
         return ViewTools::singleton()->array2att($this->owner->getListItemImageClassNames());
+    }
+    
+    /**
+     * Answers an array of list item content class names for the HTML template.
+     *
+     * @return array
+     */
+    public function getListItemContentClassNames()
+    {
+        return $this->styles('content', 'content.typography');
     }
     
     /**

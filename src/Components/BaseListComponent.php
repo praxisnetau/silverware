@@ -19,6 +19,7 @@ namespace SilverWare\Components;
 
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverWare\Colorpicker\Forms\ColorField;
 use SilverWare\Extensions\Lists\ListSourceExtension;
@@ -45,6 +46,7 @@ class BaseListComponent extends BaseComponent
     const SHOW_ALL   = 'all';
     const SHOW_LAST  = 'last';
     const SHOW_FIRST = 'first';
+    const SHOW_NONE  = 'none';
     
     /**
      * Define align constants.
@@ -153,7 +155,6 @@ class BaseListComponent extends BaseComponent
         
         // Define Placeholders:
         
-        $placeholderNone    = _t(__CLASS__ . '.NONE', 'None');
         $placeholderDefault = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
         
         // Create Style Fields:
@@ -183,6 +184,10 @@ class BaseListComponent extends BaseComponent
             ]
         );
         
+        // Add List Style Fields:
+        
+        $fields->addFieldsToTab('Root.Style', $this->getListStyleFields());
+        
         // Create Options Fields:
         
         $fields->addFieldsToTab(
@@ -196,32 +201,32 @@ class BaseListComponent extends BaseComponent
                             'ShowImage',
                             $this->fieldLabel('ShowImage'),
                             $this->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        ),
                         DropdownField::create(
                             'ShowHeader',
                             $this->fieldLabel('ShowHeader'),
                             $this->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        ),
                         DropdownField::create(
                             'ShowDetails',
                             $this->fieldLabel('ShowDetails'),
                             $this->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        ),
                         DropdownField::create(
                             'ShowSummary',
                             $this->fieldLabel('ShowSummary'),
                             $this->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        ),
                         DropdownField::create(
                             'ShowContent',
                             $this->fieldLabel('ShowContent'),
                             $this->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        ),
                         DropdownField::create(
                             'ShowFooter',
                             $this->fieldLabel('ShowFooter'),
                             $this->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderNone),
+                        ),
                         TextField::create(
                             'DateFormat',
                             $this->fieldLabel('DateFormat')
@@ -258,9 +263,33 @@ class BaseListComponent extends BaseComponent
             ]
         );
         
+        // Add List Option Fields:
+        
+        $fields->addFieldsToTab('Root.Options', $this->getListOptionFields());
+        
         // Answer Field Objects:
         
         return $fields;
+    }
+    
+    /**
+     * Answers the list style fields for the receiver.
+     *
+     * @return FieldList
+     */
+    public function getListStyleFields()
+    {
+        return FieldList::create();
+    }
+    
+    /**
+     * Answers the list option fields for the receiver.
+     *
+     * @return FieldList
+     */
+    public function getListOptionFields()
+    {
+        return FieldList::create();
     }
     
     /**
@@ -469,6 +498,7 @@ class BaseListComponent extends BaseComponent
     public function getShowOptions()
     {
         return [
+            self::SHOW_NONE => _t(__CLASS__ . '.NONE', 'None'),
             self::SHOW_FIRST => _t(__CLASS__ . '.FIRST', 'First'),
             self::SHOW_LAST => _t(__CLASS__ . '.LAST', 'Last'),
             self::SHOW_ALL => _t(__CLASS__ . '.ALL', 'All')
@@ -514,6 +544,10 @@ class BaseListComponent extends BaseComponent
      */
     protected function isShown($name, $isFirst, $isMiddle, $isLast)
     {
+        if (!$this->{"Show{$name}"} || $this->{"Show{$name}"} == self::SHOW_NONE) {
+            return false;
+        }
+        
         return (
             ($this->{"Show{$name}"} == self::SHOW_FIRST && $isFirst) ||
             ($this->{"Show{$name}"} == self::SHOW_LAST && $isLast) ||

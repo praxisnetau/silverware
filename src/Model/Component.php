@@ -34,7 +34,6 @@ use SilverWare\Tools\ClassTools;
 use SilverWare\Tools\ViewTools;
 use SilverWare\View\GridAware;
 use SilverWare\View\Renderable;
-use SilverWare\View\RequireFiles;
 use SilverWare\View\ViewClasses;
 use Page;
 
@@ -52,7 +51,6 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     use GridAware;
     use Renderable;
     use ViewClasses;
-    use RequireFiles;
     
     /**
      * Human-readable singular name.
@@ -255,33 +253,45 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     }
     
     /**
-     * Defines the parent of the receiver.
+     * Defines the parent instance of the receiver.
      *
-     * @param SiteTree|int $item
+     * @param SiteTree $parent
      *
-     * @return void
+     * @return $this
      */
-    public function setParent($item)
+    public function setParentInstance(SiteTree $parent)
     {
-        // Record Parent Instance:
+        $this->parentInstance = $parent;
         
-        if ($item instanceof SiteTree) {
-            $this->parentInstance = $item;
-        }
+        $this->setStyleIDFrom($parent);
         
-        // Call Parent Method:
-        
-        return parent::setParent($item);
+        return $this;
     }
     
     /**
-     * Answers the parent instance of the receiver (if available).
+     * Answers the parent of the receiver.
      *
      * @return SiteTree
      */
-    public function getParentInstance()
+    public function getParent()
     {
-        return $this->parentInstance;
+        if ($this->parentInstance) {
+            return $this->parentInstance;
+        }
+        
+        return parent::getParent();
+    }
+    
+    /**
+     * Overrides the method inherited from DataObject in order to answer parent instances (if applicable).
+     *
+     * @param string $componentName
+     *
+     * @return DataObject
+     */
+    public function getComponent($componentName)
+    {
+        return ($componentName == 'Parent') ? $this->getParent() : parent::getComponent($componentName);
     }
     
     /**
@@ -344,10 +354,16 @@ class Component extends SiteTree implements Flushable, PermissionProvider
                 
             } else {
                 
-                // Disallow Page as Parent:
+                // Disallow Page as Parent (except if explicitly allowed):
                 
                 if ($context['Parent'] instanceof Page) {
-                    return false;
+                    
+                    $allowed_children = $context['Parent']->allowedChildren();
+                    
+                    if (in_array(SiteTree::class, $allowed_children) || !in_array(static::class, $allowed_children)) {
+                        return false;
+                    }
+                    
                 }
                 
             }
@@ -493,6 +509,18 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         // Answer Child Objects:
         
         return $this->cacheAllChildren;
+    }
+    
+    /**
+     * Answers a list of all children within the receiver of the given class.
+     *
+     * @param string $class
+     *
+     * @return DataList
+     */
+    public function getAllChildrenByClass($class)
+    {
+        return $this->getAllChildren()->filter('ClassName', ClassInfo::subclassesFor($class));
     }
     
     /**

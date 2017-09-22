@@ -1,6 +1,6 @@
-<% if $ParentInstance.HasListAlerts %>
+<% if $Parent.HasListAlerts %>
   <div class="alerts">
-    <% loop $ParentInstance.ListAlertsData %>
+    <% loop $Parent.ListAlertsData %>
       <% include Alert Type=$Type, Icon=$Icon, Text=$Text.RAW %>
     <% end_loop %>
   </div>

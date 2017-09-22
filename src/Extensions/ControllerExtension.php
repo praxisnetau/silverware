@@ -280,18 +280,6 @@ class ControllerExtension extends Extension
                 
             }
             
-            // Component Requirements Enabled?
-            
-            if ($this->owner->config()->load_component_requirements) {
-                
-                // Load Component Requirements:
-                
-                foreach ($this->owner->getEnabledComponents() as $component) {
-                    $component->loadRequirements();
-                }
-                
-            }
-            
         }
     }
     

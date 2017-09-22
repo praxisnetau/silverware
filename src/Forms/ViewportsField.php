@@ -17,10 +17,10 @@
 
 namespace SilverWare\Forms;
 
+use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\ORM\FieldType\DBField;
@@ -30,7 +30,7 @@ use SilverWare\ORM\FieldType\DBViewports;
 use ArrayAccess;
 
 /**
- * An extension of the form field class for a viewports field.
+ * An extension of the composite field class for a viewports field.
  *
  * @package SilverWare\Forms
  * @author Colin Tucker <colin@praxis.net.au>
@@ -38,7 +38,7 @@ use ArrayAccess;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class ViewportsField extends FormField
+class ViewportsField extends CompositeField
 {
     /**
      * Source options for viewport fields.
@@ -46,13 +46,6 @@ class ViewportsField extends FormField
      * @var array
      */
     protected $source = [];
-    
-    /**
-     * Array of viewport fields.
-     *
-     * @var array
-     */
-    protected $fields = [];
     
     /**
      * Labels for viewport fields.
@@ -106,9 +99,17 @@ class ViewportsField extends FormField
      */
     public function __construct($name, $title = null, $source = [], $value = null)
     {
+        // Construct Parent:
+        
+        parent::__construct();
+        
         // Define Name:
         
         $this->setName($name);
+        
+        // Define Title:
+        
+        $this->setTitle($title);
         
         // Define Source:
         
@@ -118,45 +119,19 @@ class ViewportsField extends FormField
         
         $this->buildViewportFields();
         
+        // Define Value:
+        
+        if ($value !== null) {
+            $this->setValue($value);
+        }
+        
         // Define Empty String:
         
         $this->setEmptyString(_t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)'));
         
-        // Construct Parent:
-        
-        parent::__construct($name, $title, $value);
-        
         // Update Viewport Fields:
         
         $this->updateViewportFields();
-    }
-    
-    /**
-     * Called when the receiver is cloned (ensures associated objects are also cloned).
-     *
-     * @return void
-     */
-    public function __clone()
-    {
-        foreach ($this->fields as $viewport => $field) {
-            $this->fields[$viewport] = clone $field;
-        }
-    }
-    
-    /**
-     * Defines the form for the receiver and viewport fields.
-     *
-     * @param Form $form
-     *
-     * @return $this
-     */
-    public function setForm($form)
-    {
-        foreach ($this->fields as $field) {
-            $field->setForm($form);
-        }
-        
-        return parent::setForm($form);
     }
     
     /**
@@ -179,7 +154,9 @@ class ViewportsField extends FormField
             
             // Define from Array:
             
-            foreach ($this->fields as $viewport => $field) {
+            foreach ($this->getViewports() as $viewport) {
+                
+                $field = $this->getViewportField($viewport);
                 
                 if (isset($value[$viewport])) {
                     $field->setValue($value[$viewport]);
@@ -191,8 +168,8 @@ class ViewportsField extends FormField
             
             // Define from Field:
             
-            foreach ($this->fields as $viewport => $field) {
-                $field->setValue($value->{$viewport});
+            foreach ($this->getViewports() as $viewport) {
+                $this->getViewportField($viewport)->setValue($value->{$viewport});
             }
             
         }
@@ -224,6 +201,16 @@ class ViewportsField extends FormField
             }
             
         }
+    }
+    
+    /**
+     * Answers true to specify that data is contained within this field.
+     *
+     * @return boolean
+     */
+    public function hasData()
+    {
+        return true;
     }
     
     /**
@@ -311,24 +298,6 @@ class ViewportsField extends FormField
     }
     
     /**
-     * Returns a read-only version of the receiver.
-     *
-     * @return ViewportsField
-     */
-    public function performReadonlyTransformation()
-    {
-        $clone = clone $this;
-        
-        foreach ($clone->fields as $viewport => $field) {
-            $clone->fields[$viewport] = $field->performReadonlyTransformation();
-        }
-        
-        $clone->setReadonly(true);
-        
-        return $clone;
-    }
-    
-    /**
      * Defines the label for the specified viewport.
      *
      * @param string $viewport
@@ -370,8 +339,8 @@ class ViewportsField extends FormField
     {
         $values = [];
         
-        foreach ($this->fields as $viewport => $field) {
-            $values[$viewport] = $field->dataValue();
+        foreach ($this->getViewports() as $viewport) {
+            $values[$viewport] = $this->getViewportField($viewport)->dataValue();
         }
         
         return $values;
@@ -394,7 +363,7 @@ class ViewportsField extends FormField
         
         foreach ($viewports as $viewport) {
             
-            if (isset($this->fields[$viewport])) {
+            if ($this->getViewportField($viewport)) {
                 $this->hidden[$viewport] = true;
             }
             
@@ -450,7 +419,41 @@ class ViewportsField extends FormField
      */
     public function getFields()
     {
-        return FieldList::create($this->fields);
+        return $this->children;
+    }
+    
+    /**
+     * Answers the child field for the specified viewport.
+     *
+     * @param string $viewport
+     *
+     * @return FormField
+     */
+    public function getViewportField($viewport)
+    {
+        return $this->children->dataFieldByName($this->getViewportName($viewport));
+    }
+    
+    /**
+     * Answers the child field name for the specified viewport.
+     *
+     * @param string $viewport
+     *
+     * @return string
+     */
+    public function getViewportName($viewport)
+    {
+        return sprintf('%s[%s]', $this->getName(), $viewport);
+    }
+    
+    /**
+     * Answers an array of the viewport field names.
+     *
+     * @return array
+     */
+    public function getViewports()
+    {
+        return DBViewports::singleton()->getViewports();
     }
     
     /**
@@ -495,8 +498,8 @@ class ViewportsField extends FormField
      */
     protected function buildViewportFields()
     {
-        foreach (DBViewports::singleton()->getViewports() as $viewport) {
-            $this->fields[$viewport] = $this->buildViewportField($viewport);
+        foreach ($this->getViewports() as $viewport) {
+            $this->push($this->buildViewportField($viewport));
         }
     }
     
@@ -512,14 +515,14 @@ class ViewportsField extends FormField
         if ($this->useTextInput) {
             
             $field = TextField::create(
-                sprintf('%s[%s]', $this->getName(), $viewport),
+                $this->getViewportName($viewport),
                 $this->getViewportLabel($viewport)
             );
             
         } else {
             
             $field = DropdownField::create(
-                sprintf('%s[%s]', $this->getName(), $viewport),
+                $this->getViewportName($viewport),
                 $this->getViewportLabel($viewport),
                 $this->getSource()
             );
@@ -536,7 +539,13 @@ class ViewportsField extends FormField
      */
     protected function updateViewportFields()
     {
-        foreach ($this->fields as $viewport => $field) {
+        foreach ($this->getViewports() as $viewport) {
+            
+            // Obtain Field:
+            
+            if (!($field = $this->getViewportField($viewport))) {
+                continue;
+            }
             
             // Update Title:
             

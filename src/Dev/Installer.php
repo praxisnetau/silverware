@@ -78,7 +78,7 @@ class Installer
         'default-locale' => 'en_GB',
         'default-database' => '{app-name}',
         'default-vendor' => 'vendor',
-        'default-repo-name' => '{default-vendor}/app-{app-name}',
+        'default-repo-name' => '{vendor}/app-{app-name}',
         'default-repo-url' => 'git@bitbucket.org:{repo-name}.git',
         'default-user' => 'serverpilot',
         'default-host-staging' => '{app-name}-staging.example.com',
@@ -217,6 +217,22 @@ class Installer
         $data['locale'] = $this->ask(
             'Default locale',
             $this->getConfig('default-locale'),
+            $data
+        );
+        
+        // Obtain Database Name:
+        
+        $data['database'] = $this->ask(
+            'Database name',
+            $this->getConfig('default-database'),
+            $data
+        );
+        
+        // Obtain Vendor:
+        
+        $data['vendor'] = $this->ask(
+            'Vendor',
+            $this->getConfig('default-vendor'),
             $data
         );
         

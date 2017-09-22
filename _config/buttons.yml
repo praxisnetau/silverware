@@ -1,0 +1,17 @@
+---
+Name: silverware-buttons
+---
+
+# Define Button Types:
+
+SilverWare\Extensions\Style\ButtonStyle:
+  button_types:
+    primary: Primary
+    secondary: Secondary
+    success: Success
+    info: Info
+    warning: Warning
+    danger: Danger
+    light: Light
+    dark: Dark
+    link: Link

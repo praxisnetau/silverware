@@ -17,6 +17,7 @@
 
 namespace SilverWare\Extensions;
 
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\ORM\DataExtension;
 use SilverWare\Components\AreaComponent;
 use SilverWare\Model\Panel;
@@ -86,10 +87,10 @@ class AreaExtension extends DataExtension
     /**
      * Answers a list of child panels from the extended object.
      *
-     * @return DataList
+     * @return ArrayList
      */
     public function getChildPanels()
     {
-        return $this->owner->AllChildren()->filter('ClassName', Panel::class);
+        return $this->owner->AllChildren()->filter('ClassName', ClassInfo::subclassesFor(Panel::class));
     }
 }

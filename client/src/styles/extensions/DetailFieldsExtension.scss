@@ -1,0 +1,19 @@
+/* Detail Fields Extension Styles
+===================================================================================================================== */
+
+.detail-fields {
+  
+  > dl {
+    
+    dt {
+      font-weight: $detail-fields-heading-weight;
+    }
+    
+    dd {
+      font-size: $detail-fields-text-font-size;
+      margin-bottom: $spacer;
+    }
+    
+  }
+  
+}

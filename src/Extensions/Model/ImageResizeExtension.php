@@ -88,7 +88,7 @@ class ImageResizeExtension extends DataExtension
     public function updateFieldLabels(&$labels)
     {
         $labels['ImageResize'] = _t(__CLASS__ . '.DIMENSIONS', 'Dimensions');
-        $labels['ImageResizeStyle'] = _t(__CLASS__ . '.IMAGERESIZE', 'Image resize');
+        $labels['ImageResizeStyle'] = _t(__CLASS__ . '.IMAGERESIZE', 'Image Resize');
         $labels['ImageResizeMethod'] = _t(__CLASS__ . '.RESIZEMETHOD', 'Resize method');
     }
     

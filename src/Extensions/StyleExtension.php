@@ -20,6 +20,7 @@ namespace SilverWare\Extensions;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\View\SSViewer;
+use SilverWare\Tools\ViewTools;
 use SilverWare\View\GridAware;
 
 /**
@@ -83,7 +84,7 @@ class StyleExtension extends DataExtension
         $template = $this->owner->getStyleExtensionTemplate(static::class);
         
         if (SSViewer::hasTemplate($template)) {
-            $css[] = $this->owner->renderWith($template);
+            $css = ViewTools::singleton()->renderCSS($this->owner, $template, $css);
         }
     }
     

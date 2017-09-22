@@ -5,6 +5,15 @@
   
   article.feature {
     
+    > a.feature {
+      display: block;
+      text-decoration: none;
+      @include hover-focus {
+        text-decoration: none;
+      }
+      @include transition($btn-transition);
+    }
+    
     div.icon {
       margin-bottom: $spacer-half;
     }

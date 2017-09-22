@@ -67,6 +67,12 @@
     }
   }
   
+  &.fieldgroup {
+    > .hidden {
+      display: none;
+    }
+  }
+  
 }
 
 // Badge Styles:

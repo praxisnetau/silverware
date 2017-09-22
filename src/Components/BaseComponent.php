@@ -193,7 +193,7 @@ class BaseComponent extends Component
      */
     public function getContentClassNames()
     {
-        $classes = ['content'];
+        $classes = $this->styles('content');
         
         $this->extend('updateContentClassNames', $classes);
         

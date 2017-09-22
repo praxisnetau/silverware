@@ -163,7 +163,7 @@ class LinkToExtension extends DataExtension
         $labels['URL'] = _t(__CLASS__ . '.URL', 'URL');
         $labels['None'] = _t(__CLASS__ . '.NONE', 'None');
         $labels['Page'] = _t(__CLASS__ . '.PAGE', 'Page');
-        $labels['LinkTo'] = _t(__CLASS__ . '.LINKTO', 'Link to');
+        $labels['LinkTo'] = _t(__CLASS__ . '.LINKTO', 'Link To');
         $labels['LinkURL'] = _t(__CLASS__ . '.LINKURL', 'Link URL');
         $labels['LinkPageID'] = _t(__CLASS__ . '.LINKPAGE', 'Link page');
         $labels['LinkOptions'] = _t(__CLASS__ . '.LINK', 'Link');
@@ -179,14 +179,48 @@ class LinkToExtension extends DataExtension
     {
         $attributes = [
             'href' => $this->owner->Link,
-            'title' => $this->owner->Title
+            'title' => $this->owner->LinkTitle
         ];
+        
+        if ($class = $this->owner->LinkClass) {
+            $attributes['class'] = $class;
+        }
         
         if ($this->owner->OpenLinkInNewTab) {
             $attributes['target'] = '_blank';
         }
         
         return $attributes;
+    }
+    
+    /**
+     * Answers the title for the link.
+     *
+     * @return string
+     */
+    public function getLinkTitle()
+    {
+        return $this->owner->Title;
+    }
+    
+    /**
+     * Answers a string of link class names for the template.
+     *
+     * @return string
+     */
+    public function getLinkClass()
+    {
+        return ViewTools::singleton()->array2att($this->owner->getLinkClassNames());
+    }
+    
+    /**
+     * Answers an array of link class names for the template.
+     *
+     * @return array
+     */
+    public function getLinkClassNames()
+    {
+        return [];
     }
     
     /**
@@ -223,6 +257,16 @@ class LinkToExtension extends DataExtension
     public function hasLink()
     {
         return (boolean) $this->owner->getLink();
+    }
+    
+    /**
+     * Answers true if the extended object has a link page.
+     *
+     * @return boolean
+     */
+    public function hasLinkPage()
+    {
+        return $this->owner->LinkPage()->isInDB();
     }
     
     /**

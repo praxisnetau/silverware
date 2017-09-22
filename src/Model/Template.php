@@ -85,32 +85,6 @@ class Template extends SectionHolder
     ];
     
     /**
-     * Answers an array of custom CSS required for the template.
-     *
-     * @return array
-     */
-    public function getCustomCSS()
-    {
-        // Obtain CSS Array:
-        
-        $css = parent::getCustomCSS();
-        
-        // Merge CSS from Enabled Components:
-        
-        foreach ($this->getEnabledComponents() as $component) {
-            $css = array_merge($css, $component->getCustomCSS());
-        }
-        
-        // Filter CSS Array:
-        
-        $css = array_filter($css);
-        
-        // Answer CSS Array:
-        
-        return $css;
-    }
-    
-    /**
      * Renders the component for the HTML template.
      *
      * @param string $layout Page layout passed from template.

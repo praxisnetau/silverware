@@ -29,6 +29,8 @@ use SilverWare\Forms\FieldSection;
 use SilverWare\Model\Layout;
 use SilverWare\Model\Link;
 use SilverWare\Model\Template;
+use SilverWare\Tools\ViewTools;
+use SilverWare\View\GridAware;
 use Page;
 
 /**
@@ -42,6 +44,8 @@ use Page;
  */
 class PageExtension extends DataExtension implements PermissionProvider
 {
+    use GridAware;
+    
     /**
      * Defines the has-one associations for the extended object.
      *
@@ -314,6 +318,30 @@ class PageExtension extends DataExtension implements PermissionProvider
     }
     
     /**
+     * Answers a string of content class names for the HTML template.
+     *
+     * @return string
+     */
+    public function getContentClass()
+    {
+        return ViewTools::singleton()->array2att($this->owner->getContentClassNames());
+    }
+    
+    /**
+     * Answers an array of content class names for the HTML template.
+     *
+     * @return array
+     */
+    public function getContentClassNames()
+    {
+        $classes = $this->styles('content', 'content.typography');
+        
+        $this->owner->extend('updateContentClassNames', $classes);
+        
+        return $classes;
+    }
+    
+    /**
      * Answers an array of custom CSS required for the template.
      *
      * @return array
@@ -324,11 +352,9 @@ class PageExtension extends DataExtension implements PermissionProvider
         
         $css = [];
         
-        // Merge Template Custom CSS:
+        // Apply Extensions:
         
-        if ($template = $this->owner->getPageTemplate()) {
-            $css = array_merge($css, $template->getCustomCSS());
-        }
+        $this->owner->extend('updateCustomCSS', $css);
         
         // Answer CSS Array:
         
@@ -382,7 +408,7 @@ class PageExtension extends DataExtension implements PermissionProvider
      */
     public function getFieldFromHierarchy($name)
     {
-        return ($value = $this->owner->$name) ? $value : $this->owner->getFieldFromParent($name);
+        return !is_null($this->owner->$name) ? $this->owner->$name : $this->owner->getFieldFromParent($name);
     }
     
     /**

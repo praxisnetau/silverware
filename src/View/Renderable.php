@@ -18,11 +18,14 @@
 namespace SilverWare\View;
 
 use Psr\SimpleCache\CacheInterface;
+use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\Debug;
+use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\View\Requirements;
 use SilverStripe\View\SSViewer;
 use SilverWare\Extensions\ControllerExtension;
 use SilverWare\Tools\ClassTools;
@@ -39,6 +42,46 @@ use SilverWare\Tools\ViewTools;
  */
 trait Renderable
 {
+    /**
+     * An array of required JavaScript files.
+     *
+     * @var array
+     * @config
+     */
+    private static $required_js = [];
+    
+    /**
+     * An array of required CSS files.
+     *
+     * @var array
+     * @config
+     */
+    private static $required_css = [];
+    
+    /**
+     * An array of required themed JavaScript files.
+     *
+     * @var array
+     * @config
+     */
+    private static $required_themed_js = [];
+    
+    /**
+     * An array of required themed CSS files.
+     *
+     * @var array
+     * @config
+     */
+    private static $required_themed_css = [];
+    
+    /**
+     * An array of required JavaScript template files.
+     *
+     * @var array
+     * @config
+     */
+    private static $required_js_templates = [];
+    
     /**
      * Extra classes for the HTML tag.
      *
@@ -71,6 +114,154 @@ trait Renderable
     public static function flushRenderCache()
     {
         return self::getRenderCache()->clear();
+    }
+    
+    /**
+     * Loads the requirements for the object.
+     *
+     * @return void
+     */
+    public function loadRequirements()
+    {
+        // Load Required Themed JavaScript:
+        
+        if (ContentController::config()->load_themed_js) {
+            
+            foreach ($this->getRequiredThemedJS() as $js) {
+                Requirements::themedJavascript($js);
+            }
+            
+        }
+        
+        // Load Required Themed CSS:
+        
+        if (ContentController::config()->load_themed_css) {
+            
+            foreach ($this->getRequiredThemedCSS() as $css => $media) {
+                Requirements::themedCSS($css, $media);
+            }
+            
+        }
+        
+        // Load Required JavaScript:
+        
+        if (ContentController::config()->load_js) {
+            
+            foreach ($this->getRequiredJS() as $js) {
+                Requirements::javascript($js);
+            }
+            
+        }
+        
+        // Load Required CSS:
+        
+        if (ContentController::config()->load_css) {
+            
+            foreach ($this->getRequiredCSS() as $css => $media) {
+                Requirements::css($css, $media);
+            }
+            
+        }
+        
+        // Load Required Custom CSS:
+        
+        if (ContentController::config()->load_custom_css) {
+            
+            if ($css = $this->getCustomCSSAsString()) {
+                Requirements::customCSS($css, $this->HTMLID);
+            }
+            
+        }
+        
+        // Load Required JavaScript Templates:
+        
+        foreach ($this->getRequiredJSTemplates() as $file => $params) {
+            ViewTools::singleton()->loadJSTemplate($file, $params['vars'], $params['id']);
+        }
+    }
+    
+    /**
+     * Answers an array of JavaScript files required by the object.
+     *
+     * @return array
+     */
+    public function getRequiredJS()
+    {
+        $js = $this->config()->required_js;
+        
+        $this->extend('updateRequiredJS', $js);
+        
+        return $js;
+    }
+    
+    /**
+     * Answers an array of CSS files required by the object.
+     *
+     * @return array
+     */
+    public function getRequiredCSS()
+    {
+        $css = $this->config()->required_css;
+        
+        $this->extend('updateRequiredCSS', $css);
+        
+        return $this->processCSSConfig($css);
+    }
+    
+    /**
+     * Answers an array of themed JavaScript files required by the object.
+     *
+     * @return array
+     */
+    public function getRequiredThemedJS()
+    {
+        $js =  $this->config()->required_themed_js;
+        
+        $this->extend('updateRequiredThemedJS', $js);
+        
+        return $js;
+    }
+    
+    /**
+     * Answers an array of themed CSS files required by the object.
+     *
+     * @return array
+     */
+    public function getRequiredThemedCSS()
+    {
+        $css =  $this->config()->required_themed_css;
+        
+        $this->extend('updateRequiredThemedCSS', $css);
+        
+        return $this->processCSSConfig($css);
+    }
+    
+    /**
+     * Answers an array of JavaScript templates required by the object.
+     *
+     * @return array
+     */
+    public function getRequiredJSTemplates()
+    {
+        $js = $this->config()->required_js_templates;
+        
+        $this->extend('updateRequiredJSTemplates', $js);
+        
+        return $this->processJSTemplateConfig($js);
+    }
+    
+    /**
+     * Answers an array of variables required by a JavaScript template.
+     *
+     * @return array
+     */
+    public function getJSVars()
+    {
+        if (in_array(Renderable::class, class_uses(self::class))) {
+            return ['HTMLID' => $this->getHTMLID(), 'CSSID' => $this->getCSSID()];
+        }
+        
+        return [];
     }
     
     /**
@@ -325,19 +516,30 @@ trait Renderable
     }
     
     /**
-     * Defines the style ID of the receiver from the given data object.
+     * Defines the style ID of the receiver from the given data object and optional suffix.
      *
      * @param DataObject $object
+     * @param string $suffix
      *
      * @return $this
      */
-    public function setStyleIDFrom(DataObject $object)
+    public function setStyleIDFrom(DataObject $object, $suffix = null)
     {
         $this->StyleID = sprintf(
             '%s_%s',
             ClassTools::singleton()->getClassWithoutNamespace(get_class($object)),
             ClassTools::singleton()->getClassWithoutNamespace(get_class($this))
         );
+        
+        if (!is_null($suffix)) {
+            $this->StyleID = sprintf(
+                '%s_%s',
+                $this->StyleID,
+                $suffix
+            );
+        }
+        
+        $this->StyleID = $this->cleanStyleID($this->StyleID);
         
         return $this;
     }
@@ -402,7 +604,7 @@ trait Renderable
             $template = $this->getCustomCSSTemplate($class);
             
             if (SSViewer::hasTemplate($template)) {
-                $css = array_merge($css, preg_split('/\r\n|\n|\r/', $this->renderWith($template)));
+                $css = ViewTools::singleton()->renderCSS($this, $template, $css);
             }
             
         }
@@ -416,6 +618,30 @@ trait Renderable
         $css = array_filter($css);
         
         // Answer CSS Array:
+        
+        return $css;
+    }
+    
+    /**
+     * Answers the custom CSS required for the template as a string.
+     *
+     * @return string
+     */
+    public function getCustomCSSAsString()
+    {
+        // Create CSS String:
+        
+        $css = implode("\n", $this->getCustomCSS());
+        
+        // Remove Empty Lines:
+        
+        $css = ViewTools::singleton()->removeEmptyLines($css);
+        
+        // Trim CSS String:
+        
+        $css = trim($css);
+        
+        // Answer CSS String:
         
         return $css;
     }
@@ -513,6 +739,8 @@ trait Renderable
      */
     public function forTemplate()
     {
+        // Render Object:
+        
         return $this->render();
     }
     
@@ -529,6 +757,10 @@ trait Renderable
         // Initialise:
         
         $html = '';
+        
+        // Load Requirements:
+        
+        $this->loadRequirements();
         
         // Obtain Cached HTML (if enabled):
         
@@ -569,5 +801,91 @@ trait Renderable
         // Answer HTML:
         
         return $html;
+    }
+    
+    /**
+     * Processes the given CSS config and answers an array suitable for loading requirements.
+     *
+     * @param array $config
+     *
+     * @return array
+     */
+    protected function processCSSConfig($config)
+    {
+        if (!ArrayLib::is_associative($config)) {
+            return array_fill_keys(array_values($config), null); 
+        }
+        
+        return $config;
+    }
+    
+    /**
+     * Processes the given JavaScript template config and answers an array suitable for loading requirements.
+     *
+     * @param array $config
+     *
+     * @return array
+     */
+    protected function processJSTemplateConfig($config)
+    {
+        $templates = [];
+        
+        foreach ($config as $key => $value) {
+            
+            if (is_integer($key)) {
+                
+                $templates[$value] = [
+                    'vars' => $this->getJSVars(),
+                    'id'   => $this->getHTMLID()
+                ];
+                
+            } else {
+                
+                $templates[$key] = [
+                    'vars' => $this->getJSTemplateVars(array_shift($value)),
+                    'id'   => $this->getJSTemplateID(array_shift($value))
+                ];
+                
+            }
+            
+        }
+        
+        return $templates;
+    }
+    
+    /**
+     * Answers an array of variables for a required JavaScript template.
+     *
+     * @param string|array $vars Array of variables or method name.
+     *
+     * @return array
+     */
+    protected function getJSTemplateVars($vars)
+    {
+        if (is_array($vars)) {
+            return $vars;
+        }
+        
+        if ($this->hasMethod($vars)) {
+            return $this->{$vars}();
+        }
+        
+        return [];
+    }
+    
+    /**
+     * Answers the ID for a required JavaScript template.
+     *
+     * @param string $id ID or method name.
+     *
+     * @return string
+     */
+    protected function getJSTemplateID($id)
+    {
+        if ($this->hasMethod($id)) {
+            return $this->{$id}();
+        }
+        
+        return $id;
     }
 }

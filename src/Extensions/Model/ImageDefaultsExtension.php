@@ -101,7 +101,7 @@ class ImageDefaultsExtension extends DataExtension
     public function updateFieldLabels(&$labels)
     {
         $labels['Style'] = _t(__CLASS__ . '.STYLE', 'Style');
-        $labels['ImageDefaults'] = _t(__CLASS__ . '.IMAGEDEFAULTS', 'Image defaults');
+        $labels['ImageDefaults'] = _t(__CLASS__ . '.IMAGEDEFAULTS', 'Image Defaults');
         $labels['ImageDefaultResize'] = _t(__CLASS__ . '.DIMENSIONS', 'Dimensions');
         $labels['ImageDefaultResizeMethod'] = _t(__CLASS__ . '.RESIZEMETHOD', 'Resize method');
         $labels['ImageDefaultAlignment'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');
