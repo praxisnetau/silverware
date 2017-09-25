@@ -554,16 +554,4 @@ class BaseListComponent extends BaseComponent
             ($this->{"Show{$name}"} == self::SHOW_ALL)
         );
     }
-    
-    /**
-     * Initialises the component.
-     *
-     * @return void
-     */
-    protected function init()
-    {
-        parent::init();
-        
-        $this->setAttribute('data-url', $this->URL);
-    }
 }

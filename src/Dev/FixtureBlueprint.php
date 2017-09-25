@@ -1444,7 +1444,7 @@ class FixtureBlueprint extends BaseBlueprint
             // Write and Publish File:
             
             $file->write();
-            $file->publishRecursive();
+            $file->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE);
             
             // Answer File ID:
             

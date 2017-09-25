@@ -27,6 +27,7 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\SS_List;
 use SilverWare\Extensions\Model\URLSegmentExtension;
 use SilverWare\Security\CMSMainPermissions;
 
@@ -116,11 +117,11 @@ class Tag extends DataObject
      * Answers a list of tags for the given tag source and optional list of tagged items.
      *
      * @param TagSource $source The tag source object.
-     * @param DataList $items Optional list of tagged items for filtering tags.
+     * @param SS_List $items Optional list of tagged items for filtering tags.
      *
      * @return ArrayList
      */
-    public static function forSource(TagSource $source, DataList $items = null)
+    public static function forSource(TagSource $source, SS_List $items = null)
     {
         // Create Data List:
         
@@ -128,7 +129,7 @@ class Tag extends DataObject
         
         // Filter Tagged Items:
         
-        if (!is_null($items)) {
+        if ($items instanceof DataList) {
             
             if ($belongs = Config::inst()->get(static::class, 'belongs_many_many')) {
                 
