@@ -144,7 +144,7 @@ class ClassTools
             foreach ($records as $record) {
                 $map[$record->ID] = sprintf(
                     '%s (%s)',
-                    $record->Title,
+                    $record->hasMethod('NestedTitle') ? $record->NestedTitle(5, ' > ') : $record->Title,
                     $record->i18n_singular_name()
                 );
             }

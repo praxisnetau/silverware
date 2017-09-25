@@ -301,7 +301,7 @@ class TagCloudComponent extends BaseComponent
         $labels['WeightSizeMax'] = _t(__CLASS__ . '.MAXIMUM', 'Maximum');
         $labels['WeightSize'] = _t(__CLASS__ . '.WEIGHTEDFONTSIZES', 'Weighted font sizes');
         $labels['Weight'] = _t(__CLASS__ . '.ENABLETAGWEIGHTING', 'Enable tag weighting');
-        $labels['TagSource'] = $labels['TagSourceID'] = _t(__CLASS__ . '.TAGSOURCE', 'Tag source');
+        $labels['TagSource'] = $labels['TagSourceID'] = _t(__CLASS__ . '.TAGSOURCE', 'Tag Source');
         $labels['TagCloudStyle'] = $labels['TagCloudOptions'] = _t(__CLASS__ . '.TAGCLOUD', 'Tag Cloud');
         
         // Answer Field Labels:

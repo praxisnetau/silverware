@@ -320,7 +320,7 @@ class BaseListComponent extends BaseComponent
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['ImageLinksTo'] = _t(__CLASS__ . '.IMAGELINKSTO', 'Image links to');
         $labels['OverlayImages'] = _t(__CLASS__ . '.OVERLAYIMAGES', 'Overlay images');
-        $labels['ListImageOptions'] = _t(__CLASS__ . '.LISTIMAGES', 'List images');
+        $labels['ListImageOptions'] = _t(__CLASS__ . '.LISTIMAGES', 'List Images');
         $labels['OverlayIcon'] = _t(__CLASS__ . '.OVERLAYICON', 'Overlay icon');
         $labels['OverlayIconColor'] = _t(__CLASS__ . '.OVERLAYICONCOLOR', 'Overlay icon color');
         $labels['ListStyle'] = $labels['ListOptions'] = _t(__CLASS__ . '.LIST', 'List');

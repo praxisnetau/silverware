@@ -17,11 +17,17 @@
 
 namespace SilverWare\Dev;
 
+use SilverStripe\Assets\File;
+use SilverStripe\Assets\Folder;
+use SilverStripe\Assets\Upload;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FixtureBlueprint as BaseBlueprint;
 use SilverStripe\Dev\FixtureFactory as BaseFactory;
+use SilverStripe\Forms\FileHandleField;
 use SilverStripe\Forms\FormField;
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataList;
@@ -76,6 +82,14 @@ class FixtureBlueprint extends BaseBlueprint
      * @config
      */
     private static $verbose = false;
+    
+    /**
+     * Defines the name of the MatchOn filter.
+     *
+     * @var string
+     * @config
+     */
+    private static $match_on_name = 'MatchOn';
     
     /**
      * The factory associated with this blueprint.
@@ -245,6 +259,10 @@ class FixtureBlueprint extends BaseBlueprint
             $objects = $objects->filter($filter);
         }
         
+        if (isset($data[$this->getMatchOnName()])) {
+            return $this->matchObjects($objects, $data);
+        }
+        
         if ($field = $this->getDefaultIdentifier()) {
             return $objects->filter($field, $identifier);
         }
@@ -254,6 +272,60 @@ class FixtureBlueprint extends BaseBlueprint
         return $objects->filterByCallback(function ($item, $list) use ($title) {
             return ($item->Title == $title);
         });
+    }
+    
+    /**
+     * Answers those objects within the given data list matching the provided filter.
+     *
+     * @param DataList $objects
+     * @param array $data
+     *
+     * @return DataList
+     */
+    public function matchObjects(DataList $objects, $data)
+    {
+        // Detect Filter:
+        
+        $name = $this->getMatchOnName();
+        
+        if (isset($data[$name])) {
+            
+            $filter  = [];
+            $matchOn = $data[$name];
+            
+            if (is_array($matchOn)) {
+                
+                // Handle Array Filter:
+                
+                if (ArrayLib::is_associative($matchOn)) {
+                    
+                    $filter = $matchOn;
+                    
+                } else {
+                    
+                    foreach ($matchOn as $field) {
+                        
+                        if (isset($data[$field])) {
+                            $filter[$field] = $data[$field];
+                        }
+                        
+                    }
+                    
+                }
+                
+            } elseif (isset($data[$matchOn])) {
+                
+                // Handle String Filter:
+                
+                $filter[$matchOn] = $data[$matchOn];
+                
+            }
+            
+            return $objects->filter($filter);
+            
+        }
+        
+        return $objects;
     }
     
     /**
@@ -353,6 +425,10 @@ class FixtureBlueprint extends BaseBlueprint
     public function populateObject(DataObject $object, $data, $fixtures)
     {
         if (is_array($data)) {
+            
+            // Prepare Data:
+            
+            $this->prepareData($data);
             
             // Populate Fields:
             
@@ -546,7 +622,11 @@ class FixtureBlueprint extends BaseBlueprint
             
             // Define Relation:
             
-            $object->{$field . 'ID'} = $this->processValue($value);
+            if ($this->isFile($hasOneClass)) {
+                $object->{$field . 'ID'} = $this->processFile($object, $field, $value, $hasOneClass);
+            } else {
+                $object->{$field . 'ID'} = $this->processValue($value);
+            }
             
             // Handle Polymorphic Relation:
             
@@ -799,6 +879,18 @@ class FixtureBlueprint extends BaseBlueprint
     public function isChildIdentifier($name)
     {
         return (strpos($name, '+') === 0);
+    }
+    
+    /**
+     * Answers true if the specified class is a file.
+     *
+     * @param string $class
+     *
+     * @return boolean
+     */
+    public function isFile($class)
+    {
+        return in_array($class, ClassInfo::subclassesFor(File::class));
     }
     
     /**
@@ -1263,7 +1355,7 @@ class FixtureBlueprint extends BaseBlueprint
      *
      * @return mixed
      */
-    public function processCallbackArray($value)
+    protected function processCallbackArray($value)
     {
         if ($this->isCallbackArray($value)) {
             
@@ -1281,6 +1373,112 @@ class FixtureBlueprint extends BaseBlueprint
             }
             
         }
+    }
+    
+    /**
+     * Processes the given value as a file and answers the ID of the file record.
+     *
+     * @param DataObject $object
+     * @param string $field
+     * @param mixed $value
+     * @param string $class
+     *
+     * @return integer
+     */
+    protected function processFile(DataObject $object, $field, $value, $class)
+    {
+        // Initialise:
+        
+        $source = null;
+        $folder = null;
+        
+        // Detect Value Type:
+        
+        if (is_array($value)) {
+            
+            // Handle Array Value:
+            
+            $source = isset($value['Source']) ? $value['Source'] : null;
+            $folder = isset($value['Folder']) ? $value['Folder'] : null;
+            
+        } else {
+            
+            // Handle String Value:
+            
+            $source = $value;
+            
+        }
+        
+        // Obtain Folder (if required):
+        
+        if (!$folder) {
+            $folder = $this->getFolderName($object, $field);
+        }
+        
+        // Obtain Source Path:
+        
+        $path = Director::getAbsFile($source);
+        
+        // Does Source Exist?
+        
+        if (file_exists($path)) {
+            
+            // Obtain Base Name:
+            
+            $basename = basename($path);
+            
+            // Define Asset Filename:
+            
+            $filename = sprintf('%s/%s', $folder, $basename);
+            
+            // Obtain or Create File:
+            
+            if (!($file = File::find($filename))) {
+                $file = Injector::inst()->create($class);
+            }
+            
+            // Define File Contents:
+            
+            $file->setFromLocalFile($path, $filename);
+            
+            // Write and Publish File:
+            
+            $file->write();
+            $file->publishRecursive();
+            
+            // Answer File ID:
+            
+            return $file->ID;
+        }
+    }
+    
+    /**
+     * Attempts to answer the folder name for the given object and field name.
+     *
+     * @param DataObject $object
+     * @param string $field
+     *
+     * @return string
+     */
+    protected function getFolderName(DataObject $object, $field)
+    {
+        // Initialise:
+        
+        $folder = null;
+        
+        // Locate File Handle Field:
+        
+        if ($fileField = $object->getCMSFields()->dataFieldByName($field)) {
+            
+            if ($fileField instanceof FileHandleField) {
+                $folder = $fileField->getFolderName();
+            }
+            
+        }
+        
+        // Answer Folder Name:
+        
+        return ($folder ? $folder : Upload::config()->uploads_folder);
     }
     
     /**
@@ -1363,6 +1561,34 @@ class FixtureBlueprint extends BaseBlueprint
     protected function processTypedIdentifier($identifier)
     {
         return array_pad(explode('.', ltrim($identifier, '+=>')), 2, null);
+    }
+    
+    /**
+     * Answers the name of the MatchOn filter.
+     *
+     * @return string
+     */
+    protected function getMatchOnName()
+    {
+        return $this->config()->match_on_name;
+    }
+    
+    /**
+     * Prepares the given array of data for object population.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function prepareData(&$data)
+    {
+        // Remove MatchOn Filter:
+        
+        $name = $this->getMatchOnName();
+        
+        if (isset($data[$name])) {
+            unset($data[$name]);
+        }
     }
     
     /**
