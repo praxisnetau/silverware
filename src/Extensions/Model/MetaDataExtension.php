@@ -20,7 +20,6 @@ namespace SilverWare\Extensions\Model;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
@@ -55,12 +54,13 @@ class MetaDataExtension extends DataExtension
      */
     private static $db = [
         'SummaryMeta' => 'HTMLText',
-        'ImageMetaHidden' => 'Boolean',
+        'ImageMetaHidden' => 'Varchar(1)',
         'ImageMetaResize' => 'Dimensions',
         'ImageMetaResizeMethod' => 'Varchar(32)',
         'ImageMetaCaption' => 'HTMLText',
-        'ImageMetaCaptionHidden' => 'Boolean',
-        'ImageMetaAlignment' => 'Varchar(32)'
+        'ImageMetaCaptionHidden' => 'Varchar(1)',
+        'ImageMetaAlignment' => 'Varchar(32)',
+        'ImageMetaLinked' => 'Varchar(1)'
     ];
     
     /**
@@ -154,6 +154,14 @@ class MetaDataExtension extends DataExtension
      * @config
      */
     private static $default_image_folder = 'Images';
+    
+    /**
+     * Defines the default format for the meta date field.
+     *
+     * @var string
+     * @config
+     */
+    private static $default_date_format = 'd MMMM Y';
     
     /**
      * Updates the CMS fields of the extended object.
@@ -365,14 +373,21 @@ class MetaDataExtension extends DataExtension
         if ($showOptions) {
             
             $fields = array_merge($fields, [
-                CheckboxField::create(
+                DropdownField::create(
+                    'ImageMetaLinked',
+                    $this->owner->fieldLabel('ImageMetaLinked'),
+                    $this->getToggleOptions()
+                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                DropdownField::create(
                     'ImageMetaHidden',
-                    $this->owner->fieldLabel('ImageMetaHidden')
-                ),
-                CheckboxField::create(
+                    $this->owner->fieldLabel('ImageMetaHidden'),
+                    $this->getToggleOptions()
+                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                DropdownField::create(
                     'ImageMetaCaptionHidden',
-                    $this->owner->fieldLabel('ImageMetaCaptionHidden')
-                )
+                    $this->owner->fieldLabel('ImageMetaCaptionHidden'),
+                    $this->getToggleOptions()
+                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
             ]);
             
         }
@@ -406,6 +421,7 @@ class MetaDataExtension extends DataExtension
         $labels['ImageMetaCaptionHidden'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['ImageMetaAlignment'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');
         $labels['ImageMetaHidden'] = _t(__CLASS__ . '.HIDEIMAGE', 'Hide image');
+        $labels['ImageMetaLinked'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
         $labels['SummaryMeta'] = _t(__CLASS__ . '.SUMMARY', 'Summary');
     }
     
@@ -468,16 +484,26 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
-     * Formats the date of the extended object using the given format.
+     * Answers the default format for the date of the extended object.
+     *
+     * @return string
+     */
+    public function getMetaDateFormat()
+    {
+        return Config::inst()->get(self::class, 'default_date_format');
+    }
+    
+    /**
+     * Formats the date of the extended object using the given format, or a default format.
      *
      * @param string $format
      *
      * @return string
      */
-    public function getMetaDateFormatted($format)
+    public function getMetaDateFormatted($format = null)
     {
         if ($this->owner->hasMetaDate()) {
-            return $this->owner->getMetaDate()->Format($format);
+            return $this->owner->getMetaDate()->Format($format ? $format : $this->owner->getMetaDateFormat());
         }
     }
     
@@ -665,9 +691,35 @@ class MetaDataExtension extends DataExtension
                 
             }
             
-            return $this->owner->getMetaImage()->getAbsoluteURL();
+            return $this->owner->getMetaImageURL();
             
         }
+    }
+    
+    /**
+     * Answers the absolute URL for the meta image.
+     *
+     * @return string
+     */
+    public function getMetaImageURL()
+    {
+        if ($this->owner->hasMetaImage()) {
+            return $this->owner->getMetaImage()->getAbsoluteURL();
+        }
+    }
+    
+    /**
+     * Answers true if the meta image link is to the image file.
+     *
+     * @return boolean
+     */
+    public function isMetaImageFileLink()
+    {
+        if ($this->owner->hasMetaImage()) {
+            return ($this->owner->getMetaImageLink() == $this->owner->getMetaImageURL());
+        }
+        
+        return false;
     }
     
     /**
@@ -894,6 +946,20 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
+     * Answers true if the meta image is to be linked in the template.
+     *
+     * @return boolean
+     */
+    public function getMetaImageLinked()
+    {
+        if (!is_null($this->owner->ImageMetaLinked)) {
+            return (boolean) $this->owner->ImageMetaLinked;
+        }
+        
+        return $this->owner->getFieldFromParent('DefaultImageLinked');
+    }
+    
+    /**
      * Answers a string of meta image link class names for the template.
      *
      * @return string
@@ -917,7 +983,11 @@ class MetaDataExtension extends DataExtension
             if ($to = strtolower($renderer->ImageLinksTo)) {
                 $classes[] = sprintf('to-%s', $to);
             }
-        
+            
+        } elseif ($this->owner->isMetaImageFileLink()) {
+            
+            $classes[] = 'to-file';
+            
         }
         
         return $classes;
@@ -998,5 +1068,18 @@ class MetaDataExtension extends DataExtension
         }
         
         return $value;
+    }
+    
+    /**
+     * Answers an array of options for a toggle dropdown field.
+     *
+     * @return array
+     */
+    protected function getToggleOptions()
+    {
+        return [
+            0 => _t(__CLASS__ . '.TOGGLENO', 'No'),
+            1 => _t(__CLASS__ . '.TOGGLEYES', 'Yes')
+        ];
     }
 }

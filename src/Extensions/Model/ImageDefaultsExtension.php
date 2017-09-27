@@ -44,7 +44,8 @@ class ImageDefaultsExtension extends DataExtension
     private static $db = [
         'ImageDefaultResize' => 'Dimensions',
         'ImageDefaultResizeMethod' => 'Varchar(32)',
-        'ImageDefaultAlignment' => 'Varchar(32)'
+        'ImageDefaultAlignment' => 'Varchar(32)',
+        'ImageDefaultLinked' => 'Varchar(1)'
     ];
     
     /**
@@ -85,6 +86,11 @@ class ImageDefaultsExtension extends DataExtension
                         'ImageDefaultResizeMethod',
                         $this->owner->fieldLabel('ImageDefaultResizeMethod'),
                         ImageTools::singleton()->getResizeMethods()
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    DropdownField::create(
+                        'ImageDefaultLinked',
+                        $this->owner->fieldLabel('ImageDefaultLinked'),
+                        $this->getToggleOptions()
                     )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
                 ]
             )
@@ -105,6 +111,7 @@ class ImageDefaultsExtension extends DataExtension
         $labels['ImageDefaultResize'] = _t(__CLASS__ . '.DIMENSIONS', 'Dimensions');
         $labels['ImageDefaultResizeMethod'] = _t(__CLASS__ . '.RESIZEMETHOD', 'Resize method');
         $labels['ImageDefaultAlignment'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');
+        $labels['ImageDefaultLinked'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
     }
     
     /**
@@ -169,5 +176,34 @@ class ImageDefaultsExtension extends DataExtension
         if ($this->owner->hasExtension(MetaDataExtension::class)) {
             return $this->owner->getFieldFromParent('DefaultImageAlignment');
         }
+    }
+    
+    /**
+     * Answers the default image linked setting.
+     *
+     * @return string
+     */
+    public function getDefaultImageLinked()
+    {
+        if ($method = $this->owner->ImageDefaultLinked) {
+            return (boolean) $method;
+        }
+        
+        if ($this->owner->hasExtension(MetaDataExtension::class)) {
+            return $this->owner->getFieldFromParent('DefaultImageLinked');
+        }
+    }
+    
+    /**
+     * Answers an array of options for a toggle dropdown field.
+     *
+     * @return array
+     */
+    protected function getToggleOptions()
+    {
+        return [
+            0 => _t(__CLASS__ . '.TOGGLENO', 'No'),
+            1 => _t(__CLASS__ . '.TOGGLEYES', 'Yes')
+        ];
     }
 }

@@ -189,6 +189,20 @@ class DetailFieldsExtension extends Extension
     {
         $classes = ['detail-fields'];
         
+        $classes[] = $this->owner->DetailFieldsInline ? 'inline' : 'block';
+        
+        if ($this->owner->DetailFieldsHideIcons) {
+            $classes[] = 'hide-icons';
+        }
+        
+        if ($this->owner->DetailFieldsHideNames) {
+            $classes[] = 'hide-names';
+        }
+        
+        if ($this->owner->DetailFieldsHideHeader) {
+            $classes[] = 'hide-header';
+        }
+        
         $this->owner->extend('updateDetailFieldsClassNames', $classes);
         
         return $classes;

@@ -7,5 +7,13 @@ $icon-size-multiplier: 0.5;
 $image-overlay-background: rgba($gray-900, 0.5);
 $image-overlay-foreground: $white;
 
-$detail-fields-heading-weight: 500;
-$detail-fields-text-font-size: 0.9rem;
+$detail-fields-name-weight: 500;
+$detail-fields-inline-margin: $spacer-half;
+
+$detail-fields-block-name-font-size: 1rem;
+$detail-fields-block-text-font-size: 0.9rem;
+
+$detail-fields-inline-name-font-size: 1rem;
+$detail-fields-inline-text-font-size: 1rem;
+
+$detail-fields-inline-color: $gray-600;

@@ -3,15 +3,101 @@
 
 .detail-fields {
   
-  > dl {
+  a {
+    color: inherit;
+  }
+  
+  > ul {
     
-    dt {
-      font-weight: $detail-fields-heading-weight;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    
+    > li > dl,
+    > li > dl > dd {
+      margin-bottom: 0;
     }
     
-    dd {
-      font-size: $detail-fields-text-font-size;
+  }
+  
+  &.block {
+    
+    > ul > li {
+      
       margin-bottom: $spacer;
+      
+      dl {
+        
+        dt {
+          font-size: $detail-fields-block-name-font-size;
+          font-weight: $detail-fields-name-weight;
+        }
+        
+        dd {
+          font-size: $detail-fields-block-text-font-size;
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+  &.inline {
+    
+    > ul > li {
+      
+      color: $detail-fields-inline-color;
+      
+      display: inline-block;
+      margin-right: $detail-fields-inline-margin;
+      
+      dl {
+        
+        dt {
+          display: inline-block;
+          font-size: $detail-fields-inline-name-font-size;
+        }
+        
+        dd {
+          display: inline-block;
+          font-size: $detail-fields-inline-text-font-size;
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+  &.hide-header {
+    
+    > header {
+      display: none;
+    }
+    
+  }
+  
+  &.hide-icons {
+    
+    > ul > li {
+      
+      dl > dt > i {
+        display: none;
+      }
+      
+    }
+    
+  }
+  
+  &.hide-names {
+    
+    > ul > li {
+      
+      dl > dt > span.name {
+        display: none;
+      }
+      
     }
     
   }

@@ -1,13 +1,19 @@
 <% if $HasDetailFields %>
   <div class="$DetailFieldsClass">
-    <{$DetailFieldsHeadingTag}>{$DetailFieldsHeadingText}</{$DetailFieldsHeadingTag}>
-    <dl>
+    <header>
+      <{$DetailFieldsHeadingTag}>{$DetailFieldsHeadingText}</{$DetailFieldsHeadingTag}>
+    </header>
+    <ul>
       <% loop $DetailFields %>
-        <% if $Text %>
-          <dt><% include Icon Name=$Icon, FixedWidth=1 %>$Name</dt>
-          <dd>$Text.RAW</dd>
-        <% end_if %>
+        <li>
+          <dl>
+            <% if $Text %>
+              <dt><% include Icon Name=$Icon, FixedWidth=1 %><span class="name">$Name</span></dt>
+              <dd>$Text.RAW</dd>
+            <% end_if %>
+          </dl>
+        </li>
       <% end_loop %>
-    </dl>
+    </ul>
   </div>
 <% end_if %>
