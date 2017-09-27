@@ -33,6 +33,7 @@ use SilverWare\Forms\DimensionsField;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\ViewportsField;
 use SilverWare\ORM\FieldType\DBViewports;
+use SilverWare\Tools\ClassTools;
 use SilverWare\Tools\ImageTools;
 use SilverWare\Tools\ViewTools;
 
@@ -59,6 +60,7 @@ class ListViewExtension extends DataExtension
      * @config
      */
     private static $db = [
+        'ListClass' => 'Varchar(255)',
         'ListConfig' => 'Text'
     ];
     
@@ -173,6 +175,11 @@ class ListViewExtension extends DataExtension
                     'ListViewOptions',
                     $this->owner->fieldLabel('ListView'),
                     [
+                        DropdownField::create(
+                            'ListClass',
+                            $this->owner->fieldLabel('ListClass'),
+                            $this->owner->getListClassOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                         TextField::create(
                             $this->nestName('Title'),
                             $this->owner->fieldLabel('ListTitle')
@@ -319,6 +326,7 @@ class ListViewExtension extends DataExtension
         $labels['NumberOfItems'] = _t(__CLASS__ . '.NUMBEROFITEMS', 'Number of items');
         $labels['ReverseItems'] = _t(__CLASS__ . '.REVERSEITEMS', 'Reverse items');
         $labels['ImageItems'] = _t(__CLASS__ . '.IMAGEITEMS', 'Show only items with images');
+        $labels['ListClass'] = _t(__CLASS__ . '.LISTCLASS', 'List class');
     }
     
     /**
@@ -494,6 +502,24 @@ class ListViewExtension extends DataExtension
      */
     public function getListComponentClass()
     {
+        if ($class = $this->owner->ListClass) {
+            return $class;
+        }
+        
+        return $this->owner->getDefaultListComponentClass();
+    }
+    
+    /**
+     * Answers the default class to use for the list component.
+     *
+     * @return string
+     */
+    public function getDefaultListComponentClass()
+    {
+        if ($class = $this->owner->config()->list_component_class) {
+            return $class;
+        }
+        
         return Config::inst()->get(self::class, 'default_list_component_class');
     }
     
@@ -551,6 +577,22 @@ class ListViewExtension extends DataExtension
     public function hasListComponent()
     {
         return ($this->owner->ListComponent instanceof BaseListComponent);
+    }
+    
+    /**
+     * Answers an array of options for the list class field.
+     *
+     * @return array
+     */
+    public function getListClassOptions()
+    {
+        $classes = ClassTools::singleton()->getVisibleSubClasses(BaseListComponent::class);
+        
+        foreach ($classes as $key => $value) {
+            $classes[$key] = Injector::inst()->get($key)->i18n_singular_name();
+        }
+        
+        return $classes;
     }
     
     /**

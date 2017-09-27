@@ -21,15 +21,10 @@
         
         margin-top: auto;
         
-        header > * {
-          font-size: 1rem;
-          line-height: 1.2;
-        }
-        
         div.details > span {
           display: block;
           margin-right: 0;
-          margin-bottom: $spacer-half;
+          margin-bottom: $spacer-quarter;
         }
         
       }

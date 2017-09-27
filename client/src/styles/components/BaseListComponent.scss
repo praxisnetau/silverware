@@ -55,8 +55,18 @@
       
       > section.content {
         
-        header a {
-          color: inherit;
+        header {
+          
+          margin-bottom: $spacer-half;
+          
+          > * {
+            margin-bottom: 0;
+          }
+          
+          a {
+            color: inherit;
+          }
+          
         }
         
         div.details {

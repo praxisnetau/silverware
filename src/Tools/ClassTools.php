@@ -97,11 +97,11 @@ class ClassTools
             $instance = Injector::inst()->get($class);
             
             if ($ancestor = $instance->stat('hide_ancestor')) {
-                $remove[$ancestor] = $ancestor;
+                $remove[strtolower($ancestor)] = $ancestor;
             }
             
             if ($instance instanceof HiddenClass) {
-                $remove[$class] = $class;
+                $remove[strtolower($class)] = $class;
             }
             
         }
