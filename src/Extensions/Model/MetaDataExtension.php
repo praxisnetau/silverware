@@ -132,6 +132,7 @@ class MetaDataExtension extends DataExtension
     private static $default_list_item_buttons = [
         'link' => [
             'href' => '$MetaLink',
+            'icon' => '$Renderer.ButtonIcon',
             'text' => '$Renderer.ButtonLabel'
         ]
     ];

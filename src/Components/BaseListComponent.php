@@ -62,6 +62,12 @@ class BaseListComponent extends BaseComponent
     const IMAGE_LINK_FILE = 'file';
     
     /**
+     * Define button type constants.
+     */
+    const BUTTON_TYPE_LINK   = 'link';
+    const BUTTON_TYPE_BUTTON = 'button';
+    
+    /**
      * Defines an ancestor class to hide from the admin interface.
      *
      * @var string
@@ -82,6 +88,8 @@ class BaseListComponent extends BaseComponent
         'ShowSummary' => 'Varchar(8)',
         'ShowContent' => 'Varchar(8)',
         'ShowFooter' => 'Varchar(8)',
+        'ButtonType' => 'Varchar(8)',
+        'ButtonIcon' => 'FontIcon',
         'ButtonLabel' => 'Varchar(128)',
         'HeadingLevel' => 'Varchar(2)',
         'ImageLinksTo' => 'Varchar(8)',
@@ -178,6 +186,10 @@ class BaseListComponent extends BaseComponent
                         ColorField::create(
                             'OverlayIconColor',
                             $this->fieldLabel('OverlayIconColor')
+                        ),
+                        FontIconField::create(
+                            'ButtonIcon',
+                            $this->fieldLabel('ButtonIcon')
                         )
                     ]
                 )
@@ -231,6 +243,11 @@ class BaseListComponent extends BaseComponent
                             'DateFormat',
                             $this->fieldLabel('DateFormat')
                         ),
+                        DropdownField::create(
+                            'ButtonType',
+                            $this->fieldLabel('ButtonType'),
+                            $this->getButtonTypeOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
                         TextField::create(
                             'ButtonLabel',
                             $this->fieldLabel('ButtonLabel')
@@ -316,6 +333,8 @@ class BaseListComponent extends BaseComponent
         $labels['DateFormat'] = _t(__CLASS__ . '.DATEFORMAT', 'Date format');
         $labels['LinkImages'] = _t(__CLASS__ . '.LINKIMAGES', 'Link images');
         $labels['LinkTitles'] = _t(__CLASS__ . '.LINKTITLES', 'Link titles');
+        $labels['ButtonIcon'] = _t(__CLASS__ . '.BUTTONICON', 'Button icon');
+        $labels['ButtonType'] = _t(__CLASS__ . '.BUTTONTYPE', 'Button type');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['ImageLinksTo'] = _t(__CLASS__ . '.IMAGELINKSTO', 'Image links to');
@@ -481,6 +500,16 @@ class BaseListComponent extends BaseComponent
     }
     
     /**
+     * Answers true if the item buttons are to be rendered as links.
+     *
+     * @return boolean
+     */
+    public function isButtonLink()
+    {
+        return ($this->ButtonType == self::BUTTON_TYPE_LINK);
+    }
+    
+    /**
      * Answers a message string to be shown when no data is available.
      *
      * @return string
@@ -488,6 +517,19 @@ class BaseListComponent extends BaseComponent
     public function getNoDataMessage()
     {
         return _t(__CLASS__ . '.NODATAAVAILABLE', 'No data available.');
+    }
+    
+    /**
+     * Answers an array of options for the button type field.
+     *
+     * @return array
+     */
+    public function getButtonTypeOptions()
+    {
+        return [
+            self::BUTTON_TYPE_LINK   => _t(__CLASS__ . '.LINK', 'Link'),
+            self::BUTTON_TYPE_BUTTON => _t(__CLASS__ . '.BUTTON', 'Button')
+        ];
     }
     
     /**
