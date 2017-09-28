@@ -488,7 +488,7 @@ class FixtureBlueprint extends BaseBlueprint
     {
         // Detect Value Type:
         
-        if (is_array($value)) {
+        if (is_array($value) && $object->hasField($name)) {
             
             // Handle Array Value:
             
