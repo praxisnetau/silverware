@@ -13,5 +13,5 @@ SilverStripe\Core\Injector\Injector:
   LogFileHandler:
     class: Monolog\Handler\StreamHandler
     constructor:
-      - '../silverware-debug.log'
+      - '../../../silverware-debug.log'
       - 'debug'
