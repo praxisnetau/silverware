@@ -18,6 +18,10 @@
 namespace SilverWare\Extensions\Admin;
 
 use SilverStripe\Admin\LeftAndMainExtension as BaseExtension;
+use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Manifest\ModuleResourceLoader;
 use SilverStripe\Forms\HTMLEditor\TinyMCEConfig;
 use SilverStripe\View\SSViewer;
 use SilverStripe\View\ThemeResourceLoader;
@@ -45,9 +49,37 @@ class LeftAndMainExtension extends BaseExtension
         
         Grid::framework()->doInit();
         
+        // Initialise Site Tree Icons:
+        
+        $this->initSiteTreeIcons();
+        
         // Initialise Themed Editor CSS:
         
         $this->initThemedEditorCSS();
+    }
+    
+    /**
+     * Processes the icon configuration for all site tree classes and resolves resources.
+     *
+     * @return void
+     */
+    protected function initSiteTreeIcons()
+    {
+        foreach (ClassInfo::subclassesFor(SiteTree::class) as $class) {
+            
+            $icon = Config::inst()->get($class, 'icon');
+            
+            $path = ModuleResourceLoader::singleton()->resolvePath($icon);
+            
+            if ($path !== $icon) {
+                
+                $path = preg_replace('#^vendor/#i', 'resources/', $path);
+                
+                Config::modify()->set($class, 'icon', $path);
+                
+            }
+            
+        }
     }
     
     /**

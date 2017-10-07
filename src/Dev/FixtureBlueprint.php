@@ -321,6 +321,10 @@ class FixtureBlueprint extends BaseBlueprint
                 
             }
             
+            foreach ($filter as $k => $v) {
+                $filter[$k] = $this->processValue($v);
+            }
+            
             return $objects->filter($filter);
             
         }

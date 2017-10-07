@@ -97,7 +97,7 @@ class MediaComponent extends BaseComponent
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/MediaComponent.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/MediaComponent.png';
     
     /**
      * Defines an ancestor class to hide from the admin interface.

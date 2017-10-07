@@ -73,7 +73,7 @@ class FeatureComponent extends BaseComponent
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/FeatureComponent.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/FeatureComponent.png';
     
     /**
      * Maps field names to field types for this object.

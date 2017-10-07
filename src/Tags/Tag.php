@@ -131,6 +131,10 @@ class Tag extends DataObject
         
         if ($items instanceof DataList) {
             
+            if (!$items->exists()) {
+                return ArrayList::create();
+            }
+            
             if ($belongs = Config::inst()->get(static::class, 'belongs_many_many')) {
                 
                 // Filter Tags Associated with Items:

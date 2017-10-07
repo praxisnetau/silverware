@@ -67,7 +67,7 @@ class DeveloperComponent extends BaseComponent
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/DeveloperComponent.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/DeveloperComponent.png';
     
     /**
      * Defines an ancestor class to hide from the admin interface.

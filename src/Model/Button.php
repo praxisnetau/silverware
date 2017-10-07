@@ -63,7 +63,7 @@ class Button extends Component
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/Button.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Button.png';
     
     /**
      * Defines an ancestor class to hide from the admin interface.

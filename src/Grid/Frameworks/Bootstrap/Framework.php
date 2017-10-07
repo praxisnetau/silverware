@@ -46,6 +46,14 @@ class Framework extends GridFramework
     ];
     
     /**
+     * Determines whether the framework uses column offset values.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $use_column_offset = false;
+    
+    /**
      * Answers the text alignment class for the specified viewport and value.
      *
      * @param string $viewport

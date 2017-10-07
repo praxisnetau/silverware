@@ -65,7 +65,7 @@ class ListSourceSlide extends Slide
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/ListSourceSlide.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/ListSourceSlide.png';
     
     /**
      * Defines the extension classes to apply to this object.

@@ -60,7 +60,7 @@ class Layout extends SectionHolder
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/Layout.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Layout.png';
     
     /**
      * Defines an ancestor class to hide from the admin interface.

@@ -61,7 +61,7 @@ class HeaderSection extends Section
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/HeaderSection.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/HeaderSection.png';
     
     /**
      * Defines the allowed parents for this object.

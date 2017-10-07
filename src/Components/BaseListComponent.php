@@ -49,11 +49,11 @@ class BaseListComponent extends BaseComponent
     const SHOW_NONE  = 'none';
     
     /**
-     * Define align constants.
+     * Define image align constants.
      */
-    const ALIGN_LEFT    = 'left';
-    const ALIGN_RIGHT   = 'right';
-    const ALIGN_STAGGER = 'stagger';
+    const IMAGE_ALIGN_LEFT    = 'left';
+    const IMAGE_ALIGN_RIGHT   = 'right';
+    const IMAGE_ALIGN_STAGGER = 'stagger';
     
     /**
      * Define image link constants.
@@ -92,8 +92,8 @@ class BaseListComponent extends BaseComponent
         'ButtonIcon' => 'FontIcon',
         'ButtonLabel' => 'Varchar(128)',
         'HeadingLevel' => 'Varchar(2)',
+        'ImageAlign' => 'Varchar(8)',
         'ImageLinksTo' => 'Varchar(8)',
-        'DateFormat' => 'Varchar(32)',
         'OverlayIcon' => 'FontIcon',
         'OverlayIconColor' => 'Color',
         'OverlayImages' => 'Boolean',
@@ -112,9 +112,9 @@ class BaseListComponent extends BaseComponent
         'ShowHeader' => 'all',
         'ShowDetails' => 'all',
         'ShowSummary' => 'all',
+        'ShowContent' => 'none',
         'ShowFooter' => 'all',
         'ImageLinksTo' => 'item',
-        'DateFormat' => 'd MMMM Y',
         'OverlayIcon' => 'search',
         'OverlayImages' => 0,
         'LinkImages' => 1,
@@ -151,6 +151,14 @@ class BaseListComponent extends BaseComponent
     private static $heading_level_default = 'h4';
     
     /**
+     * Hides the image fields from the alignment style extension.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $alignment_style_hide_image = true;
+    
+    /**
      * Answers a list of field objects for the CMS interface.
      *
      * @return FieldList
@@ -178,6 +186,11 @@ class BaseListComponent extends BaseComponent
                             'HeadingLevel',
                             $this->fieldLabel('HeadingLevel'),
                             $this->getTitleLevelOptions()
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
+                        DropdownField::create(
+                            'ImageAlign',
+                            $this->fieldLabel('ImageAlign'),
+                            $this->getImageAlignOptions()
                         )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
                         FontIconField::create(
                             'OverlayIcon',
@@ -238,10 +251,6 @@ class BaseListComponent extends BaseComponent
                             'ShowFooter',
                             $this->fieldLabel('ShowFooter'),
                             $this->getShowOptions()
-                        ),
-                        TextField::create(
-                            'DateFormat',
-                            $this->fieldLabel('DateFormat')
                         ),
                         DropdownField::create(
                             'ButtonType',
@@ -330,7 +339,6 @@ class BaseListComponent extends BaseComponent
         $labels['ShowSummary'] = _t(__CLASS__ . '.SHOWSUMMARY', 'Show summary');
         $labels['ShowContent'] = _t(__CLASS__ . '.SHOWCONTENT', 'Show content');
         $labels['ShowFooter'] = _t(__CLASS__ . '.SHOWFOOTER', 'Show footer');
-        $labels['DateFormat'] = _t(__CLASS__ . '.DATEFORMAT', 'Date format');
         $labels['LinkImages'] = _t(__CLASS__ . '.LINKIMAGES', 'Link images');
         $labels['LinkTitles'] = _t(__CLASS__ . '.LINKTITLES', 'Link titles');
         $labels['ButtonIcon'] = _t(__CLASS__ . '.BUTTONICON', 'Button icon');
@@ -338,6 +346,7 @@ class BaseListComponent extends BaseComponent
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['ImageLinksTo'] = _t(__CLASS__ . '.IMAGELINKSTO', 'Image links to');
+        $labels['ImageAlign'] = _t(__CLASS__ . '.IMAGEALIGNMENT', 'Image alignment');
         $labels['OverlayImages'] = _t(__CLASS__ . '.OVERLAYIMAGES', 'Overlay images');
         $labels['ListImageOptions'] = _t(__CLASS__ . '.LISTIMAGES', 'List Images');
         $labels['OverlayIcon'] = _t(__CLASS__ . '.OVERLAYICON', 'Overlay icon');
@@ -384,9 +393,30 @@ class BaseListComponent extends BaseComponent
     {
         $classes = ['items'];
         
+        if ($class = $this->getImageAlignClass()) {
+            $classes[] = $class;
+        }
+        
         $this->extend('updateWrapperClassNames', $classes);
         
         return $classes;
+    }
+    
+    /**
+     * Answers the image align class for the receiver.
+     *
+     * @return string
+     */
+    public function getImageAlignClass()
+    {
+        switch ($this->ImageAlign) {
+            case self::IMAGE_ALIGN_LEFT:
+                return 'image-align-left';
+            case self::IMAGE_ALIGN_RIGHT:
+                return 'image-align-right';
+            case self::IMAGE_ALIGN_STAGGER:
+                return 'image-align-stagger';
+        }
     }
     
     /**
@@ -544,6 +574,20 @@ class BaseListComponent extends BaseComponent
             self::SHOW_FIRST => _t(__CLASS__ . '.FIRST', 'First'),
             self::SHOW_LAST => _t(__CLASS__ . '.LAST', 'Last'),
             self::SHOW_ALL => _t(__CLASS__ . '.ALL', 'All')
+        ];
+    }
+    
+    /**
+     * Answers an array of options for the image align field.
+     *
+     * @return array
+     */
+    public function getImageAlignOptions()
+    {
+        return [
+            self::IMAGE_ALIGN_LEFT => _t(__CLASS__ . '.LEFT', 'Left'),
+            self::IMAGE_ALIGN_RIGHT => _t(__CLASS__ . '.LEFT', 'Right'),
+            self::IMAGE_ALIGN_STAGGER => _t(__CLASS__ . '.LEFT', 'Stagger')
         ];
     }
     

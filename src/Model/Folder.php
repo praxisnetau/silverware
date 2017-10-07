@@ -42,7 +42,7 @@ class Folder extends SiteTree implements PermissionProvider
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/Folder.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Folder.png';
     
     /**
      * Defines the default values for the fields of this object.

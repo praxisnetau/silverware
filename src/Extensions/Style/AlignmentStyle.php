@@ -66,29 +66,46 @@ class AlignmentStyle extends StyleExtension
         
         parent::updateCMSFields($fields);
         
+        // Create Child Fields:
+        
+        $children = [];
+        
+        if (!$this->owner->config()->alignment_style_hide_text) {
+            
+            $children[] = ViewportsField::create(
+                'TextAlignment',
+                $this->owner->fieldLabel('TextAlignment'),
+                $this->owner->getTextAlignmentOptions()
+            );
+            
+        }
+        
+        if (!$this->owner->config()->alignment_style_hide_image) {
+            
+            $children[] = ViewportsField::create(
+                'ImageAlignment',
+                $this->owner->fieldLabel('ImageAlignment'),
+                $this->owner->getImageAlignmentOptions()
+            );
+            
+        }
+        
         // Create Style Fields:
         
-        $fields->addFieldsToTab(
-            'Root.Style',
-            [
-                FieldSection::create(
-                    'AlignmentStyle',
-                    $this->owner->fieldLabel('AlignmentStyle'),
-                    [
-                        ViewportsField::create(
-                            'TextAlignment',
-                            $this->owner->fieldLabel('TextAlignment'),
-                            $this->owner->getTextAlignmentOptions()
-                        ),
-                        ViewportsField::create(
-                            'ImageAlignment',
-                            $this->owner->fieldLabel('ImageAlignment'),
-                            $this->owner->getImageAlignmentOptions()
-                        )
-                    ]
-                )
-            ]
-        );
+        if (!empty($children)) {
+            
+            $fields->addFieldsToTab(
+                'Root.Style',
+                [
+                    $section = FieldSection::create(
+                        'AlignmentStyle',
+                        $this->owner->fieldLabel('Alignment'),
+                        $children
+                    )
+                ]
+            );
+            
+        }
     }
     
     /**
@@ -100,9 +117,9 @@ class AlignmentStyle extends StyleExtension
      */
     public function updateFieldLabels(&$labels)
     {
+        $labels['Alignment'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');
         $labels['TextAlignment']  = _t(__CLASS__ . '.TEXT', 'Text');
         $labels['ImageAlignment'] = _t(__CLASS__ . '.IMAGES', 'Images');
-        $labels['AlignmentStyle'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');
     }
     
     /**

@@ -17,11 +17,11 @@
 
 namespace SilverWare\Folders;
 
+use SilverWare\Model\Component;
 use SilverWare\Model\Folder;
-use SilverWare\Model\Layout;
 
 /**
- * An extension of the folder class for a layout folder.
+ * An extension of the folder class for a component folder.
  *
  * @package SilverWare\Folders
  * @author Colin Tucker <colin@praxis.net.au>
@@ -29,7 +29,7 @@ use SilverWare\Model\Layout;
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class LayoutFolder extends Folder
+class ComponentFolder extends Folder
 {
     /**
      * Description of this object.
@@ -37,7 +37,7 @@ class LayoutFolder extends Folder
      * @var string
      * @config
      */
-    private static $description = 'Holds a series of SilverWare layouts';
+    private static $description = 'Holds a series of SilverWare component instances';
     
     /**
      * Icon file for this object.
@@ -45,7 +45,7 @@ class LayoutFolder extends Folder
      * @var string
      * @config
      */
-    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/LayoutFolder.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/ComponentFolder.png';
     
     /**
      * Defines an ancestor class to hide from the admin interface.
@@ -56,22 +56,22 @@ class LayoutFolder extends Folder
     private static $hide_ancestor = Folder::class;
     
     /**
-     * Defines the default child class for this object.
-     *
-     * @var string
-     * @config
-     */
-    private static $default_child = Layout::class;
-    
-    /**
      * Defines the allowed children for this object.
      *
      * @var array|string
      * @config
      */
     private static $allowed_children = [
-        Layout::class
+        Component::class
     ];
+    
+    /**
+     * Determines whether or not to hide the folder from the CMS tree.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $hide_from_tree = true;
     
     /**
      * Populates the default values for the fields of the receiver.
@@ -86,6 +86,22 @@ class LayoutFolder extends Folder
         
         // Populate Defaults:
         
-        $this->Title = _t(__CLASS__ . '.DEFAULTTITLE', 'Layouts');
+        $this->Title = _t(__CLASS__ . '.DEFAULTTITLE', 'Components');
+    }
+    
+    /**
+     * Answers a string of CSS classes to apply to the receiver in the CMS tree.
+     *
+     * @return string
+     */
+    public function CMSTreeClasses()
+    {
+        $classes = parent::CMSTreeClasses();
+        
+        if ($this->config()->hide_from_tree) {
+            $classes .= ' hidden';
+        }
+        
+        return $classes;
     }
 }

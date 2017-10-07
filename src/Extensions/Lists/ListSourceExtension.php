@@ -85,6 +85,13 @@ class ListSourceExtension extends DataExtension
     ];
     
     /**
+     * Holds a list source instance which overrides the associated list source.
+     *
+     * @var ListSource
+     */
+    protected $source;
+    
+    /**
      * Updates the CMS fields of the extended object.
      *
      * @param FieldList $fields List of CMS fields from the extended object.
@@ -206,7 +213,7 @@ class ListSourceExtension extends DataExtension
         
         // Obtain Items from Source:
         
-        if ($source = $this->getSource()) {
+        if ($source = $this->owner->getSource()) {
             
             // Merge List Items:
             
@@ -250,7 +257,7 @@ class ListSourceExtension extends DataExtension
         
         if ($this->owner->PaginateItems) {
             
-            $items = PaginatedList::create($items, $_GET)->setPaginationGetVar($this->getPaginationGetVar());
+            $items = PaginatedList::create($items, $_GET)->setPaginationGetVar($this->owner->getPaginationGetVar());
             
             if ($this->owner->ItemsPerPage) {
                 $items->setPageLength($this->owner->ItemsPerPage);
@@ -284,19 +291,19 @@ class ListSourceExtension extends DataExtension
      *
      * @param ListSource|SS_List $source
      *
-     * @return $this
+     * @return DataObject
      */
     public function setSource($source)
     {
         if ($source instanceof ListSource) {
-            $this->owner->ListSource = $source;
+            $this->source = $source;
         }
         
         if ($source instanceof SS_List) {
-            $this->owner->ListSource = ListWrapper::create($source);
+            $this->source = ListWrapper::create($source);
         }
         
-        return $this;
+        return $this->owner;
     }
     
     /**
@@ -306,11 +313,7 @@ class ListSourceExtension extends DataExtension
      */
     public function getSource()
     {
-        if (!$this->owner->ListSourceID) {
-            return $this->owner->getField('ListSource');
-        } else {
-            return $this->owner->ListSource();
-        }
+        return $this->source ?: $this->owner->ListSource();
     }
     
     /**

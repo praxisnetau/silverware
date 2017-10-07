@@ -17,6 +17,7 @@
 
 namespace SilverWare\Extensions\Model;
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
@@ -39,7 +40,55 @@ class DetailFieldsExtension extends Extension
      * @var string
      * @config
      */
-    private static $detail_fields_heading_level_default = 'h3';
+    private static $default_detail_fields_heading_level = 'h3';
+    
+    /**
+     * Defines the default detail field heading level to use.
+     *
+     * @var string
+     * @config
+     */
+    private static $default_detail_field_heading_level = 'h4';
+    
+    /**
+     * Defines the default setting for showing the detail fields inline.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $default_detail_fields_inline = false;
+    
+    /**
+     * Defines the default setting for hiding the detail fields header.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $default_detail_fields_hide_header = false;
+    
+    /**
+     * Defines the default setting for hiding the detail field icons.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $default_detail_fields_hide_icons = false;
+    
+    /**
+     * Defines the default setting for hiding the detail field names.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $default_detail_fields_hide_names = false;
+    
+    /**
+     * Defines the default setting for using a heading tag for each detail field.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $default_detail_fields_use_heading = false;
     
     /**
      * Answers an array list object containing the detail fields for the template.
@@ -57,6 +106,10 @@ class DetailFieldsExtension extends Extension
         foreach ($this->owner->getDetailFieldsConfig() as $name => $spec) {
             
             if ($spec) {
+                
+                if (!is_array($spec)) {
+                    $spec = ['text' => $spec];
+                }
                 
                 foreach ($spec as $item => $value) {
                     
@@ -157,7 +210,89 @@ class DetailFieldsExtension extends Extension
     {
         $tag = $this->owner->config()->detail_fields_heading_level;
         
-        return $tag ? $tag : $this->owner->config()->detail_fields_heading_level_default;
+        return $tag ? $tag : Config::inst()->get(static::class, 'default_detail_fields_heading_level');
+    }
+    
+    /**
+     * Answers the heading tag for an individual detail field.
+     *
+     * @return string
+     */
+    public function getDetailFieldHeadingTag()
+    {
+        $tag = $this->owner->config()->detail_field_heading_level;
+        
+        return $tag ? $tag : Config::inst()->get(static::class, 'default_detail_field_heading_level');
+    }
+    
+    /**
+     * Answers true if heading tags are to be used for each detail field.
+     *
+     * @return boolean
+     */
+    public function getDetailFieldsUseHeading()
+    {
+        if ($this->owner->config()->detail_fields_use_heading) {
+            return true;
+        }
+        
+        return Config::inst()->get(static::class, 'default_detail_fields_use_heading');
+    }
+    
+    /**
+     * Answers true if the detail fields are to be shown inline.
+     *
+     * @return boolean
+     */
+    public function getDetailFieldsInline()
+    {
+        if ($this->owner->config()->detail_fields_inline) {
+            return true;
+        }
+        
+        return Config::inst()->get(static::class, 'default_detail_fields_inline');
+    }
+    
+    /**
+     * Answers true if the detail fields header is to be hidden.
+     *
+     * @return boolean
+     */
+    public function getDetailFieldsHideHeader()
+    {
+        if ($this->owner->config()->detail_fields_hide_header) {
+            return true;
+        }
+        
+        return Config::inst()->get(static::class, 'default_detail_fields_hide_header');
+    }
+    
+    /**
+     * Answers true if the detail fields icons are to be hidden.
+     *
+     * @return boolean
+     */
+    public function getDetailFieldsHideIcons()
+    {
+        if ($this->owner->config()->detail_fields_hide_icons) {
+            return true;
+        }
+        
+        return Config::inst()->get(static::class, 'default_detail_fields_hide_icons');
+    }
+    
+    /**
+     * Answers true if the detail fields names are to be hidden.
+     *
+     * @return boolean
+     */
+    public function getDetailFieldsHideNames()
+    {
+        if ($this->owner->config()->detail_fields_hide_names) {
+            return true;
+        }
+        
+        return Config::inst()->get(static::class, 'default_detail_fields_hide_names');
     }
     
     /**

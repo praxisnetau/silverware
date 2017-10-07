@@ -11,8 +11,9 @@
     line-height: #{$size}px;
     
     > i.fa {
-      height: #{$size}px;
-      line-height: #{$size}px;
+      top: 50%;
+      position: relative;
+      transform: translateY(-50%);
     }
     
   }
