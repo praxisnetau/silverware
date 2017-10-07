@@ -1,7 +1,7 @@
 /* Detail Fields Extension Styles
 ===================================================================================================================== */
 
-.detail-fields {
+div.detail-fields {
   
   a {
     color: inherit;
@@ -15,7 +15,8 @@
     
     > li > dl,
     > li > dl > dd {
-      margin-bottom: 0;
+      margin: 0;
+      padding: 0;
     }
     
   }

@@ -82,7 +82,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/Component.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Component.png';
     
     /**
      * Determines whether this object can exist at the root level.

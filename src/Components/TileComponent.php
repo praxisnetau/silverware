@@ -58,5 +58,5 @@ class TileComponent extends BaseListComponent
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/TileComponent.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/TileComponent.png';
 }

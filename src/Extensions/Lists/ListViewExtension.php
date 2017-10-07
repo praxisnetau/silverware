@@ -21,13 +21,16 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Versioned\Versioned;
 use SilverWare\Colorpicker\Forms\ColorField;
 use SilverWare\Components\BaseListComponent;
 use SilverWare\Components\ListComponent;
+use SilverWare\Folders\ComponentFolder;
 use SilverWare\FontIcons\Forms\FontIconField;
 use SilverWare\Forms\DimensionsField;
 use SilverWare\Forms\FieldSection;
@@ -51,7 +54,7 @@ class ListViewExtension extends DataExtension
     /**
      * Define constants.
      */
-    const FIELD_WRAPPER = 'ListConfig';
+    const FIELD_WRAPPER = 'ListObject';
     
     /**
      * Maps field names to field types for the extended object.
@@ -61,7 +64,17 @@ class ListViewExtension extends DataExtension
      */
     private static $db = [
         'ListClass' => 'Varchar(255)',
-        'ListConfig' => 'Text'
+        'ListInherit' => 'Boolean'
+    ];
+    
+    /**
+     * Defines the has-one associations for the extended object.
+     *
+     * @var array
+     * @config
+     */
+    private static $has_one = [
+        'ListObject' => BaseListComponent::class
     ];
     
     /**
@@ -94,84 +107,107 @@ class ListViewExtension extends DataExtension
         
         $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
         
-        // Create List Component:
+        // Obtain List Object:
         
-        $list = $this->owner->getListComponent();
+        $list = $this->owner->getListObject();
         
         // Create Style Fields:
         
         $fields->addFieldToTab(
             'Root.Style',
-            FieldSection::create(
+            $styleOpts = FieldSection::create(
                 'ListViewStyle',
                 $this->owner->fieldLabel('ListView'),
                 [
                     DropdownField::create(
                         $this->nestName('HeadingLevel'),
                         $this->owner->fieldLabel('HeadingLevel'),
-                        $list->getTitleLevelOptions()
+                        $list->getTitleLevelOptions(),
+                        $list->HeadingLevel
                     )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                     ViewportsField::create(
                         $this->nestName('TextAlignment'),
                         $this->owner->fieldLabel('TextAlignment'),
-                        $list->getTextAlignmentOptions()
+                        $list->getTextAlignmentOptions(),
+                        $list->TextAlignment
                     ),
-                    ViewportsField::create(
-                        $this->nestName('ImageAlignment'),
+                    DropdownField::create(
+                        $this->nestName('ImageAlign'),
                         $this->owner->fieldLabel('ImageAlignment'),
-                        $list->getImageAlignmentOptions()
-                    ),
+                        $list->getImageAlignOptions(),
+                        $list->ImageAlign
+                    )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                     DimensionsField::create(
                         $this->nestName('ImageResize'),
-                        $this->owner->fieldLabel('ImageResize')
+                        $this->owner->fieldLabel('ImageResize'),
+                        $list->ImageResize
                     ),
                     DropdownField::create(
                         $this->nestName('ImageResizeMethod'),
                         $this->owner->fieldLabel('ImageResizeMethod'),
-                        ImageTools::singleton()->getResizeMethods()
+                        ImageTools::singleton()->getResizeMethods(),
+                        $list->ImageResizeMethod
                     )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                     FontIconField::create(
                         $this->nestName('OverlayIcon'),
                         $this->owner->fieldLabel('OverlayIcon')
-                    ),
+                    )->setValue($list->OverlayIcon),
                     ColorField::create(
                         $this->nestName('OverlayIconColor'),
-                        $this->owner->fieldLabel('OverlayIconColor')
-                    )
+                        $this->owner->fieldLabel('OverlayIconColor'),
+                        $list->OverlayIconColor
+                    ),
+                    FontIconField::create(
+                        $this->nestName('ButtonIcon'),
+                        $this->owner->fieldLabel('ButtonIcon')
+                    )->setValue($list->ButtonIcon)
                 ]
             )
         );
         
         // Add List Style Fields:
         
-        $fields->addFieldsToTab('Root.Style', $this->nest($list->getListStyleFields()));
+        $fields->addFieldsToTab('Root.Style', $this->getListStyleFields());
         
         // Create Options Fields:
         
         $fields->addFieldsToTab(
             'Root.Options',
             [
+                $inheritOpts = FieldSection::create(
+                    'ListInheritanceOptions',
+                    $this->owner->fieldLabel('ListInheritance'),
+                    [
+                        CheckboxField::create(
+                            'ListInherit',
+                            $this->owner->fieldLabel('ListInherit')
+                        )
+                    ]
+                ),
                 $sourceOpts = FieldSection::create(
                     'ListSourceOptions',
                     $this->owner->fieldLabel('ListSource'),
                     [
                         TextField::create(
                             $this->nestName('NumberOfItems'),
-                            $this->owner->fieldLabel('NumberOfItems')
+                            $this->owner->fieldLabel('NumberOfItems'),
+                            $list->NumberOfItems
                         ),
                         DropdownField::create(
                             $this->nestName('ReverseItems'),
                             $this->owner->fieldLabel('ReverseItems'),
-                            $this->getToggleOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $this->getToggleOptions(),
+                            $list->ReverseItems
+                        ),
                         DropdownField::create(
                             $this->nestName('ImageItems'),
                             $this->owner->fieldLabel('ImageItems'),
-                            $this->getToggleOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                            $this->getToggleOptions(),
+                            $list->ImageItems
+                        )
                     ]
                 ),
-                FieldSection::create(
+                $viewOpts = FieldSection::create(
                     'ListViewOptions',
                     $this->owner->fieldLabel('ListView'),
                     [
@@ -180,79 +216,77 @@ class ListViewExtension extends DataExtension
                             $this->owner->fieldLabel('ListClass'),
                             $this->owner->getListClassOptions()
                         )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                        TextField::create(
-                            $this->nestName('Title'),
-                            $this->owner->fieldLabel('ListTitle')
-                        ),
                         DropdownField::create(
                             $this->nestName('ShowImage'),
                             $this->owner->fieldLabel('ShowImage'),
-                            $list->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $list->getShowOptions(),
+                            $list->ShowImage
+                        ),
                         DropdownField::create(
                             $this->nestName('ShowHeader'),
                             $this->owner->fieldLabel('ShowHeader'),
-                            $list->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $list->getShowOptions(),
+                            $list->ShowHeader
+                        ),
                         DropdownField::create(
                             $this->nestName('ShowDetails'),
                             $this->owner->fieldLabel('ShowDetails'),
-                            $list->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $list->getShowOptions(),
+                            $list->ShowDetails
+                        ),
                         DropdownField::create(
                             $this->nestName('ShowSummary'),
                             $this->owner->fieldLabel('ShowSummary'),
-                            $list->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $list->getShowOptions(),
+                            $list->ShowSummary
+                        ),
                         DropdownField::create(
                             $this->nestName('ShowContent'),
                             $this->owner->fieldLabel('ShowContent'),
-                            $list->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $list->getShowOptions(),
+                            $list->ShowContent
+                        ),
                         DropdownField::create(
                             $this->nestName('ShowFooter'),
                             $this->owner->fieldLabel('ShowFooter'),
-                            $list->getShowOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                        TextField::create(
-                            $this->nestName('DateFormat'),
-                            $this->owner->fieldLabel('DateFormat')
+                            $list->getShowOptions(),
+                            $list->ShowFooter
                         ),
                         TextField::create(
                             $this->nestName('ButtonLabel'),
-                            $this->owner->fieldLabel('ButtonLabel')
+                            $this->owner->fieldLabel('ButtonLabel'),
+                            $list->ButtonLabel
                         ),
                         DropdownField::create(
                             $this->nestName('LinkTitles'),
                             $this->owner->fieldLabel('LinkTitles'),
-                            $this->getToggleOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
-                        DropdownField::create(
-                            $this->nestName('TitleHidden'),
-                            $this->owner->fieldLabel('TitleHidden'),
-                            $this->getToggleOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                            $this->getToggleOptions(),
+                            $list->LinkTitles
+                        )
                     ]
                 ),
-                FieldSection::create(
+                $imageOpts = FieldSection::create(
                     'ListImageOptions',
                     $this->owner->fieldLabel('ListImages'),
                     [
                         DropdownField::create(
                             $this->nestName('LinkImages'),
                             $this->owner->fieldLabel('LinkImages'),
-                            $this->getToggleOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $this->getToggleOptions(),
+                            $list->LinkImages
+                        ),
                         DropdownField::create(
                             $this->nestName('ImageLinksTo'),
                             $this->owner->fieldLabel('ImageLinksTo'),
-                            $list->getImageLinksToOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                            $list->getImageLinksToOptions(),
+                            $list->ImageLinksTo
+                        ),
                         DropdownField::create(
                             $this->nestName('OverlayImages'),
                             $this->owner->fieldLabel('OverlayImages'),
-                            $this->getToggleOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                            $this->getToggleOptions(),
+                            $list->OverlayImages
+                        )
                     ]
                 )
             ]
@@ -260,7 +294,7 @@ class ListViewExtension extends DataExtension
         
         // Add List Option Fields:
         
-        $fields->addFieldsToTab('Root.Options', $this->nest($list->getListOptionFields()));
+        $fields->addFieldsToTab('Root.Options', $this->getListOptionFields());
         
         // Merge Pagination Fields:
         
@@ -270,19 +304,30 @@ class ListViewExtension extends DataExtension
                 DropdownField::create(
                     $this->nestName('PaginateItems'),
                     $this->owner->fieldLabel('PaginateItems'),
-                    $this->getToggleOptions()
-                )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    $this->getToggleOptions(),
+                    $list->PaginateItems
+                ),
                 TextField::create(
                     $this->nestName('ItemsPerPage'),
-                    $this->owner->fieldLabel('ItemsPerPage')
+                    $this->owner->fieldLabel('ItemsPerPage'),
+                    $list->ItemsPerPage
                 )
             ]);
             
         }
         
-        // Load List Config:
+        // Hide Fields (if required):
         
-        $this->owner->loadListConfig($fields);
+        if (!$this->owner->canListInherit()) {
+            $inheritOpts->addExtraClass('hidden');
+        }
+        
+        if ($this->owner->ListInherit) {
+            $viewOpts->addExtraClass('hidden');
+            $imageOpts->addExtraClass('hidden');
+            $styleOpts->addExtraClass('hidden');
+            $sourceOpts->addExtraClass('hidden');
+        }
     }
     
     /**
@@ -307,9 +352,9 @@ class ListViewExtension extends DataExtension
         $labels['ShowSummary'] = _t(__CLASS__ . '.SHOWSUMMARY', 'Show summary');
         $labels['ShowContent'] = _t(__CLASS__ . '.SHOWCONTENT', 'Show content');
         $labels['ShowFooter'] = _t(__CLASS__ . '.SHOWFOOTER', 'Show footer');
-        $labels['DateFormat'] = _t(__CLASS__ . '.DATEFORMAT', 'Date format');
         $labels['LinkTitles'] = _t(__CLASS__ . '.LINKTITLES', 'Link titles');
         $labels['LinkImages'] = _t(__CLASS__ . '.LINKIMAGES', 'Link images');
+        $labels['ButtonIcon'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button icon');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['ItemsPerPage'] = _t(__CLASS__ . '.ITEMSPERPAGE', 'Items per page');
@@ -319,7 +364,6 @@ class ListViewExtension extends DataExtension
         $labels['ImageResizeMethod'] = _t(__CLASS__ . '.IMAGERESIZEMETHOD', 'Image resize method');
         $labels['ImageAlignment'] = _t(__CLASS__ . '.IMAGEALIGNMENT', 'Image alignment');
         $labels['TextAlignment'] = _t(__CLASS__ . '.TEXTALIGNMENT', 'Text alignment');
-        $labels['TitleHidden'] = _t(__CLASS__ . '.HIDELISTTITLE', 'Hide list title');
         $labels['OverlayImages'] = _t(__CLASS__ . '.OVERLAYIMAGES', 'Overlay images');
         $labels['OverlayIcon'] = _t(__CLASS__ . '.OVERLAYICON', 'Overlay icon');
         $labels['OverlayIconColor'] = _t(__CLASS__ . '.OVERLAYICONCOLOR', 'Overlay icon color');
@@ -327,6 +371,8 @@ class ListViewExtension extends DataExtension
         $labels['ReverseItems'] = _t(__CLASS__ . '.REVERSEITEMS', 'Reverse items');
         $labels['ImageItems'] = _t(__CLASS__ . '.IMAGEITEMS', 'Show only items with images');
         $labels['ListClass'] = _t(__CLASS__ . '.LISTCLASS', 'List class');
+        $labels['ListInherit'] = _t(__CLASS__ . '.INHERITFROMPARENT', 'Inherit from parent');
+        $labels['ListInheritance'] = _t(__CLASS__ . '.LISTINHERITANCE', 'List Inheritance');
     }
     
     /**
@@ -336,153 +382,74 @@ class ListViewExtension extends DataExtension
      */
     public function onBeforeWrite()
     {
-        if ($this->owner->isInDB()) {
-            
-            if ($request = Controller::curr()->getRequest()) {
-                
-                if ($config = $request->postVar(self::FIELD_WRAPPER)) {
-                    $this->owner->setListConfig($config);
-                }
-                
-            }
-            
-        }
+        $this->owner->updateListObject();
     }
     
     /**
-     * Defines the value of the list config field.
-     *
-     * @param array $config
-     *
-     * @return $this
-     */
-    public function setListConfig($config)
-    {
-        return $this->owner->setField('ListConfig', Convert::array2json($config));
-    }
-    
-    /**
-     * Answers the value of the list config field.
-     *
-     * @return array|null
-     */
-    public function getListConfig()
-    {
-        return ($config = $this->owner->getField('ListConfig')) ? Convert::json2array($config) : null;
-    }
-    
-    /**
-     * Answers true if the extended object has list config defined.
-     *
-     * @return boolean
-     */
-    public function hasListConfig()
-    {
-        return is_array($this->owner->getListConfig());
-    }
-    
-    /**
-     * Answers an array of list configuration with values inherited from parent objects.
-     *
-     * @return array
-     */
-    public function getListConfigInherited()
-    {
-        // Obtain List Configuration:
-        
-        $config = $this->owner->hasListConfig() ? $this->owner->getListConfig() : [];
-        
-        // Obtain Inherited List Configuration:
-        
-        if ($this->owner->hasMethod('getParent')) {
-            
-            // Obtain Parent:
-            
-            $parent = $this->owner->getParent();
-            
-            // Iterate While Parent Valid:
-            
-            while ($parent) {
-                
-                // Detect Extension and Configuration:
-                
-                if ($parent->hasExtension(self::class) && $parent->hasListConfig()) {
-                    
-                    // Iterate Parent Configuration:
-                    
-                    foreach ($parent->getListConfig() as $name => $value) {
-                        
-                        if (!$this->isEmptyValue($value)) {
-                            
-                            if (isset($config[$name]) && $this->isEmptyValue($config[$name])) {
-                                $config[$name] = $value;
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-                // Obtain Next Ancestor:
-                
-                $parent = $parent->hasMethod('getParent') ? $parent->getParent() : false;
-                
-            }
-            
-        }
-        
-        // Answer Config:
-        
-        return $config;
-    }
-    
-    /**
-     * Loads the list config into the given list of fields.
-     *
-     * @param FieldList $fields
+     * Event method called after the extended object is published.
      *
      * @return void
      */
-    public function loadListConfig(FieldList $fields)
+    public function onAfterPublish()
     {
-        // Obtain List Configuration:
-        
-        $config = $this->owner->getListConfig();
-        
-        // Bail Early (if not array):
-        
-        if (!is_array($config)) {
-            return;
+        $this->owner->getListObject()->publishSingle();
+    }
+    
+    /**
+     * Event method called after the extended object is version published.
+     *
+     * @param int|string $fromStage
+     * @param string $toStage
+     *
+     * @return void
+     */
+    public function onAfterVersionedPublish($fromStage, $toStage)
+    {
+        $this->owner->getListObject()->copyVersionToStage($fromStage, $toStage);
+    }
+    
+    /**
+     * Event method called after the extended object is unpublished.
+     *
+     * @return void
+     */
+    public function onAfterUnpublish()
+    {
+        $this->owner->getListObject()->doUnpublish();
+    }
+    
+    /**
+     * Event method called after the extended object is archived.
+     *
+     * @return void
+     */
+    public function onAfterArchive()
+    {
+        $this->owner->getListObject()->doArchive();
+    }
+    
+    /**
+     * Event method called after the extended object is reverted to live.
+     *
+     * @return void
+     */
+    public function onAfterRevertToLive()
+    {
+        $this->owner->getListObject()->doRevertToLive();
+    }
+    
+    /**
+     * Answers true if the extended object can inherit a list object from the parent.
+     *
+     * @return boolean
+     */
+    public function canListInherit()
+    {
+        if ($parent = $this->owner->getParent()) {
+            return $parent->hasExtension(self::class);
         }
         
-        // Iterate Configuration Values:
-        
-        foreach ($config as $name => $value) {
-            
-            if (is_array($value)) {
-                
-                // Handle Array Value:
-                
-                foreach ($value as $k => $v) {
-                    
-                    if ($field = $fields->dataFieldByName(self::FIELD_WRAPPER . "[$name][$k]")) {
-                        $field->setValue($v);
-                    }
-                    
-                }
-                
-            } else {
-                
-                // Handle Regular Value:
-                
-                if ($field = $fields->dataFieldByName(self::FIELD_WRAPPER . "[$name]")) {
-                    $field->setValue($value);
-                }
-                
-            }
-            
-        }
+        return false;
     }
     
     /**
@@ -524,33 +491,25 @@ class ListViewExtension extends DataExtension
     }
     
     /**
+     * Answers the default values for the list component.
+     *
+     * @return array
+     */
+    public function getListComponentDefaults()
+    {
+        return $this->owner->config()->list_view_defaults ?: [];
+    }
+    
+    /**
      * Answers the list component for the template.
      *
      * @return BaseListComponent
      */
     public function getListComponent()
     {
-        // Create List Component:
+        // Obtain List Object:
         
-        $list = Injector::inst()->create($this->owner->getListComponentClass());
-        
-        // Obtain List Configuration:
-        
-        $config = $this->owner->getListConfigInherited();
-        
-        // Configure List Component:
-        
-        if (is_array($config)) {
-            
-            foreach ($config as $name => $value) {
-                
-                if (!$this->isEmptyValue($value)) {
-                    $list->setField($name, $value);
-                }
-                
-            }
-            
-        }
+        $list = $this->owner->getListObjectInherited();
         
         // Define List Parent:
         
@@ -586,39 +545,220 @@ class ListViewExtension extends DataExtension
      */
     public function getListClassOptions()
     {
-        $classes = ClassTools::singleton()->getVisibleSubClasses(BaseListComponent::class);
+        $options = [];
         
-        foreach ($classes as $key => $value) {
-            $classes[$key] = Injector::inst()->get($key)->i18n_singular_name();
+        foreach (ClassTools::singleton()->getVisibleSubClasses(BaseListComponent::class) as $class) {
+            $options[$class] = Injector::inst()->get($class)->i18n_singular_name();
         }
         
-        return $classes;
+        return $options;
     }
     
     /**
-     * Answers true if the given value is considered to be an 'empty' value.
+     * Answers the list component instance associated with the extended object.
      *
-     * @param mixed $value
-     *
-     * @return boolean
+     * @return BaseListComponent
      */
-    protected function isEmptyValue($value)
+    public function getListObject()
     {
-        if (is_array($value)) {
+        return $this->owner->getComponent('ListObject');
+    }
+    
+    /**
+     * Answers the list component instance associated with the extended object or alternatively the parent.
+     *
+     * @return BaseListComponent
+     */
+    public function getListObjectInherited()
+    {
+        return $this->owner->ListInherit ? $this->owner->getParent()->getListObject() : $this->owner->getListObject();
+    }
+    
+    /**
+     * Create a new instance of the list component.
+     *
+     * @return BaseListComponent
+     */
+    public function createListObject()
+    {
+        // Create List Object:
+        
+        $object = Injector::inst()->create(
+            $this->owner->getListComponentClass(),
+            $this->owner->getListComponentDefaults()
+        );
+        
+        // Define List Object:
+        
+        if ($folder = ComponentFolder::find()) {
+            $object->ParentID = $folder->ID;
+            $object->write();
+        }
+        
+        // Answer List Object:
+        
+        return $object;
+    }
+    
+    /**
+     * Answers either an existing instance or a new instance of the list object.
+     *
+     * @return BaseListComponent
+     */
+    public function findOrMakeListObject()
+    {
+        // Obtain List Object:
+        
+        $object = $this->owner->getListObject();
+        
+        // Create List Object (if required):
+        
+        if (!$object->isInDB()) {
+            $object = $this->owner->createListObject();
+        }
+        
+        // Answer List Object:
+        
+        return $object;
+    }
+    
+    /**
+     * Updates the list component instance within the database.
+     *
+     * @return void
+     */
+    public function updateListObject()
+    {
+        // Bail Early (if not draft):
+        
+        if (Versioned::get_stage() !== Versioned::DRAFT) {
+           return; 
+        }
+        
+        // Obtain List Object:
+        
+        $object = $this->owner->findOrMakeListObject();
+        
+        // Verify List Object Exists:
+        
+        if ($object->isInDB()) {
             
-            foreach ($value as $item) {
+            // Obtain List Object Class:
+            
+            $class = $this->owner->getListComponentClass();
+            
+            // Mutate List Object (if required):
+            
+            if ($object->ClassName != $class) {
+                $object = $object->newClassInstance($class);
+            }
+            
+            // Define List Object:
+            
+            $object->Title     = $this->owner->Title;
+            $object->HideTitle = 1;
+            
+            if ($request = Controller::curr()->getRequest()) {
                 
-                if ($this->isEmptyValue($item)) {
-                    return true;
+                if ($config = $request->postVar(self::FIELD_WRAPPER)) {
+                    
+                    foreach ($config as $name => $value) {
+                        $object->$name = $value;
+                    }
+                    
                 }
                 
             }
             
-            return false;
+            // Record List Object:
+            
+            $object->write();
+            
+            // Associate with Owner:
+            
+            $this->owner->ListObjectID = $object->ID;
+            
+        }
+    }
+    
+    /**
+     * Answers the style fields for the list component.
+     *
+     * @return FieldList
+     */
+    protected function getListStyleFields()
+    {
+        $fields = FieldList::create();
+        
+        if ($list = $this->owner->getListObject()) {
+            
+            $fields = $list->getListStyleFields();
+            
+            foreach ($fields->dataFields() as $field) {
+                
+                $name = $field->getName();
+                
+                if (isset($list->$name)) {
+                    $field->setValue($list->$name, $list);
+                }
+                
+            }
+            
+            $this->hideFields($fields);
             
         }
         
-        return ($value === '');
+        return $this->nest($fields);
+    }
+    
+    /**
+     * Answers the option fields for the list component.
+     *
+     * @return FieldList
+     */
+    protected function getListOptionFields()
+    {
+        $fields = FieldList::create();
+        
+        if ($list = $this->owner->getListObject()) {
+            
+            $fields = $list->getListOptionFields();
+            
+            foreach ($fields->dataFields() as $field) {
+                
+                $name = $field->getName();
+                
+                if (isset($list->$name)) {
+                    $field->setValue($list->$name, $list);
+                }
+                
+            }
+            
+            $this->hideFields($fields);
+            
+        }
+        
+        return $this->nest($fields);
+    }
+    
+    /**
+     * Hides the given list of fields if the extended object inherits the list component.
+     *
+     * @param FieldList $fields
+     *
+     * @return FieldList
+     */
+    public function hideFields(FieldList $fields)
+    {
+        if ($this->owner->ListInherit) {
+            
+            foreach ($fields as $field) {
+                $field->addExtraClass('hidden');
+            }
+            
+        }
+        
+        return $fields;
     }
     
     /**

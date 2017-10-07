@@ -82,7 +82,7 @@ class ComponentController extends ContentController
         
         // Load Preview Requirements:
         
-        Requirements::css(SILVERWARE_DIR . '/admin/client/dist/styles/preview.css');
+        Requirements::css('silverware/silverware: admin/client/dist/styles/preview.css');
         
         // Answer Viewer Object (for CMS preview):
         

@@ -40,6 +40,22 @@ abstract class Framework extends ViewableData
     private static $columns = 12;
     
     /**
+     * Determines whether the framework uses column span values.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $use_column_span = true;
+    
+    /**
+     * Determines whether the framework uses column offset values.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $use_column_offset = true;
+    
+    /**
      * Maps viewport sizes to breakpoints for this framework.
      *
      * @var array
@@ -211,6 +227,26 @@ abstract class Framework extends ViewableData
     public function getColumnOffsetOptions()
     {
         return $this->getColumnSizeOptions($this->getNumberOfColumns() - 1);
+    }
+    
+    /**
+     * Answers true if columns make use of span values.
+     *
+     * @return boolean
+     */
+    public function useColumnSpan()
+    {
+        return $this->config()->use_column_span;
+    }
+    
+    /**
+     * Answers true if columns make use of offset values.
+     *
+     * @return boolean
+     */
+    public function useColumnOffset()
+    {
+        return $this->config()->use_column_offset;
     }
     
     /**

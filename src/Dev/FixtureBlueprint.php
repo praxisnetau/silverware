@@ -321,6 +321,10 @@ class FixtureBlueprint extends BaseBlueprint
                 
             }
             
+            foreach ($filter as $k => $v) {
+                $filter[$k] = $this->processValue($v);
+            }
+            
             return $objects->filter($filter);
             
         }
@@ -488,7 +492,7 @@ class FixtureBlueprint extends BaseBlueprint
     {
         // Detect Value Type:
         
-        if (is_array($value)) {
+        if (is_array($value) && $object->hasField($name)) {
             
             // Handle Array Value:
             

@@ -6,9 +6,9 @@ Name: silverware-controller
 
 SilverStripe\CMS\Controllers\ContentController:
   required_js:
-    - silverware/client/dist/js/bundle.js
+    - "silverware/silverware: client/dist/js/bundle.js"
   required_css:
-    - silverware/client/dist/styles/bundle.css
+    - "silverware/silverware: client/dist/styles/bundle.css"
   required_themed_js:
     - production/js/bundle.js
   required_themed_css:

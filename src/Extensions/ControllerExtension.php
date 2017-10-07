@@ -22,6 +22,8 @@ use SilverStripe\Control\Director;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleResourceLoader;
 use SilverStripe\Security\Security;
 use SilverStripe\View\Requirements;
 use SilverWare\Grid\Grid;
@@ -127,6 +129,52 @@ class ControllerExtension extends Extension
     }
     
     /**
+     * Answers an array of files required by given configuration array.
+     *
+     * @param array $config
+     *
+     * @return array
+     */
+    public function getRequiredFiles($config)
+    {
+        $files = [];
+        
+        foreach ($config as $key => $name) {
+            
+            if (is_numeric($key) && is_string($name)) {
+                
+                $files[] = $name;
+                
+            } elseif (is_numeric($key) && is_array($name)) {
+                
+                foreach ($name as $module => $file) {
+                    $files[] = sprintf('%s: %s', $module, $file);
+                }
+                
+            } elseif (!is_numeric($key) && is_array($name)) {
+                
+                foreach ($name as $file) {
+                    $files[] = sprintf('%s: %s', $key, $file);
+                }
+                
+            }
+            
+        }
+        
+        return $files;
+    }
+    
+    /**
+     * Answers an array of JavaScript files required by the extended object.
+     *
+     * @return array
+     */
+    public function getRequiredJS()
+    {
+        return $this->owner->getRequiredFiles($this->owner->config()->required_js);
+    }
+    
+    /**
      * Answers an array of all JavaScript files required by the content controllers of the app.
      *
      * @return array
@@ -137,9 +185,11 @@ class ControllerExtension extends Extension
         
         foreach (ClassInfo::subclassesFor(ContentController::class) as $controller) {
             
-            if ($required_js = Config::inst()->get($controller, 'required_js')) {
+            if ($required_js = Injector::inst()->get($controller)->getRequiredJS()) {
                 
                 foreach ($required_js as $file) {
+                    
+                    $file = ModuleResourceLoader::singleton()->resolvePath($file);
                     
                     if (!isset($files[$file])) {
                         $files[$file] = file_get_contents(Director::getAbsFile($file));
@@ -155,6 +205,15 @@ class ControllerExtension extends Extension
     }
     
     /**
+     * Answers an array of CSS files required by the extended object.
+     *
+     * @return array
+     */
+    public function getRequiredCSS()
+    {
+        return $this->owner->getRequiredFiles($this->owner->config()->required_css);
+    }
+    
     /**
      * Answers an array of all CSS files required by the content controllers of the app.
      *
@@ -166,9 +225,11 @@ class ControllerExtension extends Extension
         
         foreach (ClassInfo::subclassesFor(ContentController::class) as $controller) {
             
-            if ($required_css = Config::inst()->get($controller, 'required_css')) {
+            if ($required_css = Injector::inst()->get($controller)->getRequiredCSS()) {
                 
                 foreach ($required_css as $file) {
+                    
+                    $file = ModuleResourceLoader::singleton()->resolvePath($file);
                     
                     if (!isset($files[$file])) {
                         $files[$file] = file_get_contents(Director::getAbsFile($file));
@@ -344,7 +405,7 @@ class ControllerExtension extends Extension
             
             // Load Regular JavaScript:
             
-            foreach ($this->owner->config()->required_js as $name) {
+            foreach ($this->owner->getRequiredJS() as $name) {
                 $this->loadJS($name);
             }
             
@@ -356,7 +417,7 @@ class ControllerExtension extends Extension
             
             // Load Regular CSS:
             
-            foreach ($this->owner->config()->required_css as $name) {
+            foreach ($this->owner->getRequiredCSS() as $name) {
                 $this->loadCSS($name);
             }
             

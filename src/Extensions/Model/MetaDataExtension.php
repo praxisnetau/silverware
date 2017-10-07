@@ -118,7 +118,7 @@ class MetaDataExtension extends DataExtension
             'icon' => 'calendar',
             'text' => [
                 '$MetaDateFormatted',
-                '$DateFormat'
+                '$MetaDateFormat'
             ]
         ]
     ];
@@ -132,6 +132,7 @@ class MetaDataExtension extends DataExtension
     private static $default_list_item_buttons = [
         'link' => [
             'href' => '$MetaLink',
+            'icon' => '$Renderer.ButtonIcon',
             'text' => '$Renderer.ButtonLabel'
         ]
     ];
@@ -148,12 +149,12 @@ class MetaDataExtension extends DataExtension
     ];
     
     /**
-     * Defines the default asset folder for uploaded images.
+     * Defines the default asset folder for uploaded meta images.
      *
      * @var string
      * @config
      */
-    private static $default_image_folder = 'Images';
+    private static $default_meta_image_folder = 'Images';
     
     /**
      * Defines the default format for the meta date field.
@@ -161,7 +162,7 @@ class MetaDataExtension extends DataExtension
      * @var string
      * @config
      */
-    private static $default_date_format = 'd MMMM Y';
+    private static $default_meta_date_format = 'd MMMM Y';
     
     /**
      * Updates the CMS fields of the extended object.
@@ -484,13 +485,17 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
-     * Answers the default format for the date of the extended object.
+     * Answers the format for the date of the extended object.
      *
      * @return string
      */
     public function getMetaDateFormat()
     {
-        return Config::inst()->get(self::class, 'default_date_format');
+        if ($format = $this->owner->config()->meta_date_format) {
+            return $format;
+        }
+        
+        return Config::inst()->get(self::class, 'default_meta_date_format');
     }
     
     /**
@@ -654,7 +659,11 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaImageFolder()
     {
-        return Config::inst()->get(self::class, 'default_image_folder');
+        if ($folder = $this->owner->config()->meta_image_folder) {
+            return $folder;
+        }
+        
+        return Config::inst()->get(self::class, 'default_meta_image_folder');
     }
     
     /**

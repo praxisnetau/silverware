@@ -334,7 +334,7 @@ class PageExtension extends DataExtension implements PermissionProvider
      */
     public function getContentClassNames()
     {
-        $classes = $this->styles('content', 'content.typography');
+        $classes = $this->styles('content');
         
         $this->owner->extend('updateContentClassNames', $classes);
         

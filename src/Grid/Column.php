@@ -63,7 +63,7 @@ class Column extends Grid
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/Column.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Column.png';
     
     /**
      * Defines an ancestor class to hide from the admin interface.
@@ -126,25 +126,46 @@ class Column extends Grid
         
         // Create Style Fields:
         
-        $fields->addFieldToTab(
-            'Root.Style',
-            FieldSection::create(
-                'ColumnStyle',
-                $this->fieldLabel('ColumnStyle'),
-                [
-                    ViewportsField::create(
-                        'Span',
-                        $this->fieldLabel('Span'),
-                        $this->getColumnSpanOptions()
-                    ),
-                    ViewportsField::create(
-                        'Offset',
-                        $this->fieldLabel('Offset'),
-                        $this->getColumnOffsetOptions()
-                    )
-                ]
-            )
-        );
+        $style = [];
+        
+        // Create Column Span Field:
+        
+        if (self::framework()->useColumnSpan()) {
+            
+            $style[] = ViewportsField::create(
+                'Span',
+                $this->fieldLabel('Span'),
+                $this->getColumnSpanOptions()
+            );
+            
+        }
+        
+        // Create Column Offset Field:
+        
+        if (self::framework()->useColumnOffset()) {
+            
+            $style[] = ViewportsField::create(
+                'Offset',
+                $this->fieldLabel('Offset'),
+                $this->getColumnOffsetOptions()
+            );
+            
+        }
+        
+        // Add Style Fields to Tab:
+        
+        if (!empty($style)) {
+            
+            $fields->addFieldToTab(
+                'Root.Style',
+                FieldSection::create(
+                    'ColumnStyle',
+                    $this->fieldLabel('ColumnStyle'),
+                    $style
+                )
+            );
+            
+        }
         
         // Create Options Fields:
         

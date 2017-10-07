@@ -61,7 +61,7 @@ class PageComponent extends BaseComponent
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/PageComponent.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/PageComponent.png';
     
     /**
      * Defines an ancestor class to hide from the admin interface.
@@ -118,6 +118,16 @@ class PageComponent extends BaseComponent
      */
     private static $casting = [
         'CurrentPageAttributesHTML' => 'HTMLFragment'
+    ];
+    
+    /**
+     * Defines the default classes to use when rendering this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $default_classes = [
+        'typography'
     ];
     
     /**

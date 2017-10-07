@@ -65,7 +65,7 @@ class LayoutSection extends Section
      * @var string
      * @config
      */
-    private static $icon = 'silverware/admin/client/dist/images/icons/LayoutSection.png';
+    private static $icon = 'silverware/silverware: admin/client/dist/images/icons/LayoutSection.png';
     
     /**
      * Defines the allowed children for this object.

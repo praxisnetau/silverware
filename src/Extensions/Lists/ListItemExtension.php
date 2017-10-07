@@ -172,7 +172,7 @@ class ListItemExtension extends Extension
      */
     public function getListItemContentClassNames()
     {
-        return $this->styles('content', 'content.typography');
+        return $this->styles('content');
     }
     
     /**
