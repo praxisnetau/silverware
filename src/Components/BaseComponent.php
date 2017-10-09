@@ -283,8 +283,18 @@ class BaseComponent extends Component
      */
     public function renderContent($layout = null, $title = null)
     {
-        if ($this->getTemplate() != self::class) {
+        if (!$this->isBaseTemplate()) {
             return parent::renderSelf($layout, $title);
         }
+    }
+    
+    /**
+     * Answers true if the receiver uses the base template.
+     *
+     * @return boolean
+     */
+    public function isBaseTemplate()
+    {
+        return (is_string($this->getTemplate()) && $this->getTemplate() === self::class);
     }
 }
