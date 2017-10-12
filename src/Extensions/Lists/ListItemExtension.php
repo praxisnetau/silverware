@@ -45,13 +45,6 @@ class ListItemExtension extends Extension
     const DEFAULT_LIST_ITEM_TEMPLATE = 'SilverWare\Lists\ListItem';
     
     /**
-     * Holds the component instance responsible for rendering the extended object.
-     *
-     * @var Component
-     */
-    protected $renderer;
-    
-    /**
      * Defines the value of the renderer attribute.
      *
      * @param Component $renderer
@@ -60,7 +53,7 @@ class ListItemExtension extends Extension
      */
     public function setRenderer(Component $renderer)
     {
-        $this->renderer = $renderer;
+        $this->owner->setField('renderer', $renderer);
         
         return $this;
     }
@@ -72,7 +65,7 @@ class ListItemExtension extends Extension
      */
     public function getRenderer()
     {
-        return $this->renderer;
+        return $this->owner->getField('renderer');
     }
     
     /**
@@ -124,7 +117,7 @@ class ListItemExtension extends Extension
             $classes,
             ViewTools::singleton()->getAncestorClassNames(
                 $this->owner,
-                $this->ownerBaseClass
+                $this->owner->baseClass()
             )
         );
         

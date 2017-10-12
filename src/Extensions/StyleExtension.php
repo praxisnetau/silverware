@@ -125,7 +125,7 @@ class StyleExtension extends DataExtension
      *
      * @return boolean
      */
-    public function hasAppliedStyles()
+    protected function hasAppliedStyles()
     {
         return is_array($this->getAppliedStyles());
     }
