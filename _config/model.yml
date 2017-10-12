@@ -15,6 +15,9 @@ SilverStripe\Core\Injector\Injector:
     class: SilverWare\ORM\FieldType\DBDimensions
   Viewports:
     class: SilverWare\ORM\FieldType\DBViewports
+  SilverWare\Extensions\Lists\ListSourceExtension:
+    class: SilverWare\Extensions\Lists\ListSourceExtension
+    type: prototype
 
 # Configure Fixture Factory:
 

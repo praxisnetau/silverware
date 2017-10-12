@@ -561,6 +561,8 @@ class ListViewExtension extends DataExtension
      */
     public function getListObject()
     {
+        $this->owner->flushCache();
+        
         return $this->owner->getComponent('ListObject');
     }
     
@@ -748,7 +750,7 @@ class ListViewExtension extends DataExtension
      *
      * @return FieldList
      */
-    public function hideFields(FieldList $fields)
+    protected function hideFields(FieldList $fields)
     {
         if ($this->owner->ListInherit) {
             
