@@ -101,7 +101,8 @@ class BaseListComponent extends BaseComponent
         'OverlayImages' => 'Boolean',
         'OverlayTitle' => 'Boolean',
         'LinkImages' => 'Boolean',
-        'LinkTitles' => 'Boolean'
+        'LinkTitles' => 'Boolean',
+        'HideNoDataMessage' => 'Boolean'
     ];
     
     /**
@@ -122,7 +123,8 @@ class BaseListComponent extends BaseComponent
         'OverlayImages' => 0,
         'OverlayTitle' => 0,
         'LinkImages' => 1,
-        'LinkTitles' => 1
+        'LinkTitles' => 1,
+        'HideNoDataMessage' => 0
     ];
     
     /**
@@ -276,6 +278,10 @@ class BaseListComponent extends BaseComponent
                         CheckboxField::create(
                             'LinkTitles',
                             $this->fieldLabel('LinkTitles')
+                        ),
+                        CheckboxField::create(
+                            'HideNoDataMessage',
+                            $this->fieldLabel('HideNoDataMessage')
                         )
                     ]
                 ),
@@ -370,6 +376,7 @@ class BaseListComponent extends BaseComponent
         $labels['OverlayBackground'] = _t(__CLASS__ . '.OVERLAYBACKGROUNDCOLOR', 'Overlay background color');
         $labels['OverlayForeground'] = _t(__CLASS__ . '.OVERLAYFOREGROUNDCOLOR', 'Overlay foreground color');
         $labels['OverlayTitle'] = _t(__CLASS__ . '.SHOWTITLEINOVERLAY', 'Show title in overlay');
+        $labels['HideNoDataMessage'] = _t(__CLASS__ . '.HIDENODATAMESSAGE', 'Hide "no data" message');
         $labels['ListStyle'] = $labels['ListOptions'] = _t(__CLASS__ . '.LIST', 'List');
         
         // Answer Field Labels:
@@ -586,6 +593,16 @@ class BaseListComponent extends BaseComponent
     public function getNoDataMessage()
     {
         return _t(__CLASS__ . '.NODATAAVAILABLE', 'No data available.');
+    }
+    
+    /**
+     * Answers true if the no data message is to be shown.
+     *
+     * @return boolean
+     */
+    public function getNoDataMessageShown()
+    {
+        return !$this->HideNoDataMessage;
     }
     
     /**

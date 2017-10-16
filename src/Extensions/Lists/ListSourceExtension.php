@@ -313,7 +313,13 @@ class ListSourceExtension extends DataExtension
      */
     public function getSource()
     {
-        return $this->source ?: $this->owner->ListSource();
+        if ($this->source) {
+            return $this->source;
+        }
+        
+        if ($this->owner->ListSourceID) {
+            return $this->owner->ListSource();
+        }
     }
     
     /**
