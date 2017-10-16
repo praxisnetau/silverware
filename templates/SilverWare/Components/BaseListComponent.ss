@@ -8,6 +8,6 @@
   <% if $PaginateItems %>
     <% include Pagination List=$ListItems %>
   <% end_if %>
-<% else %>
+<% else_if $NoDataMessageShown %>
   <% include Alert Type='warning', Text=$NoDataMessage %>
 <% end_if %>
