@@ -606,6 +606,28 @@ class BaseListComponent extends BaseComponent
     }
     
     /**
+     * Defines the value of the hide no data message property.
+     *
+     * @param boolean $hideNoDataMessage
+     *
+     * @return $this
+     */
+    public function setHideNoDataMessage($hideNoDataMessage)
+    {
+        return $this->setField('HideNoDataMessage', (boolean) $hideNoDataMessage);
+    }
+    
+    /**
+     * Answers the value of the hide no data message property.
+     *
+     * @return boolean
+     */
+    public function getHideNoDataMessage()
+    {
+        return $this->getField('HideNoDataMessage');
+    }
+    
+    /**
      * Answers an array of options for the button type field.
      *
      * @return array
