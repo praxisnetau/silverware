@@ -12,7 +12,6 @@
       > div.image {
         
         position: relative;
-        margin-bottom: $spacer;
         
         a {
           display: block;
@@ -76,6 +75,8 @@
       }
       
       > section.content {
+        
+        margin-top: $spacer;
         
         header {
           

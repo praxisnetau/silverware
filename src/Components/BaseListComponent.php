@@ -535,6 +535,26 @@ class BaseListComponent extends BaseComponent
     }
     
     /**
+     * Answers true if the content section is empty for the current list item.
+     *
+     * @param boolean $isFirst Item is first in the list.
+     * @param boolean $isMiddle Item is in the middle of the list.
+     * @param boolean $isLast Item is last in the list.
+     *
+     * @return boolean
+     */
+    public function isContentEmpty($isFirst = false, $isMiddle = false, $isLast = false)
+    {
+        return !(
+            $this->isHeaderShown($isFirst, $isMiddle, $isLast) ||
+            $this->isDetailsShown($isFirst, $isMiddle, $isLast) ||
+            $this->isSummaryShown($isFirst, $isMiddle, $isLast) ||
+            $this->isContentShown($isFirst, $isMiddle, $isLast) ||
+            $this->isFooterShown($isFirst, $isMiddle, $isLast)
+        );
+    }
+    
+    /**
      * Answers true if the footer is to be shown for the current list item.
      *
      * @param boolean $isFirst Item is first in the list.
