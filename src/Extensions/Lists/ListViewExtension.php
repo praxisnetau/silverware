@@ -148,6 +148,16 @@ class ListViewExtension extends DataExtension
                         ImageTools::singleton()->getResizeMethods(),
                         $list->ImageResizeMethod
                     )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                    ColorField::create(
+                        $this->nestName('OverlayBackground'),
+                        $this->owner->fieldLabel('OverlayBackground'),
+                        $list->OverlayBackground
+                    ),
+                    ColorField::create(
+                        $this->nestName('OverlayForeground'),
+                        $this->owner->fieldLabel('OverlayForeground'),
+                        $list->OverlayForeground
+                    ),
                     FontIconField::create(
                         $this->nestName('OverlayIcon'),
                         $this->owner->fieldLabel('OverlayIcon')
@@ -286,6 +296,12 @@ class ListViewExtension extends DataExtension
                             $this->owner->fieldLabel('OverlayImages'),
                             $this->getToggleOptions(),
                             $list->OverlayImages
+                        ),
+                        DropdownField::create(
+                            $this->nestName('OverlayTitle'),
+                            $this->owner->fieldLabel('OverlayTitle'),
+                            $this->getToggleOptions(),
+                            $list->OverlayTitle
                         )
                     ]
                 )
@@ -365,8 +381,11 @@ class ListViewExtension extends DataExtension
         $labels['ImageAlignment'] = _t(__CLASS__ . '.IMAGEALIGNMENT', 'Image alignment');
         $labels['TextAlignment'] = _t(__CLASS__ . '.TEXTALIGNMENT', 'Text alignment');
         $labels['OverlayImages'] = _t(__CLASS__ . '.OVERLAYIMAGES', 'Overlay images');
+        $labels['OverlayTitle'] = _t(__CLASS__ . '.SHOWTITLEINOVERLAY', 'Show title in overlay');
         $labels['OverlayIcon'] = _t(__CLASS__ . '.OVERLAYICON', 'Overlay icon');
         $labels['OverlayIconColor'] = _t(__CLASS__ . '.OVERLAYICONCOLOR', 'Overlay icon color');
+        $labels['OverlayBackground'] = _t(__CLASS__ . '.OVERLAYBACKGROUNDCOLOR', 'Overlay background color');
+        $labels['OverlayForeground'] = _t(__CLASS__ . '.OVERLAYFOREGROUNDCOLOR', 'Overlay foreground color');
         $labels['NumberOfItems'] = _t(__CLASS__ . '.NUMBEROFITEMS', 'Number of items');
         $labels['ReverseItems'] = _t(__CLASS__ . '.REVERSEITEMS', 'Reverse items');
         $labels['ImageItems'] = _t(__CLASS__ . '.IMAGEITEMS', 'Show only items with images');
