@@ -272,6 +272,12 @@ class ListViewExtension extends DataExtension
                             $this->owner->fieldLabel('LinkTitles'),
                             $this->getToggleOptions(),
                             $list->LinkTitles
+                        ),
+                        DropdownField::create(
+                            $this->nestName('HideNoDataMessage'),
+                            $this->owner->fieldLabel('HideNoDataMessage'),
+                            $this->getToggleOptions(),
+                            $list->HideNoDataMessage
                         )
                     ]
                 ),
@@ -392,6 +398,7 @@ class ListViewExtension extends DataExtension
         $labels['ListClass'] = _t(__CLASS__ . '.LISTCLASS', 'List class');
         $labels['ListInherit'] = _t(__CLASS__ . '.INHERITFROMPARENT', 'Inherit from parent');
         $labels['ListInheritance'] = _t(__CLASS__ . '.LISTINHERITANCE', 'List Inheritance');
+        $labels['HideNoDataMessage'] = _t(__CLASS__ . '.HIDENODATAMESSAGE', 'Hide "no data" message');
     }
     
     /**
