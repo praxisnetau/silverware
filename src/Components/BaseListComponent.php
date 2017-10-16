@@ -96,7 +96,10 @@ class BaseListComponent extends BaseComponent
         'ImageLinksTo' => 'Varchar(8)',
         'OverlayIcon' => 'FontIcon',
         'OverlayIconColor' => 'Color',
+        'OverlayBackground' => 'Color',
+        'OverlayForeground' => 'Color',
         'OverlayImages' => 'Boolean',
+        'OverlayTitle' => 'Boolean',
         'LinkImages' => 'Boolean',
         'LinkTitles' => 'Boolean'
     ];
@@ -117,6 +120,7 @@ class BaseListComponent extends BaseComponent
         'ImageLinksTo' => 'item',
         'OverlayIcon' => 'search',
         'OverlayImages' => 0,
+        'OverlayTitle' => 0,
         'LinkImages' => 1,
         'LinkTitles' => 1
     ];
@@ -192,6 +196,14 @@ class BaseListComponent extends BaseComponent
                             $this->fieldLabel('ImageAlign'),
                             $this->getImageAlignOptions()
                         )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
+                        ColorField::create(
+                            'OverlayBackground',
+                            $this->fieldLabel('OverlayBackground')
+                        ),
+                        ColorField::create(
+                            'OverlayForeground',
+                            $this->fieldLabel('OverlayForeground')
+                        ),
                         FontIconField::create(
                             'OverlayIcon',
                             $this->fieldLabel('OverlayIcon')
@@ -281,6 +293,10 @@ class BaseListComponent extends BaseComponent
                             $this->fieldLabel('OverlayImages')
                         ),
                         CheckboxField::create(
+                            'OverlayTitle',
+                            $this->fieldLabel('OverlayTitle')
+                        ),
+                        CheckboxField::create(
                             'LinkImages',
                             $this->fieldLabel('LinkImages')
                         )
@@ -351,6 +367,9 @@ class BaseListComponent extends BaseComponent
         $labels['ListImageOptions'] = _t(__CLASS__ . '.LISTIMAGES', 'List Images');
         $labels['OverlayIcon'] = _t(__CLASS__ . '.OVERLAYICON', 'Overlay icon');
         $labels['OverlayIconColor'] = _t(__CLASS__ . '.OVERLAYICONCOLOR', 'Overlay icon color');
+        $labels['OverlayBackground'] = _t(__CLASS__ . '.OVERLAYBACKGROUNDCOLOR', 'Overlay background color');
+        $labels['OverlayForeground'] = _t(__CLASS__ . '.OVERLAYFOREGROUNDCOLOR', 'Overlay foreground color');
+        $labels['OverlayTitle'] = _t(__CLASS__ . '.SHOWTITLEINOVERLAY', 'Show title in overlay');
         $labels['ListStyle'] = $labels['ListOptions'] = _t(__CLASS__ . '.LIST', 'List');
         
         // Answer Field Labels:
