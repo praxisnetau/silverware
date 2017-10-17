@@ -5,11 +5,14 @@
   <% end_if %>
   <% if $TitleOrCaptionShown %>
     <div class="$CaptionClass">
-      <% if $TitleShown %>
+      <% if $TitleShownBeforeCaption %>
         <{$HeadingTag}>{$FontIconTag}<span class="text">{$Title}</span></{$HeadingTag}>
       <% end_if %>
       <% if $CaptionShown %>
         $Caption
+      <% end_if %>
+      <% if $TitleShownAfterCaption %>
+        <{$HeadingTag}>{$FontIconTag}<span class="text">{$Title}</span></{$HeadingTag}>
       <% end_if %>
     </div>
   <% end_if %>

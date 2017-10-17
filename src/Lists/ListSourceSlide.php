@@ -161,7 +161,8 @@ class ListSourceSlide extends Slide
             'ParentID' => $this->ParentID,
             'HideImage' => $this->HideImage,
             'HideTitle' => $this->HideTitle,
-            'HideCaption' => $this->HideCaption
+            'HideCaption' => $this->HideCaption,
+            'TitleAfterCaption' => $this->TitleAfterCaption
         ]);
         
         // Define Slide Link:

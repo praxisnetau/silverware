@@ -100,7 +100,8 @@ class Slide extends Component
         'HideImage' => 'Boolean',
         'HideTitle' => 'Boolean',
         'HideCaption' => 'Boolean',
-        'LinkDisabled' => 'Boolean'
+        'LinkDisabled' => 'Boolean',
+        'TitleAfterCaption' => 'Boolean'
     ];
     
     /**
@@ -143,7 +144,8 @@ class Slide extends Component
         'HideImage' => 0,
         'HideTitle' => 1,
         'HideCaption' => 0,
-        'LinkDisabled' => 0
+        'LinkDisabled' => 0,
+        'TitleAfterCaption' => 0
     ];
     
     /**
@@ -226,6 +228,10 @@ class Slide extends Component
             CheckboxField::create(
                 'LinkDisabled',
                 $this->fieldLabel('LinkDisabled')
+            ),
+            CheckboxField::create(
+                'TitleAfterCaption',
+                $this->fieldLabel('TitleAfterCaption')
             )
         ]);
         
@@ -260,6 +266,7 @@ class Slide extends Component
         $labels['HideTitle'] = _t(__CLASS__ . '.HIDETITLE', 'Hide title');
         $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['LinkDisabled'] = _t(__CLASS__ . '.LINKDISABLED', 'Link disabled');
+        $labels['TitleAfterCaption'] = _t(__CLASS__ . '.SHOWTITLEAFTERCAPTION', 'Show title after caption');
         
         // Define Relation Labels:
         
@@ -371,7 +378,7 @@ class Slide extends Component
      */
     public function getSlideClassNames($isFirst = false, $isMiddle = false, $isLast = false)
     {
-        $classes = ViewTools::singleton()->getAncestorClassNames($this, self::class);
+        $classes = parent::getClassNames();
         
         $classes[] = $this->ImageShown ? 'has-image' : 'no-image';
         
@@ -423,6 +430,10 @@ class Slide extends Component
         
         if ($this->getParent()->hasMethod('getCaptionClassNames')) {
             $classes = array_merge($classes, $this->getParent()->getCaptionClassNames($this));
+        }
+        
+        if ($this->TitleAfterCaption) {
+            $classes[] = 'title-after';
         }
         
         $this->extend('updateCaptionClassNames', $classes);
@@ -560,6 +571,26 @@ class Slide extends Component
     public function getTitleShown()
     {
         return ($this->Title && !$this->HideTitle);
+    }
+    
+    /**
+     * Answers true if the slide title is to be shown before the caption.
+     *
+     * @return boolean
+     */
+    public function getTitleShownBeforeCaption()
+    {
+        return ($this->TitleShown && !$this->TitleAfterCaption);
+    }
+    
+    /**
+     * Answers true if the slide title is to be shown after the caption.
+     *
+     * @return boolean
+     */
+    public function getTitleShownAfterCaption()
+    {
+        return ($this->TitleShown && $this->TitleAfterCaption);
     }
     
     /**
