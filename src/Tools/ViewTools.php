@@ -248,13 +248,27 @@ class ViewTools
             
             if (strpos($field, '.') !== false) {
                 
-                list($name, $prop) = explode('.', $field);
+                // Expand Relation Path:
+                
+                $relations = explode('.', $field);
+                
+                // Obtain First Relation Name:
+                
+                $name = array_shift($relations);
+                
+                // Detect Accessor Method:
                 
                 if ($object->hasMethod("get{$name}")) {
-                    return $object->{"get{$name}"}()->{$prop};
-                } elseif ($object->hasField($name) || $object->hasField($name . 'ID')) {
-                    return $object->relField($field);
+                    $name = "get{$name}";
                 }
+                
+                // Prepend First Relation Name:
+                
+                array_unshift($relations, $name);
+                
+                // Answer Relation Path Value:
+                
+                return $object->relField(implode('.', $relations));
                 
             }
             
