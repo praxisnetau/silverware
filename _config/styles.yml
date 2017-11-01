@@ -69,6 +69,8 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
     image:
       image: image
       fluid: img-fluid
+    link:
+      image: link-image
     pagination:
       small: pagination-sm
       large: pagination-lg

@@ -2,8 +2,10 @@
 Name: silverware-assets
 ---
 
-# Configure Allowed Extensions:
+# Configure File Extensions:
 
 SilverStripe\Assets\File:
+  extensions:
+    - SilverWare\Extensions\Assets\RenderInlineExtension
   allowed_extensions:
     - svg
