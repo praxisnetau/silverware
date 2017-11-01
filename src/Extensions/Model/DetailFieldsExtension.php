@@ -124,7 +124,7 @@ class DetailFieldsExtension extends Extension
                     
                 }
                 
-                $text = isset($spec['text']) ? $this->owner->processDetailFieldValue($spec['text']) : null;
+                $text = isset($spec['text']) ? $spec['text'] : null;
                 
                 if ($text) {
                     

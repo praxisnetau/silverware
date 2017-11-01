@@ -17,10 +17,18 @@
 
 namespace SilverWare\Model;
 
+use SilverStripe\Assets\File;
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\ArrayLib;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
 use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Extensions\Style\LinkColorStyle;
 use SilverWare\FontIcons\Extensions\FontIconExtension;
+use SilverWare\Forms\FieldSection;
+use SilverWare\Forms\ViewportsField;
 use Page;
 
 /**
@@ -83,6 +91,48 @@ class Link extends Component
     private static $allowed_children = 'none';
     
     /**
+     * Maps field names to field types for this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $db = [
+        'LinkImageWidth' => 'Viewports',
+        'LinkImageHeight' => 'Viewports',
+        'InlineVector' => 'Boolean'
+    ];
+    
+    /**
+     * Defines the has-one associations for this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $has_one = [
+        'LinkImage' => File::class
+    ];
+    
+    /**
+     * Defines the default values for the fields of this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $defaults = [
+        'InlineVector' => 0
+    ];
+    
+    /**
+     * Defines the ownership of associations for this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $owns = [
+        'LinkImage'
+    ];
+    
+    /**
      * Defines the extension classes to apply to this object.
      *
      * @var array
@@ -109,6 +159,117 @@ class Link extends Component
      * @config
      */
     private static $default_icon_size = 32;
+    
+    /**
+     * Defines the asset folder for uploading images.
+     *
+     * @var string
+     * @config
+     */
+    private static $asset_folder = 'Links';
+    
+    /**
+     * Answers a list of field objects for the CMS interface.
+     *
+     * @return FieldList
+     */
+    public function getCMSFields()
+    {
+        // Obtain Field Objects (from parent):
+        
+        $fields = parent::getCMSFields();
+        
+        // Insert Image Tab:
+        
+        $fields->insertAfter(
+            Tab::create(
+                'Image',
+                $this->fieldLabel('Image')
+            ),
+            'Main'
+        );
+        
+        // Create Image Fields:
+        
+        $fields->addFieldsToTab(
+            'Root.Image',
+            [
+                FieldSection::create(
+                    'LinkImage',
+                    $this->fieldLabel('LinkImage'),
+                    [
+                        $image = UploadField::create(
+                            'LinkImage',
+                            $this->fieldLabel('LinkImageFile')
+                        ),
+                        ViewportsField::create(
+                            'LinkImageWidth',
+                            $this->fieldLabel('LinkImageWidth')
+                        )->setUseTextInput(true),
+                        ViewportsField::create(
+                            'LinkImageHeight',
+                            $this->fieldLabel('LinkImageHeight')
+                        )->setUseTextInput(true),
+                        CheckboxField::create(
+                            'InlineVector',
+                            $this->fieldLabel('InlineVector')
+                        )
+                    ]
+                )
+            ]
+        );
+        
+        // Define Image Field:
+        
+        $image->setAllowedExtensions(['gif', 'jpg', 'jpeg', 'png', 'svg']);
+        $image->setFolderName($this->getAssetFolder());
+        
+        // Answer Field Objects:
+        
+        return $fields;
+    }
+    
+    /**
+     * Answers the labels for the fields of the receiver.
+     *
+     * @param boolean $includerelations Include labels for relations.
+     *
+     * @return array
+     */
+    public function fieldLabels($includerelations = true)
+    {
+        // Obtain Field Labels (from parent):
+        
+        $labels = parent::fieldLabels($includerelations);
+        
+        // Define Field Labels:
+        
+        $labels['Image'] = _t(__CLASS__ . '.IMAGE', 'Image');
+        $labels['InlineVector'] = _t(__CLASS__ . '.INLINEVECTORIMAGE', 'Inline vector image');
+        $labels['LinkImageFile'] = _t(__CLASS__ . '.FILE', 'File');
+        $labels['LinkImageWidth'] = _t(__CLASS__ . '.WIDTH', 'Width');
+        $labels['LinkImageHeight'] = _t(__CLASS__ . '.HEIGHT', 'Height');
+        
+        // Define Relation Labels:
+        
+        if ($includerelations) {
+            $labels['LinkImage'] = _t(__CLASS__ . '.has_one_LinkImage', 'Image');
+        }
+        
+        // Answer Field Labels:
+        
+        return $labels;
+    }
+    
+    /**
+     * Answers the asset folder used by the receiver.
+     *
+     * @return string
+     */
+    public function getAssetFolder()
+    {
+        return $this->config()->asset_folder;
+    }
     
     /**
      * Answers an array of HTML tag attributes for the object.
@@ -185,6 +346,93 @@ class Link extends Component
         if (($parent = $this->getParent()) && $parent->CornerStyleClass) {
             return $parent->CornerStyleClass;
         }
+    }
+    
+    /**
+     * Answers an array of link image class names for the receiver.
+     *
+     * @return string
+     */
+    public function getLinkImageClassNames()
+    {
+        $classes = $this->styles('link.image', 'image.fluid');
+        
+        $this->extend('updateLinkImageClassNames', $classes);
+        
+        return $classes;
+    }
+    
+    /**
+     * Answers true if a link images exists.
+     *
+     * @return boolean
+     */
+    public function hasLinkImage()
+    {
+        return $this->LinkImage()->exists();
+    }
+    
+    /**
+     * Answers true if the link image is an inline vector.
+     *
+     * @return boolean
+     */
+    public function hasInlineVector()
+    {
+        return ($this->hasLinkImage() && $this->LinkImage()->getExtension() == 'svg' && $this->InlineVector);
+    }
+    
+    /**
+     * Answers a list of link image dimensions for the custom CSS template.
+     *
+     * @return ArrayList
+     */
+    public function getLinkImageDimensions()
+    {
+        // Initialise:
+        
+        $data = [];
+        
+        // Obtain Dimensions:
+        
+        $widths  = $this->dbObject('LinkImageWidth');
+        $heights = $this->dbObject('LinkImageHeight');
+        
+        // Iterate Width Viewports:
+        
+        foreach ($widths->getViewports() as $viewport) {
+            
+            if ($value = $widths->getField($viewport)) {
+                $data[$viewport]['Width'] = $value;
+                $data[$viewport]['Breakpoint'] = $widths->getBreakpoint($viewport);
+            }
+            
+        }
+        
+        // Iterate Height Viewports:
+        
+        foreach ($heights->getViewports() as $viewport) {
+            
+            if ($value = $heights->getField($viewport)) {
+                $data[$viewport]['Height'] = $value;
+                $data[$viewport]['Breakpoint'] = $heights->getBreakpoint($viewport);
+            }
+            
+        }
+        
+        // Create Items List:
+        
+        $items = ArrayList::create();
+        
+        // Create Data Items:
+        
+        foreach ($data as $item) {
+            $items->push(ArrayData::create($item));
+        }
+        
+        // Answer Items List:
+        
+        return $items;
     }
     
     /**

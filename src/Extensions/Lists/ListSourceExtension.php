@@ -18,6 +18,7 @@
 namespace SilverWare\Extensions\Lists;
 
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
@@ -257,7 +258,9 @@ class ListSourceExtension extends DataExtension
         
         if ($this->owner->PaginateItems) {
             
-            $items = PaginatedList::create($items, $_GET)->setPaginationGetVar($this->owner->getPaginationGetVar());
+            $items = PaginatedList::create($items, $this->getRequest());
+            
+            $items->setPaginationGetVar($this->owner->getPaginationGetVar());
             
             if ($this->owner->ItemsPerPage) {
                 $items->setPageLength($this->owner->ItemsPerPage);
@@ -354,5 +357,15 @@ class ListSourceExtension extends DataExtension
         }
         
         return 'start';
+    }
+    
+    /**
+     * Answers the request object from the current controller.
+     *
+     * @return HTTPRequest
+     */
+    protected function getRequest()
+    {
+        return Controller::curr()->getRequest();
     }
 }
