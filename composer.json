@@ -27,7 +27,8 @@
     "silverware/colorpicker": "^1.0",
     "silverware/font-icons": "^1.0",
     "silverware/select2": "^1.0",
-    "silverware/theme": "^1.0"
+    "silverware/theme": "^1.0",
+    "symbiote/silverstripe-gridfieldextensions": "3.0.x-dev"
   },
   "autoload": {
     "psr-4": {

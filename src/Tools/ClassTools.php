@@ -22,6 +22,7 @@ use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ClassLoader;
 use SilverStripe\ORM\HiddenClass;
 use ReflectionException;
 
@@ -78,6 +79,18 @@ class ClassTools
     public function getReverseAncestry($nameOrObject)
     {
         return array_reverse(ClassInfo::ancestry($nameOrObject));
+    }
+    
+    /**
+     * Answers an array containing the descendants of the specified class name.
+     *
+     * @param string $name Name of parent class.
+     *
+     * @return array
+     */
+    public function getDescendantsOf($name)
+    {
+        return ClassLoader::inst()->getManifest()->getDescendantsOf($name);
     }
     
     /**
