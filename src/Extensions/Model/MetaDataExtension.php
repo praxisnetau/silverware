@@ -1029,6 +1029,20 @@ class MetaDataExtension extends DataExtension
     }
     
     /**
+     * Answers the footer text for a meta image popup.
+     *
+     * @return string
+     */
+    public function getMetaImageFooter()
+    {
+        if ($this->owner->hasMetaImageCaption()) {
+            return $this->owner->obj('MetaImageCaption')->Plain();
+        }
+        
+        return $this->owner->getMetaSummaryLimited();
+    }
+    
+    /**
      * Answers a string of meta image wrapper class names for the template.
      *
      * @return string
