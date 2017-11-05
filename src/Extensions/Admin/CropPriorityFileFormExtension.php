@@ -47,14 +47,13 @@ class CropPriorityFileFormExtension extends Extension
     {
         // Update Field Objects:
         
-        $fields->addFieldToTab(
-            'Editor.Details',
+        $fields->insertAfter(
+            'ParentID',
             DropdownField::create(
                 'CropPriority',
                 _t(__CLASS__ . '.CROPPRIORITY', 'Crop priority'),
                 $this->getCropPriorityOptions()
-            ),
-            'Path'
+            )
         );
     }
     

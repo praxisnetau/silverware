@@ -28,6 +28,8 @@ use SilverStripe\Forms\SelectionGroup_Item;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\DB;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\SS_List;
 use SilverWare\Forms\FieldSection;
@@ -49,6 +51,12 @@ use SilverWare\View\Renderable;
 class ListSourceExtension extends DataExtension
 {
     /**
+     * Define sort constants.
+     */
+    const SORT_DEFAULT = 'default';
+    const SORT_RANDOM  = 'random';
+    
+    /**
      * Maps field names to field types for this object.
      *
      * @var array
@@ -57,6 +65,7 @@ class ListSourceExtension extends DataExtension
     private static $db = [
         'ItemsPerPage' => 'AbsoluteInt',
         'NumberOfItems' => 'AbsoluteInt',
+        'SortItemsBy' => 'Varchar(32)',
         'PaginateItems' => 'Boolean',
         'ReverseItems' => 'Boolean',
         'ImageItems' => 'Boolean'
@@ -79,6 +88,7 @@ class ListSourceExtension extends DataExtension
      * @config
      */
     private static $defaults = [
+        'SortItemsBy' => self::SORT_DEFAULT,
         'ItemsPerPage' => 10,
         'PaginateItems' => 0,
         'ReverseItems' => 0,
@@ -130,6 +140,11 @@ class ListSourceExtension extends DataExtension
                         'NumberOfItems',
                         $this->owner->fieldLabel('NumberOfItems')
                     ),
+                    DropdownField::create(
+                        'SortItemsBy',
+                        $this->owner->fieldLabel('SortItemsBy'),
+                        $this->owner->getSortItemsByOptions()
+                    ),
                     CheckboxField::create(
                         'ReverseItems',
                         $this->owner->fieldLabel('ReverseItems')
@@ -146,7 +161,7 @@ class ListSourceExtension extends DataExtension
         
         if ($this->owner->canPaginate()) {
             
-            $fields->insertAfter(
+            $fields->insertBefore(
                 SelectionGroup::create(
                     'PaginateItems',
                     [
@@ -165,7 +180,7 @@ class ListSourceExtension extends DataExtension
                         )
                     ]
                 )->setTitle($this->owner->fieldLabel('PaginateItems')),
-                'NumberOfItems'
+                'ReverseItems'
             );
             
         }
@@ -184,6 +199,7 @@ class ListSourceExtension extends DataExtension
         $labels['Disabled'] = _t(__CLASS__ . '.DISABLED', 'Disabled');
         $labels['ListSource'] = $labels['ListSourceID'] = _t(__CLASS__ . '.LISTSOURCE', 'List Source');
         $labels['ImageItems'] = _t(__CLASS__ . '.IMAGEITEMS', 'Show only items with images');
+        $labels['SortItemsBy'] = _t(__CLASS__ . '.SORTITEMSBY', 'Sort items by');
         $labels['ReverseItems'] = _t(__CLASS__ . '.REVERSEITEMS', 'Reverse items');
         $labels['ItemsPerPage'] = _t(__CLASS__ . '.ITEMSPERPAGE', 'Items per page');
         $labels['PaginateItems'] = _t(__CLASS__ . '.PAGINATEITEMS', 'Paginate items');
@@ -232,6 +248,12 @@ class ListSourceExtension extends DataExtension
             
         }
         
+        // Sort Items (if applicable):
+        
+        if ($this->owner->SortItemsBy) {
+            $items = $this->sort($items);
+        }
+        
         // Remove Items without Images (if applicable):
         
         if ($this->owner->ImageItems) {
@@ -256,7 +278,7 @@ class ListSourceExtension extends DataExtension
         
         // Paginate Items (if applicable):
         
-        if ($this->owner->PaginateItems) {
+        if ($this->owner->PaginateItems && $this->owner->SortItemsBy != self::SORT_RANDOM) {
             
             $items = PaginatedList::create($items, $this->getRequest());
             
@@ -346,6 +368,19 @@ class ListSourceExtension extends DataExtension
     }
     
     /**
+     * Answers an array of options for the sort items by field.
+     *
+     * @return array
+     */
+    public function getSortItemsByOptions()
+    {
+        return [
+            self::SORT_DEFAULT => _t(__CLASS__ . '.DEFAULT', 'Default'),
+            self::SORT_RANDOM  => _t(__CLASS__ . '.RANDOM', 'Random'),
+        ];
+    }
+    
+    /**
      * Answers the name of the GET var to use for paginating the extended object.
      *
      * @return string
@@ -357,6 +392,40 @@ class ListSourceExtension extends DataExtension
         }
         
         return 'start';
+    }
+    
+    /**
+     * Sorts the given list of items.
+     *
+     * @param SS_List $list
+     *
+     * @return SS_List
+     */
+    protected function sort(SS_List $list)
+    {
+        switch ($this->owner->SortItemsBy) {
+            
+            // Random Sort Order:
+            
+            case self::SORT_RANDOM:
+                
+                if ($list instanceof DataList) {
+                    return $list->sort(DB::get_conn()->random());
+                }
+                
+                $items = $list->toArray();
+                
+                shuffle($items);
+                
+                return ArrayList::create($items);
+                
+            // Default Sort Order:
+                
+            default:
+                
+                return $list;
+                
+        }
     }
     
     /**

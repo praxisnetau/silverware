@@ -9,6 +9,10 @@
       
       margin-bottom: $spacer-double;
       
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
       > div.image {
         
         position: relative;
@@ -118,6 +122,11 @@
       
     }
     
+  }
+  
+  ul.pagination {
+    margin-top: $spacer-double;
+    margin-bottom: 0;
   }
   
 }
