@@ -260,6 +260,10 @@ class ListItemExtension extends Extension
                     
                 }
                 
+                if (isset($spec['show']) && !$this->owner->{$spec['show']}) {
+                    continue;
+                }
+                
                 $details->push(
                     ArrayData::create([
                         'Name' => $name,
