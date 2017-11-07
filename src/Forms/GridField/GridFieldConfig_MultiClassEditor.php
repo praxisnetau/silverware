@@ -85,7 +85,7 @@ class GridFieldConfig_MultiClassEditor extends GridFieldConfig_RecordEditor
      */
     public function useDescendantsOf($class, $default = null)
     {
-        return $this->setClasses(array_keys(ClassTools::singleton()->getDescendantsOf($class)), $default);
+        return $this->setClasses(array_values(ClassTools::singleton()->getDescendantsOf($class)), $default);
     }
     
     /**
@@ -98,6 +98,6 @@ class GridFieldConfig_MultiClassEditor extends GridFieldConfig_RecordEditor
      */
     public function useSubclassesOf($class, $default = null)
     {
-        return $this->setClasses(array_keys(ClassInfo::subclassesFor($class)), $default);
+        return $this->setClasses(array_values(ClassInfo::subclassesFor($class)), $default);
     }
 }
