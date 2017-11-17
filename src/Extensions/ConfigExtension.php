@@ -17,12 +17,14 @@
 
 namespace SilverWare\Extensions;
 
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverWare\Tools\ViewTools;
+use Page;
 
 /**
  * A data extension which adds SilverWare settings to site configuration.
@@ -88,7 +90,7 @@ class ConfigExtension extends DataExtension
      */
     public function getAllBodyAttributes()
     {
-        $attributes = [];
+        $attributes = ['class' => $this->getCurrentPageAncestry()];
         
         foreach ($this->owner->getExtensionInstances() as $class => $extension) {
             
@@ -132,6 +134,20 @@ class ConfigExtension extends DataExtension
         
         if (is_array($folders) && isset($folders[static::class])) {
             return $folders[static::class];
+        }
+    }
+    
+    /**
+     * Answers a string containing the current page ancestry for the HTML template.
+     *
+     * @return string
+     */
+    protected function getCurrentPageAncestry()
+    {
+        $tools = ViewTools::singleton();
+        
+        if (($page = Director::get_current_page()) && $page instanceof Page) {
+            return $tools->array2att($tools->getAncestorClassNames($page, Page::class));
         }
     }
 }

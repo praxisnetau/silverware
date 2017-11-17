@@ -17,7 +17,7 @@
 
 namespace SilverWare\Components;
 
-use SilverStripe\Assets\Image;
+use SilverStripe\Assets\File;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
@@ -92,7 +92,8 @@ class ImageComponent extends BaseComponent
     private static $db = [
         'Caption' => 'HTMLText',
         'LinkImage' => 'Boolean',
-        'HideCaption' => 'Boolean'
+        'HideCaption' => 'Boolean',
+        'InlineVector' => 'Boolean'
     ];
     
     /**
@@ -102,7 +103,7 @@ class ImageComponent extends BaseComponent
      * @config
      */
     private static $has_one = [
-        'Image' => Image::class
+        'Image' => File::class
     ];
     
     /**
@@ -123,7 +124,8 @@ class ImageComponent extends BaseComponent
      */
     private static $defaults = [
         'LinkImage' => 1,
-        'HideCaption' => 0
+        'HideCaption' => 0,
+        'InlineVector' => 0
     ];
     
     /**
@@ -133,6 +135,7 @@ class ImageComponent extends BaseComponent
      * @config
      */
     private static $casting = [
+        'ImageAttributesHTML' => 'HTMLFragment',
         'ImageLinkAttributesHTML' => 'HTMLFragment'
     ];
     
@@ -170,16 +173,21 @@ class ImageComponent extends BaseComponent
         $fields->addFieldsToTab(
             'Root.Main',
             [
-                UploadField::create(
+                $image = UploadField::create(
                     'Image',
                     $this->fieldLabel('Image')
-                )->setAllowedFileCategories('image')->setFolderName($this->getAssetFolder()),
+                ),
                 HTMLEditorField::create(
                     'Caption',
                     $this->fieldLabel('Caption')
                 )->setRows(10)
             ]
         );
+        
+        // Define Image Field:
+        
+        $image->setAllowedExtensions(['gif', 'jpg', 'jpeg', 'png', 'svg']);
+        $image->setFolderName($this->getAssetFolder());
         
         // Create Options Fields:
         
@@ -196,6 +204,10 @@ class ImageComponent extends BaseComponent
                     CheckboxField::create(
                         'HideCaption',
                         $this->fieldLabel('HideCaption')
+                    ),
+                    CheckboxField::create(
+                        'InlineVector',
+                        $this->fieldLabel('InlineVector')
                     )
                 ]
             )
@@ -226,6 +238,7 @@ class ImageComponent extends BaseComponent
         $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['LinkImage'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
         $labels['ImageOptions'] = _t(__CLASS__ . '.IMAGE', 'Image');
+        $labels['InlineVector'] = _t(__CLASS__ . '.INLINEVECTORIMAGE', 'Inline vector image');
         
         // Define Relation Labels:
         
@@ -291,19 +304,74 @@ class ImageComponent extends BaseComponent
     }
     
     /**
+     * Answers the URL for the image.
+     *
+     * @return string
+     */
+    public function getImageURL()
+    {
+        return $this->hasVectorImage() ? $this->Image()->URL : $this->getImageResized()->URL;
+    }
+    
+    /**
+     * Answers an array of attributes for the image element.
+     *
+     * @return array
+     */
+    public function getImageAttributes()
+    {
+        $attributes = [
+            'src' => $this->ImageURL,
+            'class' => $this->ImageClass,
+            'title' => $this->Title,
+            'alt' => $this->Title
+        ];
+        
+        if ($this->hasVectorImage()) {
+            
+            if ($width = $this->ImageResizeWidth) {
+                $attributes['width'] = $width;
+            }
+            
+            if ($height = $this->ImageResizeHeight) {
+                $attributes['height'] = $height;
+            }
+            
+        }
+        
+        $this->extend('updateImageAttributes', $attributes);
+        
+        return $attributes;
+    }
+    
+    /**
+     * Answers a string of attributes for the image element.
+     *
+     * @return string
+     */
+    public function getImageAttributesHTML()
+    {
+        return $this->getAttributesHTML($this->getImageAttributes());
+    }
+    
+    /**
      * Answers an array of attributes for the image link element.
      *
      * @return array
      */
     public function getImageLinkAttributes()
     {
-        return [
+        $attributes = [
             'href' => $this->Image()->URL,
             'data-title' => $this->Title,
             'data-footer' => $this->dbObject('Caption')->Summary(),
             'data-toggle' => 'lightbox',
             'class' => 'image'
         ];
+        
+        $this->extend('updateImageLinkAttributes', $attributes);
+        
+        return $attributes;
     }
     
     /**
@@ -334,6 +402,26 @@ class ImageComponent extends BaseComponent
     public function getImageResized()
     {
         return $this->performImageResize($this->Image());
+    }
+    
+    /**
+     * Answers true if the image is an inline vector.
+     *
+     * @return boolean
+     */
+    public function hasInlineVector()
+    {
+        return ($this->hasVectorImage() && $this->InlineVector);
+    }
+    
+    /**
+     * Answers true if the image is a vector image.
+     *
+     * @return boolean
+     */
+    public function hasVectorImage()
+    {
+        return ($this->Image()->getExtension() == 'svg');
     }
     
     /**

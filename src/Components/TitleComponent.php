@@ -137,7 +137,7 @@ class TitleComponent extends BaseComponent
     public function renderSelf($layout = null, $title = null)
     {
         return $this->getController()->customise([
-            'Title' => $title
+            'TitleText' => $title
         ])->renderWith(parent::class);
     }
 }
