@@ -35,6 +35,7 @@
         > section.content {
           flex: 1;
           order: 2;
+          margin-top: 0;
           margin-left: $spacer;
         }
         
@@ -50,6 +51,7 @@
         > section.content {
           flex: 1;
           order: 1;
+          margin-top: 0;
           margin-right: $spacer;
         }
         
