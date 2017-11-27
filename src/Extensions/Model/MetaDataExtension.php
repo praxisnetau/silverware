@@ -26,6 +26,7 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverWare\Components\BaseListComponent;
 use SilverWare\Forms\DimensionsField;
 use SilverWare\Forms\FieldSection;
@@ -47,6 +48,12 @@ class MetaDataExtension extends DataExtension
     use GridAware;
     
     /**
+     * Define summary constants.
+     */
+    const SUMMARY_FIRST_SENTENCE  = 'first-sentence';
+    const SUMMARY_FIRST_PARAGRAPH = 'first-paragraph';
+    
+    /**
      * Maps field names to field types for the extended object.
      *
      * @var array
@@ -54,6 +61,7 @@ class MetaDataExtension extends DataExtension
      */
     private static $db = [
         'SummaryMeta' => 'HTMLText',
+        'SummaryMode' => 'Varchar(16)',
         'ImageMetaHidden' => 'Varchar(1)',
         'ImageMetaResize' => 'Dimensions',
         'ImageMetaResizeMethod' => 'Varchar(32)',
@@ -103,6 +111,7 @@ class MetaDataExtension extends DataExtension
      * @config
      */
     private static $defaults = [
+        'SummaryMode' => 'default',
         'ImageMetaHidden' => 0,
         'ImageMetaCaptionHidden' => 0
     ];
@@ -264,11 +273,41 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaSummaryFields($params = [])
     {
-        return FieldList::create([
+        // Define Placeholder:
+        
+        $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
+        
+        // Create Field Objects:
+        
+        $fields = [
             HTMLEditorField::create(
                 'SummaryMeta',
                 $this->owner->fieldLabel('SummaryMeta')
-            )->setRows(10)
+            )->setRows(10),
+            $mode = DropdownField::create(
+                'SummaryMode',
+                $this->owner->fieldLabel('SummaryMode'),
+                $this->getSummaryModeOptions()
+            )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+        ];
+        
+        // Define Mode Right Title:
+        
+        $mode->setRightTitle(
+            _t(
+                __CLASS__ . '.SUMMARYMODERIGHTTITLE',
+                'This mode only applies to summary text automatically generated from the record content.'
+            )
+        );
+        
+        // Answer Field Objects:
+        
+        return FieldList::create([
+            FieldSection::create(
+                'SummaryMetaSection',
+                $this->owner->fieldLabel('SummaryMetaSection'),
+                $fields
+            )
         ]);
     }
     
@@ -423,7 +462,9 @@ class MetaDataExtension extends DataExtension
         $labels['ImageMetaAlignment'] = _t(__CLASS__ . '.ALIGNMENT', 'Alignment');
         $labels['ImageMetaHidden'] = _t(__CLASS__ . '.HIDEIMAGE', 'Hide image');
         $labels['ImageMetaLinked'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
-        $labels['SummaryMeta'] = _t(__CLASS__ . '.SUMMARY', 'Summary');
+        $labels['SummaryMetaSection'] = _t(__CLASS__ . '.SUMMARY', 'Summary');
+        $labels['SummaryMeta'] = _t(__CLASS__ . '.SUMMARYTEXT', 'Summary text');
+        $labels['SummaryMode'] = _t(__CLASS__ . '.SUMMARYMODE', 'Summary mode');
     }
     
     /**
@@ -558,7 +599,7 @@ class MetaDataExtension extends DataExtension
         }
         
         if ($content = $this->owner->getMetaContent()) {
-            return DBField::create_field('HTMLFragment', sprintf('<p>%s</p>', $content->Summary()));
+            return DBField::create_field('HTMLFragment', sprintf('<p>%s</p>', $this->getContentSummary($content)));
         }
     }
     
@@ -1091,6 +1132,38 @@ class MetaDataExtension extends DataExtension
         }
         
         return $value;
+    }
+    
+    /**
+     * Answers the appropriate summary of the given content field.
+     *
+     * @param DBHTMLText $content
+     *
+     * @return string
+     */
+    protected function getContentSummary(DBHTMLText $content)
+    {
+        switch ($this->owner->SummaryMode) {
+            case self::SUMMARY_FIRST_SENTENCE:
+                return $content->FirstSentence();
+            case self::SUMMARY_FIRST_PARAGRAPH:
+                return $content->FirstParagraph();
+            default:
+                return $content->Summary();
+        }
+    }
+    
+    /**
+     * Answers an array of options for the summary mode field.
+     *
+     * @return array
+     */
+    protected function getSummaryModeOptions()
+    {
+        return [
+            self::SUMMARY_FIRST_SENTENCE  => _t(__CLASS__ . '.FIRSTSENTENCE', 'First Sentence'),
+            self::SUMMARY_FIRST_PARAGRAPH => _t(__CLASS__ . '.FIRSTPARAGRAPH', 'First Paragraph')
+        ];
     }
     
     /**
