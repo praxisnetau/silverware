@@ -93,10 +93,10 @@ class ImageTools
     public function getAlignmentOptions()
     {
         return [
-            self::ALIGN_LEFT_ALONE => _t(__CLASS__ . '.ALIGNLEFTALONE', 'On the left, on its own.'),
-            self::ALIGN_CENTER => _t(__CLASS__ . '.ALIGNCENTER', 'Centered, on its own.'),
-            self::ALIGN_LEFT => _t(__CLASS__ . '.ALIGNLEFT', 'On the left, with text wrapping around.'),
-            self::ALIGN_RIGHT => _t(__CLASS__ . '.ALIGNRIGHT', 'On the right, with text wrapping around.')
+            self::ALIGN_LEFT_ALONE => _t(__CLASS__ . '.ALIGNLEFTALONE', 'Left'),
+            self::ALIGN_CENTER => _t(__CLASS__ . '.ALIGNCENTER', 'Center'),
+            self::ALIGN_LEFT => _t(__CLASS__ . '.ALIGNLEFT', 'Left wrap'),
+            self::ALIGN_RIGHT => _t(__CLASS__ . '.ALIGNRIGHT', 'Right wrap')
         ];
     }
     

@@ -446,6 +446,10 @@ class FixtureBlueprint extends BaseBlueprint
             
             $this->populateRelations($object, $data, $fixtures);
             
+            // Populate Objects:
+            
+            $this->populateObjects($object, $data, $fixtures);
+            
         }
         
         // Answer Object:
@@ -468,7 +472,7 @@ class FixtureBlueprint extends BaseBlueprint
         
         foreach ($data as $name => $value) {
             
-            if (!$this->isRelation($object, $name) && !$this->isChild($object, $name)) {
+            if ($this->isField($object, $name)) {
                 $this->populateField($object, $name, $value);
             }
             
@@ -556,6 +560,46 @@ class FixtureBlueprint extends BaseBlueprint
     }
     
     /**
+     * Populates the associated objects of the given object.
+     *
+     * @param DataObject $object
+     * @param array $data
+     * @param array $fixtures
+     *
+     * @return DataObject
+     */
+    public function populateObjects(DataObject $object, $data, $fixtures)
+    {
+        // Populate Objects:
+        
+        foreach ($data as $name => $value) {
+            
+            // Detect Object:
+            
+            if ($this->isObject($object, $name)) {
+                
+                // Trim Name:
+                
+                $name = ltrim($name, '->');
+                
+                // Populate Object:
+                
+                if ($subObject = $object->$name) {
+                    
+                    foreach ($value as $k => $v) {
+                        $subObject->$k = $v;
+                    }
+                    
+                    $subObject->write();
+                    
+                }
+                
+            }
+            
+        }
+    }
+    
+    /**
      * Populates the relations of the given object.
      *
      * @param DataObject $object
@@ -573,6 +617,12 @@ class FixtureBlueprint extends BaseBlueprint
         // Populate Relations:
         
         foreach ($data as $name => $value) {
+            
+            // Skip Object Identifiers:
+            
+            if ($this->isObject($object, $name)) {
+                continue;
+            }
             
             // Detect Relation:
             
@@ -874,6 +924,38 @@ class FixtureBlueprint extends BaseBlueprint
     }
     
     /**
+     * Answers true if the specified field is a regular field of the given object.
+     *
+     * @param DataObject $object
+     * @param string $name
+     *
+     * @return boolean
+     */
+    public function isField(DataObject $object, $name)
+    {
+        return (
+            !$this->isRelation($object, $name) &&
+            !$this->isObject($object, $name) &&
+            !$this->isChild($object, $name)
+        );
+    }
+    
+    /**
+     * Answers true if the specified field is an object associated with the given object.
+     *
+     * @param DataObject $object
+     * @param string $name
+     *
+     * @return boolean
+     */
+    public function isObject(DataObject $object, $name)
+    {
+        $identifier = ltrim($name, '->');
+        
+        return ($this->isObjectIdentifier($name) && is_object($object->$identifier));
+    }
+    
+    /**
      * Answers true if the specified field name is a child identifier string.
      *
      * @param string $name
@@ -883,6 +965,18 @@ class FixtureBlueprint extends BaseBlueprint
     public function isChildIdentifier($name)
     {
         return (strpos($name, '+') === 0);
+    }
+    
+    /**
+     * Answers true if the specified field name is an object identifier string.
+     *
+     * @param string $name
+     *
+     * @return boolean
+     */
+    public function isObjectIdentifier($name)
+    {
+        return (strpos($name, '->') === 0);
     }
     
     /**

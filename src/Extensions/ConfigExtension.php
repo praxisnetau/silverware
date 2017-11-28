@@ -100,6 +100,8 @@ class ConfigExtension extends DataExtension
             
         }
         
+        $this->owner->extend('updateBodyAttributes', $attributes);
+        
         return $attributes;
     }
     

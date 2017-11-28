@@ -82,7 +82,8 @@ class Column extends Grid
     private static $db = [
         'Span' => 'Viewports',
         'Offset' => 'Viewports',
-        'Sidebar' => 'Boolean'
+        'Sidebar' => 'Boolean',
+        'HideEmpty' => 'Boolean'
     ];
     
     /**
@@ -92,7 +93,8 @@ class Column extends Grid
      * @config
      */
     private static $defaults = [
-        'Sidebar' => 0
+        'Sidebar' => 0,
+        'HideEmpty' => 0
     ];
     
     /**
@@ -178,6 +180,10 @@ class Column extends Grid
                     CheckboxField::create(
                         'Sidebar',
                         $this->fieldLabel('Sidebar')
+                    ),
+                    CheckboxField::create(
+                        'HideEmpty',
+                        $this->fieldLabel('HideEmpty')
                     )
                 ]
             )
@@ -206,6 +212,7 @@ class Column extends Grid
         $labels['Span'] = _t(__CLASS__ . '.SPAN', 'Span');
         $labels['Offset'] = _t(__CLASS__ . '.OFFSET', 'Offset');
         $labels['Sidebar'] = _t(__CLASS__ . '.SIDEBAR', 'Sidebar');
+        $labels['HideEmpty'] = _t(__CLASS__ . '.HIDEWHENEMPTY', 'Hide when empty');
         $labels['ColumnStyle'] = $labels['ColumnOptions'] = _t(__CLASS__ . '.COLUMN', 'Column');
         
         // Answer Field Labels:
@@ -252,6 +259,26 @@ class Column extends Grid
     }
     
     /**
+     * Answers true if the column is empty.
+     *
+     * @return boolean
+     */
+    public function isEmpty()
+    {
+        return !$this->getEnabledChildren()->exists();
+    }
+    
+    /**
+     * Answers true if the column is hidden.
+     *
+     * @return boolean
+     */
+    public function isHidden()
+    {
+        return ($this->HideEmpty && $this->isEmpty());
+    }
+    
+    /**
      * Answers true if the column is a sidebar.
      *
      * @return boolean
@@ -273,6 +300,16 @@ class Column extends Grid
         }
         
         return parent::getTag();
+    }
+    
+    /**
+     * Answers true if the column is hidden or disabled.
+     *
+     * @return boolean
+     */
+    public function isDisabled()
+    {
+        return $this->isHidden() ?: parent::isDisabled();
     }
     
     /**

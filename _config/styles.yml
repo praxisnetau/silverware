@@ -53,6 +53,8 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       outline-dark: btn-outline-dark
       small: btn-sm
       large: btn-lg
+    column:
+      column: column
     content:
       content: content
       typography: typography
@@ -86,6 +88,7 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       left: rounded-left
       circle: rounded-circle
     row:
+      row: row
       no-gutters: no-gutters
     section:
       edge-to-edge: pl-0 pr-0

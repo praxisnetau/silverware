@@ -17,6 +17,7 @@
 
 namespace SilverWare\Extensions\Admin;
 
+use SilverStripe\Assets\Image;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Extension;
 use SilverStripe\Forms\DropdownField;
@@ -45,16 +46,22 @@ class CropPriorityFileFormExtension extends Extension
      */
     public function updateFormFields(FieldList $fields, Controller $controller, $name, $context)
     {
-        // Update Field Objects:
+        // Check Record Type:
         
-        $fields->insertAfter(
-            'ParentID',
-            DropdownField::create(
-                'CropPriority',
-                _t(__CLASS__ . '.CROPPRIORITY', 'Crop priority'),
-                $this->getCropPriorityOptions()
-            )
-        );
+        if ($context['Record'] instanceof Image) {
+            
+            // Update Field Objects:
+            
+            $fields->insertAfter(
+                'ParentID',
+                DropdownField::create(
+                    'CropPriority',
+                    _t(__CLASS__ . '.CROPPRIORITY', 'Crop priority'),
+                    $this->getCropPriorityOptions()
+                )
+            );
+            
+        }
     }
     
     /**

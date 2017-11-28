@@ -18,6 +18,7 @@
 namespace SilverWare\Grid\Frameworks\Bootstrap;
 
 use SilverWare\Grid\Extensions\ColumnExtension;
+use SilverWare\ORM\FieldType\DBViewports;
 
 /**
  * A column extension for Bootstrap columns.
@@ -75,13 +76,17 @@ class Column extends ColumnExtension
     /**
      * Answers the span class names for the extended object.
      *
+     * @param DBViewports $span Optional viewports field to use instead of extended object field.
+     *
      * @return array
      */
-    public function getSpanClassNames()
+    public function getSpanClassNames(DBViewports $span = null)
     {
         $classes = [];
         
-        $span = $this->owner->dbObject('Span');
+        if (!$span) {
+            $span = $this->owner->dbObject('Span');
+        }
         
         if ($span->allEqualTo('auto')) {
             
@@ -113,13 +118,17 @@ class Column extends ColumnExtension
     /**
      * Answers the offset class names for the extended object.
      *
+     * @param DBViewports $offset Optional viewports field to use instead of extended object field.
+     *
      * @return array
      */
-    public function getOffsetClassNames()
+    public function getOffsetClassNames(DBViewports $offset = null)
     {
         $classes = [];
         
-        $offset = $this->owner->dbObject('Offset');
+        if (!$offset) {
+            $offset = $this->owner->dbObject('Offset');
+        }
         
         foreach ($offset->getViewports() as $viewport) {
             $classes[] = $this->getOffsetClass($viewport, $offset->getField($viewport));
