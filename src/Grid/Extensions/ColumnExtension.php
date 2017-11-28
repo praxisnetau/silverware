@@ -17,6 +17,8 @@
 
 namespace SilverWare\Grid\Extensions;
 
+use SilverWare\ORM\FieldType\DBViewports;
+
 /**
  * A grid extension class which forms an abstract base for column extensions.
  *
@@ -31,16 +33,20 @@ abstract class ColumnExtension extends GridExtension
     /**
      * Answers the span class names for the extended object.
      *
+     * @param DBViewports $span Optional viewports field to use instead of extended object field.
+     *
      * @return array
      */
-    abstract public function getSpanClassNames();
+    abstract public function getSpanClassNames(DBViewports $span = null);
     
     /**
      * Answers the offset class names for the extended object.
      *
+     * @param DBViewports $offset Optional viewports field to use instead of extended object field.
+     *
      * @return array
      */
-    abstract public function getOffsetClassNames();
+    abstract public function getOffsetClassNames(DBViewports $offset = null);
     
     /**
      * Answers the combined class names for the extended object.
