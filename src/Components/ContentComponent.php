@@ -18,6 +18,9 @@
 namespace SilverWare\Components;
 
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverWare\Extensions\Model\LinkToExtension;
+use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\FontIcons\Extensions\FontIconExtension;
 
 /**
  * An extension of the base component class for a content component.
@@ -79,6 +82,18 @@ class ContentComponent extends BaseComponent
     private static $allowed_children = 'none';
     
     /**
+     * Defines the extension classes to apply to this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $extensions = [
+        AlignmentStyle::class,
+        FontIconExtension::class,
+        LinkToExtension::class
+    ];
+    
+    /**
      * Defines the default classes to use when rendering this object.
      *
      * @var array
@@ -106,7 +121,8 @@ class ContentComponent extends BaseComponent
             HTMLEditorField::create(
                 'Content',
                 $this->fieldLabel('Content')
-            )
+            ),
+            'LinkTo'
         );
         
         // Answer Field Objects:
@@ -123,5 +139,17 @@ class ContentComponent extends BaseComponent
     {
         return $this->dbObject('Content');
     }
-
+    
+    /**
+     * Renders the component for the HTML template.
+     *
+     * @param string $layout Page layout passed from template.
+     * @param string $title Page title passed from template.
+     *
+     * @return DBHTMLText|string
+     */
+    public function renderSelf($layout = null, $title = null)
+    {
+        return $this->getController()->renderWith(self::class);
+    }
 }
