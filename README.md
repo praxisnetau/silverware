@@ -165,7 +165,9 @@ SilverWare ships with the following components ready for use:
 - [`MediaComponent`](#mediacomponent)
 - [`PageComponent`](#pagecomponent)
 - [`ScrollToTopButton`](#scrolltotopbutton)
+- [`TableComponent`](#tablecomponent)
 - [`TagCloudComponent`](#tagcloudcomponent)
+- [`TileComponent`](#tilecomponent)
 - [`TitleComponent`](#titlecomponent)
 
 ### AreaComponent
@@ -238,6 +240,12 @@ The button is hidden by default when the user is at the top of the page, and app
 the user begins to scroll down. It can be customised by choosing a font icon,
 and also has fields for defining the show offset, opacity offset and scroll duration.
 
+### TableComponent
+
+Renders a series of child components in a table layout, consisting of rows and columns.
+By default, `TableComponent` makes use of the Bootstrap v4 flexbox layout grid, allowing
+you to define viewport-specific column spans for child components.
+
 ### TagCloudComponent
 
 Shows an interactive tag cloud with tags obtained from an implementor of `TagSource`.
@@ -245,6 +253,13 @@ The cloud is rendered as an HTML5 canvas (supported by most modern browsers), an
 can be rotated by the user using the mouse or touch gestures. The component has
 configurable text and outline colors, along with zoom, rotation, and font size options.
 Weighted tags are also supported.
+
+### TileComponent
+
+Renders a list of items as a series of "tiles". `TileComponent` is very similar to
+a `ListComponent`, and allows you to specify a `ListSource` for the items to display.
+The tiles are rendered using CSS + flexbox (similar to the Bootstrap grid), adjusting to
+each device accordingly.
 
 ### TitleComponent
 
