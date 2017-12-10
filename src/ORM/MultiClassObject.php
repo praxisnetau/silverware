@@ -41,6 +41,14 @@ class MultiClassObject extends DataObject
     use CMSMainPermissions;
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_MultiClassObject';
+    
+    /**
      * Defines the summary fields of this object.
      *
      * @var array

@@ -64,6 +64,14 @@ class FooterSection extends Section
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/FooterSection.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_FooterSection';
+    
+    /**
      * Defines the allowed parents for this object.
      *
      * @var array

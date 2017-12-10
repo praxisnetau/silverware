@@ -68,6 +68,14 @@ class BaseListComponent extends BaseComponent
     const BUTTON_TYPE_BUTTON = 'button';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_BaseListComponent';
+    
+    /**
      * Defines an ancestor class to hide from the admin interface.
      *
      * @var string

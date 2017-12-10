@@ -68,6 +68,14 @@ class ListSourceSlide extends Slide
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/ListSourceSlide.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_ListSourceSlide';
+    
+    /**
      * Defines the extension classes to apply to this object.
      *
      * @var array

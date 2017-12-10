@@ -68,6 +68,14 @@ class LayoutSection extends Section
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/LayoutSection.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_LayoutSection';
+    
+    /**
      * Defines the allowed children for this object.
      *
      * @var array|string

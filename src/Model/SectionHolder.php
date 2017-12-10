@@ -31,6 +31,30 @@ use SilverWare\Grid\Section;
 class SectionHolder extends Component
 {
     /**
+     * Human-readable singular name.
+     *
+     * @var string
+     * @config
+     */
+    private static $singular_name = 'Section Holder';
+    
+    /**
+     * Human-readable plural name.
+     *
+     * @var string
+     * @config
+     */
+    private static $plural_name = 'Section Holders';
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_SectionHolder';
+    
+    /**
      * Defines the default child class for this object.
      *
      * @var string

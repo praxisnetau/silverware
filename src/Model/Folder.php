@@ -37,12 +37,36 @@ use SilverStripe\Versioned\Versioned;
 class Folder extends SiteTree implements PermissionProvider
 {
     /**
+     * Human-readable singular name.
+     *
+     * @var string
+     * @config
+     */
+    private static $singular_name = 'Folder';
+    
+    /**
+     * Human-readable plural name.
+     *
+     * @var string
+     * @config
+     */
+    private static $plural_name = 'Folders';
+    
+    /**
      * Icon file for this object.
      *
      * @var string
      * @config
      */
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Folder.png';
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_Folder';
     
     /**
      * Defines the default values for the fields of this object.

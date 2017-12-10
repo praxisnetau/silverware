@@ -60,6 +60,14 @@ class PageType extends DataObject
     private static $plural_name = 'Page Types';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_PageType';
+    
+    /**
      * Maps field names to field types for this object.
      *
      * @var array
