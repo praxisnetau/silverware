@@ -34,12 +34,36 @@ use SilverWare\Model\Component;
 class BaseComponent extends Component
 {
     /**
+     * Human-readable singular name.
+     *
+     * @var string
+     * @config
+     */
+    private static $singular_name = 'Base Component';
+    
+    /**
+     * Human-readable plural name.
+     *
+     * @var string
+     * @config
+     */
+    private static $plural_name = 'Base Components';
+    
+    /**
      * Defines an ancestor class to hide from the admin interface.
      *
      * @var string
      * @config
      */
     private static $hide_ancestor = Component::class;
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_BaseComponent';
     
     /**
      * Maps field names to field types for this object.

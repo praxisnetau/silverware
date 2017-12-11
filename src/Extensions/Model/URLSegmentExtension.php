@@ -63,7 +63,7 @@ class URLSegmentExtension extends DataExtension
     {
         // Generate Valid URL Segment:
         
-        $this->generateValidURLSegment($this->getURLSegmentSource());
+        $this->owner->generateValidURLSegment($this->owner->getURLSegmentSource());
     }
     
     /**
@@ -135,13 +135,13 @@ class URLSegmentExtension extends DataExtension
     {
         // Generate URL Segment:
         
-        $this->owner->URLSegment = $this->generateURLSegment($string);
+        $this->owner->URLSegment = $this->owner->generateURLSegment($string);
         
         // Check for Duplicates:
         
         $count = 2;
         
-        while (!$this->validURLSegment()) {
+        while (!$this->owner->validURLSegment()) {
             
             $this->owner->URLSegment = sprintf(
                 '%s-%d',

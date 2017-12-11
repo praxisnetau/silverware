@@ -38,6 +38,30 @@ use Exception;
 class App extends DataObject
 {
     /**
+     * Human-readable singular name.
+     *
+     * @var string
+     * @config
+     */
+    private static $singular_name = 'App';
+    
+    /**
+     * Human-readable plural name.
+     *
+     * @var string
+     * @config
+     */
+    private static $plural_name = 'Apps';
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_App';
+    
+    /**
      * Defines the injector dependencies for this object.
      *
      * @var array

@@ -59,4 +59,12 @@ class TileComponent extends BaseListComponent
      * @config
      */
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/TileComponent.png';
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_TileComponent';
 }

@@ -207,7 +207,7 @@ class FixtureBlueprint extends BaseBlueprint
         
         // Mutate Class (if required):
         
-        $this->mutateClass($object, $identifier, $data);
+        $object = $this->mutateClass($object, $identifier, $data);
         
         // Write Object to Database:
         
@@ -254,6 +254,10 @@ class FixtureBlueprint extends BaseBlueprint
     public function findObjects($identifier, $data, $filter)
     {
         $objects = DataList::create($this->getClass());
+        
+        if (!$objects->exists()) {
+            $objects = DataList::create($this->getBaseClass());
+        }
         
         if (is_array($filter)) {
             $objects = $objects->filter($filter);

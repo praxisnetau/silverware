@@ -76,6 +76,14 @@ class FeatureComponent extends BaseComponent
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/FeatureComponent.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_FeatureComponent';
+    
+    /**
      * Maps field names to field types for this object.
      *
      * @var array

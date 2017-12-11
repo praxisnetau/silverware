@@ -64,6 +64,14 @@ class HeadingComponent extends BaseComponent
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/HeadingComponent.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_HeadingComponent';
+    
+    /**
      * Defines an ancestor class to hide from the admin interface.
      *
      * @var string

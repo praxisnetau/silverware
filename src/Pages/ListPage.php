@@ -65,6 +65,14 @@ class ListPage extends Page
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/ListPage.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_ListPage';
+    
+    /**
      * Defines the extension classes to apply to this object.
      *
      * @var array

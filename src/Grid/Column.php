@@ -66,6 +66,14 @@ class Column extends Grid
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Column.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_Column';
+    
+    /**
      * Defines an ancestor class to hide from the admin interface.
      *
      * @var string

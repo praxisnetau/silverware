@@ -85,6 +85,14 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/Component.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_Component';
+    
+    /**
      * Determines whether this object can exist at the root level.
      *
      * @var boolean

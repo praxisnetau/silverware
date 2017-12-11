@@ -32,6 +32,22 @@ use SilverWare\Model\Panel;
 class PanelFolder extends Folder
 {
     /**
+     * Human-readable singular name.
+     *
+     * @var string
+     * @config
+     */
+    private static $singular_name = 'Panel Folder';
+    
+    /**
+     * Human-readable plural name.
+     *
+     * @var string
+     * @config
+     */
+    private static $plural_name = 'Panel Folders';
+    
+    /**
      * Description of this object.
      *
      * @var string
@@ -46,6 +62,14 @@ class PanelFolder extends Folder
      * @config
      */
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/PanelFolder.png';
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_PanelFolder';
     
     /**
      * Defines an ancestor class to hide from the admin interface.

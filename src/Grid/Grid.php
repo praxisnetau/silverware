@@ -32,6 +32,14 @@ use SilverWare\Model\Component;
 class Grid extends Component
 {
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_Grid';
+    
+    /**
      * Answers the grid framework defined by configuration.
      *
      * @return Framework

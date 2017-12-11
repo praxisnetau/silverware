@@ -32,6 +32,22 @@ use SilverWare\Model\Folder;
 class ComponentFolder extends Folder
 {
     /**
+     * Human-readable singular name.
+     *
+     * @var string
+     * @config
+     */
+    private static $singular_name = 'Component Folder';
+    
+    /**
+     * Human-readable plural name.
+     *
+     * @var string
+     * @config
+     */
+    private static $plural_name = 'Component Folders';
+    
+    /**
      * Description of this object.
      *
      * @var string
@@ -46,6 +62,14 @@ class ComponentFolder extends Folder
      * @config
      */
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/ComponentFolder.png';
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_ComponentFolder';
     
     /**
      * Defines an ancestor class to hide from the admin interface.

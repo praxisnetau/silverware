@@ -32,6 +32,22 @@ use SilverWare\Model\Layout;
 class LayoutFolder extends Folder
 {
     /**
+     * Human-readable singular name.
+     *
+     * @var string
+     * @config
+     */
+    private static $singular_name = 'Layout Folder';
+    
+    /**
+     * Human-readable plural name.
+     *
+     * @var string
+     * @config
+     */
+    private static $plural_name = 'Layout Folders';
+    
+    /**
      * Description of this object.
      *
      * @var string
@@ -46,6 +62,14 @@ class LayoutFolder extends Folder
      * @config
      */
     private static $icon = 'silverware/silverware: admin/client/dist/images/icons/LayoutFolder.png';
+    
+    /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_LayoutFolder';
     
     /**
      * Defines an ancestor class to hide from the admin interface.
