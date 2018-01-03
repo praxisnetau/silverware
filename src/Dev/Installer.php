@@ -78,6 +78,13 @@ class Installer
         'default-locale' => 'en_GB',
         'default-database' => '{app-name}',
         'default-vendor' => 'vendor',
+        'default-author-name' => 'My Name',
+        'default-author-email' => 'name@example.com',
+        'default-author-company' => 'My Company',
+        'default-author-homepage' => 'https://www.example.com',
+        'default-project-link' => 'https://bitbucket.org/{repo-name}',
+        'default-license-name' => 'BSD-3-Clause',
+        'default-license-link' => 'https://opensource.org/licenses/BSD-3-Clause',
         'default-repo-name' => '{vendor}/app-{app-name}',
         'default-repo-url' => 'git@bitbucket.org:{repo-name}.git',
         'default-user' => 'serverpilot',
@@ -94,8 +101,12 @@ class Installer
         'format-default' => ' (default "%s")',
         'use-colors' => true,
         'files' => [
-            'app/_config/config.yml',
             'app/_config.php',
+            'app/_config/config.yml',
+            'app/code/Page.php',
+            'app/code/PageController.php',
+            'app/src/Pages/HomePage.php',
+            'app/src/Pages/HomePageController.php',
             'deploy.php',
             'deploy.yml'
         ],
@@ -236,6 +247,38 @@ class Installer
             $data
         );
         
+        // Obtain Author Name:
+        
+        $data['author-name'] = $this->ask(
+            'Author name',
+            $this->getConfig('default-author-name'),
+            $data
+        );
+        
+        // Obtain Author Email:
+        
+        $data['author-email'] = $this->ask(
+            'Author email',
+            $this->getConfig('default-author-email'),
+            $data
+        );
+        
+        // Obtain Author Company:
+        
+        $data['author-company'] = $this->ask(
+            'Author company',
+            $this->getConfig('default-author-company'),
+            $data
+        );
+        
+        // Obtain Author Homepage:
+        
+        $data['author-homepage'] = $this->ask(
+            'Author homepage',
+            $this->getConfig('default-author-homepage'),
+            $data
+        );
+        
         // Obtain Repository Name:
         
         $data['repo-name'] = $this->ask(
@@ -249,6 +292,30 @@ class Installer
         $data['repo-url'] = $this->ask(
             'Repository URL',
             $this->getConfig('default-repo-url'),
+            $data
+        );
+        
+        // Obtain Project Link:
+        
+        $data['project-link'] = $this->ask(
+            'Project link',
+            $this->getConfig('default-project-link'),
+            $data
+        );
+        
+        // Obtain License Name:
+        
+        $data['license-name'] = $this->ask(
+            'License name',
+            $this->getConfig('default-license-name'),
+            $data
+        );
+        
+        // Obtain License Link:
+        
+        $data['license-link'] = $this->ask(
+            'License link',
+            $this->getConfig('default-license-link'),
             $data
         );
         
@@ -329,6 +396,10 @@ class Installer
             $this->getConfig('default-app-tagline'),
             $data
         );
+        
+        // Define Year:
+        
+        $data['year'] = date('Y');
         
         // Write Namespace and Data:
         

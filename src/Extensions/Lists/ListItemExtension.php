@@ -335,6 +335,10 @@ class ListItemExtension extends Extension
                     
                 }
                 
+                if (isset($spec['show']) && !$this->owner->{$spec['show']}) {
+                    continue;
+                }
+                
                 $href = isset($spec['href']) ? $spec['href'] : null;
                 
                 if ($href) {
