@@ -73,12 +73,7 @@ const rules = (env) => {
           loader: 'postcss-loader'
         },
         {
-          loader: 'sass-loader',
-          options: {
-            includePaths: [
-              path.resolve(process.env.PWD, '../') // allows resolving of framework paths in symlinked modules
-            ]
-          }
+          loader: 'sass-loader'
         }
       ])
     },

@@ -302,9 +302,9 @@ for more information.
 
 ## Maintainers
 
-[![Colin Tucker](https://avatars3.githubusercontent.com/u/1853705?s=144)](https://github.com/colintucker) | [![Praxis Interactive](https://avatars2.githubusercontent.com/u/1782612?s=144)](http://www.praxis.net.au)
+[![Colin Tucker](https://avatars3.githubusercontent.com/u/1853705?s=144)](https://github.com/colintucker) | [![Praxis Interactive](https://avatars2.githubusercontent.com/u/1782612?s=144)](https://www.praxis.net.au)
 ---|---
-[Colin Tucker](https://github.com/colintucker) | [Praxis Interactive](http://www.praxis.net.au)
+[Colin Tucker](https://github.com/colintucker) | [Praxis Interactive](https://www.praxis.net.au)
 
 ## License
 

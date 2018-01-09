@@ -17,6 +17,7 @@
 
 namespace SilverWare\Extensions\Model;
 
+use SilverStripe\Assets\File;
 use SilverStripe\Assets\Image;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
@@ -95,18 +96,24 @@ class ImageResizeExtension extends DataExtension
     /**
      * Answers a resized image using the defined dimensions and resize method.
      *
-     * @param Image $image Image object to be resized.
+     * @param File $image Image object to be resized.
      *
-     * @return Image
+     * @return File
      */
-    public function performImageResize(Image $image)
+    public function performImageResize(File $image)
     {
-        return $this->tools()->resize(
-            $image,
-            $this->owner->ImageResizeWidth,
-            $this->owner->ImageResizeHeight,
-            $this->owner->ImageResizeMethod
-        );
+        if ($image instanceof Image) {
+            
+            return $this->tools()->resize(
+                $image,
+                $this->owner->ImageResizeWidth,
+                $this->owner->ImageResizeHeight,
+                $this->owner->ImageResizeMethod
+            );
+            
+        }
+        
+        return $image;
     }
     
     /**
