@@ -331,13 +331,17 @@ class ControllerExtension extends Extension
                 
                 // Define Protocol:
                 
-                $protocol = (isset($config['https']) && $config['https']) ? 'https' : 'http';
+                $protocol = function ($config) {
+                    if (isset($config['https']) && $config['https'] !== 'auto') {
+                        return sprintf('%s:', $config['https'] ? 'https' : 'http');
+                    }
+                };
                 
                 // Answer URL String:
                 
                 return sprintf(
-                    '%s://%s:%d/%s',
-                    $protocol,
+                    '%s//%s:%d/%s',
+                    $protocol($config),
                     $config['host'],
                     $config['port'],
                     $path
