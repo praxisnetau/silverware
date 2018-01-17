@@ -67,11 +67,11 @@ class TagField extends Select2AjaxField
     protected $idField = 'Title';
     
     /**
-     * The title field for the tag class.
+     * The text field for the tag class.
      *
      * @var string
      */
-    protected $titleField = 'Title';
+    protected $textField = 'Title';
     
     /**
      * Defines whether the field can create new tags.
@@ -185,7 +185,7 @@ class TagField extends Select2AjaxField
             
             // Obtain or Create Tag:
             
-            if ($tag = $this->findOrMakeTag($title, $relation)) {
+            if ($tag = $this->findOrMakeTag($relation, $title)) {
                 $ids[] = $tag->ID;
             }
             
@@ -199,12 +199,12 @@ class TagField extends Select2AjaxField
     /**
      * Obtains or creates a tag object with the given title.
      *
-     * @param string $title
      * @param Relation $relation
+     * @param string $title
      *
      * @return Tag
      */
-    protected function findOrMakeTag($title, $relation)
+    protected function findOrMakeTag(Relation $relation, $title)
     {
         // Obtain Data List:
         
@@ -238,7 +238,7 @@ class TagField extends Select2AjaxField
      */
     protected function getTagClass(Relation $relation)
     {
-        return ($this->dataClass == Tag::class) ? $relation->dataClass() : $this->dataClass;
+        return ($this->dataClass === Tag::class) ? $relation->dataClass() : $this->dataClass;
     }
     
     /**
