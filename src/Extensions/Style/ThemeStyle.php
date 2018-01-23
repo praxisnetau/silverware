@@ -45,6 +45,7 @@ class ThemeStyle extends StyleExtension
      * @config
      */
     private static $db = [
+        'ColorBorderTheme' => 'Varchar(64)',
         'ColorBackgroundTheme' => 'Varchar(64)',
         'ColorForegroundTheme' => 'Varchar(64)'
     ];
@@ -84,6 +85,11 @@ class ThemeStyle extends StyleExtension
                             'ColorForegroundTheme',
                             $this->owner->fieldLabel('ColorForegroundTheme'),
                             $this->getDropdownOptions('ColorForeground')
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
+                        DropdownField::create(
+                            'ColorBorderTheme',
+                            $this->owner->fieldLabel('ColorBorderTheme'),
+                            $this->getDropdownOptions('ColorBorder')
                         )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
                     ]
                 )
@@ -100,6 +106,7 @@ class ThemeStyle extends StyleExtension
      */
     public function updateFieldLabels(&$labels)
     {
+        $labels['ColorBorderTheme']     = _t(__CLASS__ . '.BORDERCOLOR', 'Border color');
         $labels['ColorBackgroundTheme'] = _t(__CLASS__ . '.BACKGROUNDCOLOR', 'Background color');
         $labels['ColorForegroundTheme'] = _t(__CLASS__ . '.FOREGROUNDCOLOR', 'Foreground color');
     }
@@ -126,6 +133,12 @@ class ThemeStyle extends StyleExtension
         // Apply Foreground Color:
         
         if ($class = $this->owner->ColorForegroundTheme) {
+            $classes[] = $this->style($class);
+        }
+        
+        // Apply Border Color:
+        
+        if ($class = $this->owner->ColorBorderTheme) {
             $classes[] = $this->style($class);
         }
     }
