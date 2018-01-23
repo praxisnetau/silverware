@@ -10,7 +10,7 @@
  *
  * @package SilverWare\Forms
  * @author Colin Tucker <colin@praxis.net.au>
- * @copyright 2017 Praxis Interactive
+ * @copyright 2018 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
@@ -19,21 +19,18 @@ namespace SilverWare\Forms;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObjectInterface;
-use SilverStripe\ORM\Relation;
 use SilverWare\Select2\Forms\Select2AjaxField;
-use SilverWare\Tags\Tag;
-use Exception;
 
 /**
- * An extension of the Select2 Ajax field for a tag field.
+ * An extension of the Select2 Ajax field for a has-one field.
  *
  * @package SilverWare\Forms
  * @author Colin Tucker <colin@praxis.net.au>
- * @copyright 2017 Praxis Interactive
+ * @copyright 2018 Praxis Interactive
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/praxisnetau/silverware
  */
-class TagField extends Select2AjaxField
+class HasOneField extends Select2AjaxField
 {
     /**
      * An array which defines the default configuration for instances.
@@ -53,39 +50,46 @@ class TagField extends Select2AjaxField
     protected $ajaxEnabled = false;
     
     /**
-     * The tag class to search via Ajax.
+     * The data class to search via Ajax.
      *
      * @var string
      */
-    protected $dataClass = Tag::class;
+    protected $dataClass;
     
     /**
-     * The ID field for the tag class.
+     * The default values for new instances of the data class.
+     *
+     * @var array
+     */
+    protected $dataDefaults = [];
+    
+    /**
+     * The ID field for the data class.
      *
      * @var string
      */
-    protected $idField = 'Title';
+    protected $idField = 'ID';
     
     /**
-     * The text field for the tag class.
+     * The text field for the data class.
      *
      * @var string
      */
     protected $textField = 'Title';
     
     /**
-     * Defines whether the field can create new tags.
+     * Defines whether the field can create new objects.
      *
      * @var boolean
      */
     protected $canCreate = true;
     
     /**
-     * Defines whether the field can handle multiple tags.
+     * Defines whether the field can handle multiple options.
      *
      * @var boolean
      */
-    protected $multiple = true;
+    protected $multiple = false;
     
     /**
      * Constructs the object upon instantiation.
@@ -100,10 +104,6 @@ class TagField extends Select2AjaxField
         // Construct Parent:
         
         parent::__construct($name, $title, $source, $value);
-        
-        // Define Object:
-        
-        $this->setHasEmptyDefault(false);
     }
     
     /**
@@ -113,7 +113,7 @@ class TagField extends Select2AjaxField
      */
     public function Type()
     {
-        return sprintf('tagfield %s', parent::Type());
+        return sprintf('hasonefield %s', parent::Type());
     }
     
     /**
@@ -141,20 +141,65 @@ class TagField extends Select2AjaxField
     }
     
     /**
+     * Defines the value of an individual data default.
+     *
+     * @param string $name
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function setDataDefault($name, $value)
+    {
+        $this->dataDefaults[$name] = $value;
+        
+        return $this;
+    }
+    
+    /**
+     * Answers the value of an individual data default.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function getDataDefault($name)
+    {
+        return isset($this->dataDefaults[$name]) ? $this->dataDefaults[$name] : null;
+    }
+    
+    /**
+     * Defines the value of the dataDefaults attribute.
+     *
+     * @param array $dataDefaults
+     *
+     * @return $this
+     */
+    public function setDataDefaults($dataDefaults)
+    {
+        $this->dataDefaults = (array) $dataDefaults;
+        
+        return $this;
+    }
+    
+    /**
+     * Answers the value of the dataDefaults attribute.
+     *
+     * @return array
+     */
+    public function getDataDefaults()
+    {
+        return $this->dataDefaults;
+    }
+    
+    /**
      * Saves the value of the field into the given data object.
      *
      * @param DataObjectInterface $record
-     *
-     * @throws Exception
      *
      * @return void
      */
     public function saveInto(DataObjectInterface $record)
     {
-        // Initialise:
-        
-        $ids = [];
-        
         // Obtain Field Name:
         
         $fieldName = $this->getName();
@@ -165,80 +210,27 @@ class TagField extends Select2AjaxField
             return;
         }
         
-        // Obtain Relation:
+        // Obtain Value:
         
-        if (!($relation = $this->getNamedRelation($record))) {
-            
-            throw new Exception(
-                sprintf(
-                    '%s does not have a relation named "%s"',
-                    get_class($record),
-                    $this->Name
-                )
-            );
-            
-        }
+        $value = $this->Value();
         
-        // Iterate Value Array:
+        // Value Not Empty / Does Not Exist?
         
-        foreach ($this->getValueArray() as $title) {
+        if (!empty($value) && !in_array($value, $this->getSourceValues())) {
             
-            // Obtain or Create Tag:
+            // Create New Object (if enabled):
             
-            if ($tag = $this->findOrMakeTag($relation, $title)) {
-                $ids[] = $tag->ID;
+            if ($this->getCanCreate() && $this->dataClass) {
+                $object = Injector::inst()->create($this->dataClass, $this->dataDefaults);
+                $object->setField($this->getTextField(), $value);
+                $this->setValue($object->write());
             }
             
         }
         
-        // Update Relation:
+        // Call Parent Method:
         
-        $relation->setByIDList($ids);
-    }
-    
-    /**
-     * Obtains or creates a tag object with the given title.
-     *
-     * @param Relation $relation
-     * @param string $title
-     *
-     * @return Tag
-     */
-    protected function findOrMakeTag(Relation $relation, $title)
-    {
-        // Obtain Data List:
-        
-        $list = $this->getList();
-        
-        // Obtain Field Name:
-        
-        $field = $this->getIDField();
-        
-        // Obtain Existing Tag:
-        
-        if ($tag = $list->find($field, $title)) {
-            return $tag;
-        }
-        
-        // Create New Tag (if enabled):
-        
-        if ($this->getCanCreate()) {
-            $tag = Injector::inst()->create($this->getTagClass($relation));
-            $tag->setField($field, $title)->write();
-            return $tag;
-        }
-    }
-    
-    /**
-     * Answers the tag class used by the field (uses the relation to identify if no source list defined).
-     *
-     * @param Relation $relation
-     *
-     * @return string
-     */
-    protected function getTagClass(Relation $relation)
-    {
-        return ($this->dataClass === Tag::class) ? $relation->dataClass() : $this->dataClass;
+        return parent::saveInto($record);
     }
     
     /**

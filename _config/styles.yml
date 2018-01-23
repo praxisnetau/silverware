@@ -32,6 +32,17 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       white: bg-white
       light: bg-light
       dark: bg-dark
+    border:
+      border: border
+      primary: border-primary
+      secondary: border-secondary
+      success: border-success
+      info: border-info
+      warning: border-warning
+      danger: border-danger
+      white: border-white
+      light: border-light
+      dark: border-dark
     button:
       button: btn
       primary: btn-primary

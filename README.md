@@ -169,6 +169,7 @@ SilverWare ships with the following components ready for use:
 - [`TagCloudComponent`](#tagcloudcomponent)
 - [`TileComponent`](#tilecomponent)
 - [`TitleComponent`](#titlecomponent)
+- [`ToggleComponent`](#togglecomponent)
 
 ### AreaComponent
 
@@ -268,6 +269,12 @@ the page title in a separate row or column from the actual page template itself.
 If you need to hide the page title in the template (so that two titles are not shown),
 select the "Hide title of page" option in your `PageComponent`. This adds the class
 `page-title-hidden` which can be used in your site styles.
+
+### ToggleComponent
+
+Allows you to embed a block of rich-text content, edited using `HTMLEditorField`, with
+the visibility of the content toggleable via clicking on the header of the component.
+Can be started open or closed.
 
 ## Issues
 

@@ -1,0 +1,59 @@
+/* Toggle Component Styles
+===================================================================================================================== */
+
+.togglecomponent {
+  
+  margin: 0 0 $spacer;
+  border: $border-width solid $border-color;
+  
+  > header {
+    
+    cursor: pointer;
+    padding: $spacer;
+    transition: $transition-base;
+    
+    > * {
+      
+      margin: 0;
+      font-size: inherit;
+      
+      &:before {
+        opacity: 0.75;
+        content: "\f0fe";
+        display: inline-block;
+        padding-right: $spacer-half;
+        font-family: 'FontAwesome';
+      }
+      
+    }
+    
+    &.opened {
+      
+      > *:before {
+        content: "\f146";
+      }
+      
+    }
+    
+    &.opened + div.content {
+      display: block;
+    }
+    
+    @include hover-focus {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+  }
+  
+  > div.content {
+    
+    display: none;
+    padding: $spacer;
+    
+    border-top-width: $border-width;
+    border-top-style: dotted;
+    border-top-color: inherit;
+    
+  }
+  
+}

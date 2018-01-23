@@ -26,3 +26,13 @@ SilverWare\Extensions\Style\ThemeStyle:
       text.white: White
       text.light: Light
       text.dark: Dark
+    ColorBorder:
+      border.primary: Primary
+      border.secondary: Secondary
+      border.success: Success
+      border.info: Info
+      border.warning: Warning
+      border.danger: Danger
+      border.white: White
+      border.light: Light
+      border.dark: Dark
