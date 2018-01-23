@@ -92,6 +92,61 @@ class ToggleComponent extends ContentComponent
     ];
     
     /**
+     * Answers a list of field objects for the CMS interface.
+     *
+     * @return FieldList
+     */
+    public function getCMSFields()
+    {
+        // Obtain Field Objects (from parent):
+        
+        $fields = parent::getCMSFields();
+        
+        // Create Options Fields:
+        
+        $fields->addFieldToTab(
+            'Root.Options',
+            FieldSection::create(
+                'ToggleOptions',
+                $this->fieldLabel('ToggleOptions'),
+                [
+                    CheckboxField::create(
+                        'StartOpen',
+                        $this->fieldLabel('StartOpen')
+                    )
+                ]
+            )
+        );
+        
+        // Answer Field Objects:
+        
+        return $fields;
+    }
+    
+    /**
+     * Answers the labels for the fields of the receiver.
+     *
+     * @param boolean $includerelations Include labels for relations.
+     *
+     * @return array
+     */
+    public function fieldLabels($includerelations = true)
+    {
+        // Obtain Field Labels (from parent):
+        
+        $labels = parent::fieldLabels($includerelations);
+        
+        // Define Field Labels:
+        
+        $labels['StartOpen'] = _t(__CLASS__ . '.STARTOPEN', 'Start open');
+        $labels['ToggleOptions'] = _t(__CLASS__ . '.TOGGLE', 'Toggle');
+        
+        // Answer Field Labels:
+        
+        return $labels;
+    }
+    
+    /**
      * Answers an array of HTML tag attributes for the object.
      *
      * @return array
