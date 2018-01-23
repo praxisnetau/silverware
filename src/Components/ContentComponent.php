@@ -20,6 +20,8 @@ namespace SilverWare\Components;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Extensions\Style\CornerStyle;
+use SilverWare\Extensions\Style\ThemeStyle;
 use SilverWare\FontIcons\Extensions\FontIconExtension;
 
 /**
@@ -97,8 +99,10 @@ class ContentComponent extends BaseComponent
      */
     private static $extensions = [
         AlignmentStyle::class,
+        CornerStyle::class,
         FontIconExtension::class,
-        LinkToExtension::class
+        LinkToExtension::class,
+        ThemeStyle::class
     ];
     
     /**
