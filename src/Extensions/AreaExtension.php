@@ -76,7 +76,11 @@ class AreaExtension extends DataExtension
         // Answer Panel from Parent:
         
         if (($parent = $this->owner->getParent()) && $parent instanceof Page) {
-            return $parent->getPanelForArea($area);
+            
+            if (($panel = $parent->getPanelForArea($area)) && $panel->isInherited()) {
+                return $panel;
+            }
+            
         }
         
         // Answer Panel for All Pages:

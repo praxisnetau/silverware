@@ -17,12 +17,14 @@
 
 namespace SilverWare\Model;
 
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\SelectionGroup;
 use SilverStripe\Forms\SelectionGroup_Item;
 use SilverWare\Components\AreaComponent;
 use SilverWare\Components\BaseComponent;
 use SilverWare\Folders\PanelFolder;
+use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\PageMultiselectField;
 use Page;
 
@@ -92,7 +94,8 @@ class Panel extends Component
      * @config
      */
     private static $db = [
-        'ShowOn' => "Enum('AllPages, OnlyThesePages', 'AllPages')"
+        'ShowOn' => "Enum('AllPages, OnlyThesePages', 'AllPages')",
+        'DoNotInherit' => 'Boolean'
     ];
     
     /**
@@ -102,7 +105,8 @@ class Panel extends Component
      * @config
      */
     private static $defaults = [
-        'ShowOn' => 'AllPages'
+        'ShowOn' => 'AllPages',
+        'DoNotInherit' => 0
     ];
     
     /**
@@ -190,6 +194,22 @@ class Panel extends Component
             
         }
         
+        // Create Options Fields:
+        
+        $fields->addFieldToTab(
+            'Root.Options',
+            FieldSection::create(
+                'PanelOptions',
+                $this->fieldLabel('PanelOptions'),
+                [
+                    CheckboxField::create(
+                        'DoNotInherit',
+                        $this->fieldLabel('DoNotInherit')
+                    )
+                ]
+            )
+        );
+        
         // Answer Field Objects:
         
         return $fields;
@@ -214,6 +234,8 @@ class Panel extends Component
         $labels['Areas'] = _t(__CLASS__ . '.AREAS', 'Areas');
         $labels['ShowOn'] = _t(__CLASS__ . '.SHOWON', 'Show on');
         $labels['AllPages'] = _t(__CLASS__ . '.ALLPAGES', 'All pages');
+        $labels['PanelOptions'] = _t(__CLASS__ . '.PANEL', 'Panel');
+        $labels['DoNotInherit'] = _t(__CLASS__ . '.DONOTINHERIT', 'Do not inherit');
         $labels['OnlyThesePages'] = _t(__CLASS__ . '.ONLYTHESEPAGES', 'Only these pages');
         
         // Answer Field Labels:
@@ -231,6 +253,16 @@ class Panel extends Component
     public function hasArea(AreaComponent $area)
     {
         return array_key_exists($area->ID, $this->Areas()->getIDList());
+    }
+    
+    /**
+     * Answers true if the panel is to be inherited by child pages.
+     *
+     * @return boolean
+     */
+    public function isInherited()
+    {
+        return !$this->DoNotInherit;
     }
     
     /**
