@@ -33,6 +33,7 @@ use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
+use SilverStripe\ORM\FieldType\DBComposite;
 use SilverStripe\ORM\Hierarchy\Hierarchy;
 use SilverStripe\Versioned\Versioned;
 use Exception;
@@ -504,8 +505,20 @@ class FixtureBlueprint extends BaseBlueprint
             
             // Handle Array Value:
             
-            foreach ($value as $k => $v) {
-                $object->dbObject($name)->setField($k, $this->processValue($v));
+            if ($object->dbObject($name) instanceof DBComposite) {
+                
+                // Handle Composite Field:
+                
+                foreach ($value as $k => $v) {
+                    $object->dbObject($name)->setField($k, $this->processValue($v));
+                }
+                
+            } else {
+                
+                // Handle Regular Field (JSON-encode):
+                
+                $object->setField($name, $this->processArray($value, true));
+                
             }
             
         } else {
@@ -1432,10 +1445,11 @@ class FixtureBlueprint extends BaseBlueprint
      * Processes the given array value and answers the resulting data.
      *
      * @param array $value
+     * @param boolean $json
      *
      * @return mixed
      */
-    protected function processArray($value)
+    protected function processArray($value, $json = false)
     {
         if (is_array($value)) {
             
@@ -1443,7 +1457,7 @@ class FixtureBlueprint extends BaseBlueprint
                 return $this->processCallbackArray($value);
             }
             
-            return implode(', ', $value);
+            return $json ? json_encode($value) : implode(', ', $value);
             
         }
         
