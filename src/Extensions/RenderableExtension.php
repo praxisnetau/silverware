@@ -17,12 +17,15 @@
 
 namespace SilverWare\Extensions;
 
+use SilverStripe\Core\Convert;
 use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\SelectionGroup;
 use SilverStripe\Forms\SelectionGroup_Item;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataExtension;
 use SilverWare\Forms\FieldSection;
 
@@ -46,6 +49,7 @@ class RenderableExtension extends DataExtension
     private static $db = [
         'StyleID' => 'Varchar(255)',
         'StyleClasses' => 'Varchar(255)',
+        'CustomStyles' => 'Varchar(255)',
         'CacheLifetime' => 'Int',
         'Cached' => 'Boolean',
         'Disabled' => 'Boolean'
@@ -93,7 +97,7 @@ class RenderableExtension extends DataExtension
         $fields->addFieldsToTab(
             'Root.Style',
             [
-                FieldSection::create(
+                $selectors = FieldSection::create(
                     'SelectorStyle',
                     $this->owner->fieldLabel('Selectors'),
                     [
@@ -119,6 +123,25 @@ class RenderableExtension extends DataExtension
                 )
             ]
         );
+        
+        // Create Custom Styles Field (if available):
+        
+        if ($this->owner->hasCustomStylesConfig()) {
+            
+            $selectors->push(
+                CheckboxSetField::create(
+                    'CustomStyles',
+                    $this->owner->fieldLabel('CustomStyles'),
+                    $this->owner->getCustomStylesOptions()
+                )->setRightTitle(
+                    _t(
+                        __CLASS__ . '.CUSTOMSTYLESRIGHTTITLE',
+                        'This component supports custom styles. Select one or more of the options above.'
+                    )
+                )
+            );
+            
+        }
         
         // Create Options Fields:
         
@@ -173,6 +196,7 @@ class RenderableExtension extends DataExtension
         $labels['Options'] = _t(__CLASS__ . '.OPTIONS', 'Options');
         $labels['Enabled'] = _t(__CLASS__ . '.ENABLED', 'Enabled');
         $labels['Selectors'] = _t(__CLASS__ . '.SELECTORS', 'Selectors');
+        $labels['CustomStyles'] = _t(__CLASS__ . '.CUSTOMSTYLES', 'Custom Styles');
         $labels['StyleClasses'] = _t(__CLASS__ . '.STYLECLASSES', 'Style Classes');
         $labels['CacheLifetime'] = _t(__CLASS__ . '.CACHELIFETIMEINSECONDS', 'Cache lifetime (in seconds)');
         $labels['Disabled'] = $labels['Disabled.Nice'] = _t(__CLASS__ . '.DISABLED', 'Disabled');
@@ -213,5 +237,69 @@ class RenderableExtension extends DataExtension
     public function onAfterWrite()
     {
         $this->owner->clearRenderCache();
+    }
+    
+    /**
+     * Answers a sorted array of any custom styles configured for the extended object.
+     *
+     * @return array
+     */
+    public function getCustomStylesConfig()
+    {
+        $styles = [];
+        
+        if (($config = $this->owner->config()->custom_styles) && is_array($config)) {
+            $styles = $config;
+        }
+        
+        ksort($styles);
+        
+        array_walk($styles, function (&$item) {
+            $item = $this->owner->cleanStyleClasses($item);
+        });
+        
+        return $styles;
+    }
+    
+    /**
+     * Answers true if the extended object has custom styles configured.
+     *
+     * @return boolean
+     */
+    public function hasCustomStylesConfig()
+    {
+        return !empty($this->owner->getCustomStylesConfig());
+    }
+    
+    /**
+     * Answers an array of selected custom styles mapped to their class names.
+     *
+     * @return array
+     */
+    public function getCustomStylesMappings()
+    {
+        $config = $this->owner->getCustomStylesConfig();
+        
+        if ($values = $this->owner->getField('CustomStyles')) {
+            
+            $styles = Convert::json2array($values);
+            
+            return array_intersect_key($config, array_flip($styles));
+            
+        }
+        
+        return [];
+    }
+    
+    /**
+     * Answers an array of options for the custom styles field.
+     *
+     * @return array
+     */
+    public function getCustomStylesOptions()
+    {
+        $keys = array_keys($this->owner->getCustomStylesConfig());
+        
+        return ArrayLib::valuekey($keys, $keys);
     }
 }

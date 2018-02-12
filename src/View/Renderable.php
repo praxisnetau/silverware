@@ -317,6 +317,7 @@ trait Renderable
         
         $classes = array_merge(
             $this->getStyleClassNames(),
+            $this->getCustomClassNames(),
             $this->getAncestorClassNames()
         );
         
@@ -341,6 +342,22 @@ trait Renderable
     public function getStyleClassNames()
     {
         return explode(' ', $this->getField('StyleClasses'));
+    }
+    
+    /**
+     * Answers an array of custom style class names for the HTML template.
+     *
+     * @return array
+     */
+    public function getCustomClassNames()
+    {
+        $classes = [];
+        
+        if (is_array($this->CustomStylesMappings)) {
+            return array_values($this->CustomStylesMappings);
+        }
+        
+        return $classes;
     }
     
     /**
