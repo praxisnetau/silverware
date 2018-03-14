@@ -214,6 +214,10 @@ class FixtureBlueprint extends BaseBlueprint
         
         $object->write();
         
+        // Handle Versioning:
+        
+        $this->publishObject($object);
+        
         // Record Object in Fixtures:
         
         $this->addFixture($object, $identifier);
@@ -361,6 +365,24 @@ class FixtureBlueprint extends BaseBlueprint
         $object->write();
         
         // Handle Versioning:
+        
+        $this->publishObject($object);
+        
+        // Answer Object:
+        
+        return $object;
+    }
+    
+    /**
+     * Publishes the given object (if the object is versioned).
+     *
+     * @param DataObject $object
+     *
+     * @return DataObject
+     */
+    public function publishObject(DataObject $object)
+    {
+        // Detect Versioned Extension:
         
         if ($object->hasExtension(Versioned::class)) {
             
