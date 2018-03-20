@@ -21,6 +21,7 @@ use SilverStripe\Assets\File;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverStripe\Forms\TextField;
 use SilverWare\Extensions\Model\ImageResizeExtension;
 use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Forms\FieldSection;
@@ -102,7 +103,9 @@ class ImageComponent extends BaseComponent
         'Caption' => 'HTMLText',
         'LinkImage' => 'Boolean',
         'HideCaption' => 'Boolean',
-        'InlineVector' => 'Boolean'
+        'InlineVector' => 'Boolean',
+        'ImageTitle' => 'Varchar(255)',
+        'ImageAlt' => 'Varchar(255)'
     ];
     
     /**
@@ -190,7 +193,15 @@ class ImageComponent extends BaseComponent
                 HTMLEditorField::create(
                     'Caption',
                     $this->fieldLabel('Caption')
-                )->setRows(10)
+                )->setRows(10),
+                TextField::create(
+                    'ImageTitle',
+                    $this->fieldLabel('ImageTitle')
+                ),
+                TextField::create(
+                    'ImageAlt',
+                    $this->fieldLabel('ImageAlt')
+                )
             ]
         );
         
@@ -245,8 +256,10 @@ class ImageComponent extends BaseComponent
         
         $labels['Caption'] = _t(__CLASS__ . '.CAPTION', 'Caption');
         $labels['ImageID'] = _t(__CLASS__ . '.IMAGE', 'Image');
-        $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
+        $labels['ImageAlt'] = _t(__CLASS__ . '.ALTTEXT', 'Alt text');
         $labels['LinkImage'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
+        $labels['ImageTitle'] = _t(__CLASS__ . '.TITLETEXT', 'Title text');
+        $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['ImageOptions'] = _t(__CLASS__ . '.IMAGE', 'Image');
         $labels['InlineVector'] = _t(__CLASS__ . '.INLINEVECTORIMAGE', 'Inline vector image');
         
@@ -333,8 +346,8 @@ class ImageComponent extends BaseComponent
         $attributes = [
             'src' => $this->ImageURL,
             'class' => $this->ImageClass,
-            'title' => $this->Title,
-            'alt' => $this->Title
+            'title' => $this->ImageTitleText,
+            'alt' => $this->ImageAltText
         ];
         
         if ($this->hasVectorImage()) {
@@ -352,6 +365,26 @@ class ImageComponent extends BaseComponent
         $this->extend('updateImageAttributes', $attributes);
         
         return $attributes;
+    }
+    
+    /**
+     * Answers the alt text for the image.
+     *
+     * @return string
+     */
+    public function getImageAltText()
+    {
+        return $this->ImageAlt ? $this->ImageAlt : $this->Title;
+    }
+    
+    /**
+     * Answers the title text for the image.
+     *
+     * @return string
+     */
+    public function getImageTitleText()
+    {
+        return $this->ImageTitle ? $this->ImageTitle : $this->Title;
     }
     
     /**
@@ -383,11 +416,14 @@ class ImageComponent extends BaseComponent
     {
         $attributes = [
             'href' => $this->ImageLinkURL,
-            'data-title' => $this->Title,
+            'data-title' => $this->ImageTitleText,
             'data-footer' => $this->dbObject('Caption')->Summary(),
-            'data-toggle' => 'lightbox',
             'class' => 'image'
         ];
+        
+        if ($this->ImageLinkURL == $this->Image()->URL) {
+            $attributes['data-toggle'] = 'lightbox';
+        }
         
         $this->extend('updateImageLinkAttributes', $attributes);
         
