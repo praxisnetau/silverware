@@ -22,6 +22,7 @@ use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverWare\Extensions\Model\ImageResizeExtension;
+use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Forms\FieldSection;
 
 /**
@@ -154,7 +155,8 @@ class ImageComponent extends BaseComponent
      * @config
      */
     private static $extensions = [
-        ImageResizeExtension::class
+        ImageResizeExtension::class,
+        LinkToExtension::class
     ];
     
     /**
@@ -363,6 +365,16 @@ class ImageComponent extends BaseComponent
     }
     
     /**
+     * Answers the URL for the image link.
+     *
+     * @return string
+     */
+    public function getImageLinkURL()
+    {
+        return ($link = $this->getLink()) ? $link : $this->Image()->URL;
+    }
+    
+    /**
      * Answers an array of attributes for the image link element.
      *
      * @return array
@@ -370,7 +382,7 @@ class ImageComponent extends BaseComponent
     public function getImageLinkAttributes()
     {
         $attributes = [
-            'href' => $this->Image()->URL,
+            'href' => $this->ImageLinkURL,
             'data-title' => $this->Title,
             'data-footer' => $this->dbObject('Caption')->Summary(),
             'data-toggle' => 'lightbox',
