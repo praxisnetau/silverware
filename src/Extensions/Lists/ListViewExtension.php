@@ -221,6 +221,11 @@ class ListViewExtension extends DataExtension
                     'ListViewOptions',
                     $this->owner->fieldLabel('ListView'),
                     [
+                        TextField::create(
+                            $this->nestName('Title'),
+                            $this->owner->fieldLabel('ListTitle'),
+                            $list->Title
+                        ),
                         DropdownField::create(
                             'ListClass',
                             $this->owner->fieldLabel('ListClass'),
@@ -278,6 +283,12 @@ class ListViewExtension extends DataExtension
                             $this->owner->fieldLabel('HideNoDataMessage'),
                             $this->getToggleOptions(),
                             $list->HideNoDataMessage
+                        ),
+                        DropdownField::create(
+                            $this->nestName('HideTitle'),
+                            $this->owner->fieldLabel('HideListTitle'),
+                            $this->getToggleOptions(),
+                            $list->HideTitle
                         )
                     ]
                 ),
@@ -399,6 +410,7 @@ class ListViewExtension extends DataExtension
         $labels['ListInherit'] = _t(__CLASS__ . '.INHERITFROMPARENT', 'Inherit from parent');
         $labels['ListInheritance'] = _t(__CLASS__ . '.LISTINHERITANCE', 'List Inheritance');
         $labels['HideNoDataMessage'] = _t(__CLASS__ . '.HIDENODATAMESSAGE', 'Hide "no data" message');
+        $labels['HideListTitle'] = _t(__CLASS__ . '.HIDETITLE', 'Hide list title');
     }
     
     /**
@@ -618,6 +630,9 @@ class ListViewExtension extends DataExtension
         
         // Define List Object:
         
+        $object->Title = $this->owner->Title;
+        $object->HideTitle = 1;
+        
         if ($folder = ComponentFolder::find()) {
             $object->ParentID = $folder->ID;
             $object->write();
@@ -683,9 +698,6 @@ class ListViewExtension extends DataExtension
             
             // Define List Object:
             
-            $object->Title     = $this->owner->Title;
-            $object->HideTitle = 1;
-            
             if ($request = Controller::curr()->getRequest()) {
                 
                 if ($config = $request->postVar(self::FIELD_WRAPPER)) {
@@ -698,6 +710,12 @@ class ListViewExtension extends DataExtension
                 
             }
             
+            // Update List Title:
+            
+            if ($object->Title === $this->getNewTitle()) {
+                $object->Title = $this->owner->Title;
+            }
+            
             // Record List Object:
             
             $object->write();
@@ -707,6 +725,22 @@ class ListViewExtension extends DataExtension
             $this->owner->ListObjectID = $object->ID;
             
         }
+    }
+    
+    /**
+     * Answers the new title for the extended object.
+     *
+     * @return string
+     */
+    protected function getNewTitle()
+    {
+        return _t(
+            'SilverStripe\\CMS\\Controllers\\CMSMain.NEWPAGE',
+            'New {pagetype}',
+            [
+                'pagetype' => $this->owner->i18n_singular_name()
+            ]
+        );
     }
     
     /**
