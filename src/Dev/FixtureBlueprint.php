@@ -93,6 +93,14 @@ class FixtureBlueprint extends BaseBlueprint
     private static $match_on_name = 'MatchOn';
     
     /**
+     * Determines whether to filter objects by the base class if no existing objects are found.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $filter_by_base_class = false;
+    
+    /**
      * The factory associated with this blueprint.
      *
      * @var FixtureFactory
@@ -260,7 +268,7 @@ class FixtureBlueprint extends BaseBlueprint
     {
         $objects = DataList::create($this->getClass());
         
-        if (!$objects->exists()) {
+        if (!$objects->exists() && $this->config()->filter_by_base_class) {
             $objects = DataList::create($this->getBaseClass());
         }
         
