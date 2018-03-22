@@ -329,6 +329,12 @@ class ControllerExtension extends Extension
             
             if (isset($config['host']) && isset($config['port'])) {
                 
+                // Auto Host Mode:
+                
+                if ($config['host'] === 'auto') {
+                    $config['host'] = Director::host();
+                }
+                
                 // Define Protocol:
                 
                 $protocol = function ($config) {
@@ -460,6 +466,12 @@ class ControllerExtension extends Extension
         if ($config = $this->getDevServerConfig()) {
             
             if (isset($config['host']) && isset($config['port'])) {
+                
+                // Auto Host Mode:
+                
+                if ($config['host'] === 'auto') {
+                    $config['host'] = Director::host();
+                }
                 
                 // Define Timeout:
                 

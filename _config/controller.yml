@@ -24,7 +24,7 @@ Only:
 
 SilverStripe\CMS\Controllers\ContentController:
   dev_server:
-    host: localhost
+    host: auto
     port: 8080
     https: auto
     timeout: 10
