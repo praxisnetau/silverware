@@ -33,13 +33,7 @@
     
   }
   
-}
-
-// Media Queries:
-
-@media (min-width: map-get($grid-breakpoints, sm)) {
-  
-  .tilecomponent {
+  @include media-breakpoint-up(sm) {
     
     .items > article.item {
       flex: 1 50%;
@@ -47,11 +41,7 @@
     
   }
   
-}
-
-@media (min-width: map-get($grid-breakpoints, md)) {
-  
-  .tilecomponent {
+  @include media-breakpoint-up(md) {
     
     .items > article.item {
       flex: 1 33.3%;
@@ -59,11 +49,7 @@
     
   }
   
-}
-
-@media (min-width: map-get($grid-breakpoints, lg)) {
-  
-  .tilecomponent {
+  @include media-breakpoint-up(lg) {
     
     .items > article.item {
       flex: 1 25%;

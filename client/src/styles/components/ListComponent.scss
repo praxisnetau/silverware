@@ -1,11 +1,9 @@
 /* List Component Styles
 ===================================================================================================================== */
 
-// Media Queries:
-
-@media (min-width: map-get($grid-breakpoints, md)) {
+.listcomponent {
   
-  .listcomponent {
+  @include media-breakpoint-up(md) {
     
     .items {
       
@@ -39,7 +37,7 @@
           margin-left: $spacer;
         }
         
-      },
+      }
       
       &.image-align-right > article.item.has-image,
       &.image-align-stagger > article.item.has-image:nth-child(even) {

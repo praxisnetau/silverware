@@ -36,13 +36,7 @@
     opacity: 1;
   }
   
-}
-
-// Media Queries:
-
-@media (min-width: map-get($grid-breakpoints, md)) {
-  
-  .scrolltotopbutton {
+  @include media-breakpoint-up(md) {
     width: ($spacer * 5);
     height: ($spacer * 5);
     right: $spacer-double;
@@ -50,11 +44,7 @@
     line-height: ($spacer * 5);
   }
   
-}
-
-@media (min-width: map-get($grid-breakpoints, lg)) {
-  
-  .scrolltotopbutton {
+  @include media-breakpoint-up(lg) {
     width: ($spacer * 6);
     height: ($spacer * 6);
     font-size: 20px;
