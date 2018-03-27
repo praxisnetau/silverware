@@ -2,7 +2,7 @@
   <header>
     <$TitleTag>
       {$FontIconTag}
-      <% if $HasLink %>
+      <% if $LinkTitle %>
         <a $LinkAttributesHTML>{$TitleText}</a>
       <% else %>
         {$TitleText}

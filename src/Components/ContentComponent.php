@@ -17,12 +17,15 @@
 
 namespace SilverWare\Components;
 
+use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverStripe\Forms\TextField;
 use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
 use SilverWare\Extensions\Style\CornerStyle;
 use SilverWare\Extensions\Style\ThemeStyle;
 use SilverWare\FontIcons\Extensions\FontIconExtension;
+use SilverWare\Forms\FieldSection;
 
 /**
  * An extension of the base component class for a content component.
@@ -35,6 +38,13 @@ use SilverWare\FontIcons\Extensions\FontIconExtension;
  */
 class ContentComponent extends BaseComponent
 {
+    /**
+     * Define link mode constants.
+     */
+    const LINK_MODE_BOTH   = 'both';
+    const LINK_MODE_TITLE  = 'title';
+    const LINK_MODE_BUTTON = 'button';
+    
     /**
      * Human-readable singular name.
      *
@@ -92,6 +102,17 @@ class ContentComponent extends BaseComponent
     private static $allowed_children = 'none';
     
     /**
+     * Maps field names to field types for this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $db = [
+        'LinkMode' => 'Varchar(16)',
+        'ButtonLabel' => 'Varchar(128)'
+    ];
+    
+    /**
      * Defines the extension classes to apply to this object.
      *
      * @var array
@@ -137,9 +158,70 @@ class ContentComponent extends BaseComponent
             'LinkTo'
         );
         
+        // Create Options Fields:
+        
+        $fields->addFieldToTab(
+            'Root.Options',
+            FieldSection::create(
+                'ContentOptions',
+                $this->fieldLabel('ContentOptions'),
+                [
+                    DropdownField::create(
+                        'LinkMode',
+                        $this->fieldLabel('LinkMode'),
+                        $this->getLinkModeOptions()
+                    ),
+                    TextField::create(
+                        'ButtonLabel',
+                        $this->fieldLabel('ButtonLabel')
+                    )
+                ]
+            )
+        );
+        
         // Answer Field Objects:
         
         return $fields;
+    }
+    
+    /**
+     * Answers the labels for the fields of the receiver.
+     *
+     * @param boolean $includerelations Include labels for relations.
+     *
+     * @return array
+     */
+    public function fieldLabels($includerelations = true)
+    {
+        // Obtain Field Labels (from parent):
+        
+        $labels = parent::fieldLabels($includerelations);
+        
+        // Define Field Labels:
+        
+        $labels['LinkMode'] = _t(__CLASS__ . '.LINKMODE', 'Link mode');
+        $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
+        $labels['ContentOptions'] = _t(__CLASS__ . '.CONTENT', 'Content');
+        
+        // Answer Field Labels:
+        
+        return $labels;
+    }
+    
+    /**
+     * Populates the default values for the fields of the receiver.
+     *
+     * @return void
+     */
+    public function populateDefaults()
+    {
+        // Populate Defaults (from parent):
+        
+        parent::populateDefaults();
+        
+        // Populate Defaults:
+        
+        $this->ButtonLabel = _t(__CLASS__ . '.DEFAULTBUTTONLABEL', 'More');
     }
     
     /**
@@ -153,6 +235,56 @@ class ContentComponent extends BaseComponent
     }
     
     /**
+     * Answers the link for the content component.
+     *
+     * @return string
+     */
+    public function getContentLink()
+    {
+        return $this->getLink();
+    }
+    
+    /**
+     * Answers true if the button is to be shown.
+     *
+     * @return boolean
+     */
+    public function getButtonShown()
+    {
+        return ($this->LinkMode == self::LINK_MODE_BOTH || $this->LinkMode == self::LINK_MODE_BUTTON);
+    }
+    
+    /**
+     * Answers true if the footer is to be shown in the template.
+     *
+     * @return boolean
+     */
+    public function getFooterShown()
+    {
+        return ($this->hasLink() && $this->ButtonShown);
+    }
+    
+    /**
+     * Answers true if the title link is to be shown in the template.
+     *
+     * @return boolean
+     */
+    public function getLinkTitle()
+    {
+        return ($this->hasLink() && $this->TitleLinked);
+    }
+    
+    /**
+     * Answers true if the title link is to be shown.
+     *
+     * @return boolean
+     */
+    public function getTitleLinked()
+    {
+        return ($this->LinkMode == self::LINK_MODE_BOTH || $this->LinkMode == self::LINK_MODE_TITLE);
+    }
+    
+    /**
      * Renders the component for the HTML template.
      *
      * @param string $layout Page layout passed from template.
@@ -163,5 +295,19 @@ class ContentComponent extends BaseComponent
     public function renderSelf($layout = null, $title = null)
     {
         return $this->getController()->renderWith(self::class);
+    }
+    
+    /**
+     * Answers an array of options for the link mode field.
+     *
+     * @return array
+     */
+    public function getLinkModeOptions()
+    {
+        return [
+            self::LINK_MODE_TITLE  => _t(__CLASS__ . '.TITLE', 'Title'),
+            self::LINK_MODE_BUTTON => _t(__CLASS__ . '.BUTTON', 'Button'),
+            self::LINK_MODE_BOTH   => _t(__CLASS__ . '.BOTHTITLEANDBUTTON', 'Both Title and Button')
+        ];
     }
 }
