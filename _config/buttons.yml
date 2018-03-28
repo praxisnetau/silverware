@@ -2,7 +2,7 @@
 Name: silverware-buttons
 ---
 
-# Define Button Types:
+# Define Button Style:
 
 SilverWare\Extensions\Style\ButtonStyle:
   button_types:
@@ -15,3 +15,6 @@ SilverWare\Extensions\Style\ButtonStyle:
     light: Light
     dark: Dark
     link: Link
+  default_button_type: primary
+  default_button_size: medium
+  default_button_style: filled

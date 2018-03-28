@@ -60,18 +60,6 @@ class ButtonStyle extends StyleExtension
     ];
     
     /**
-     * Defines the default values for the fields of this object.
-     *
-     * @var array
-     * @config
-     */
-    private static $defaults = [
-        'ButtonType' => 'primary',
-        'ButtonSize' => 'medium',
-        'ButtonStyle' => 'filled'
-    ];
-    
-    /**
      * Updates the CMS fields of the extended object.
      *
      * @param FieldList $fields List of CMS fields from the extended object.
@@ -101,17 +89,17 @@ class ButtonStyle extends StyleExtension
                             'ButtonType',
                             $this->owner->fieldLabel('ButtonType'),
                             $this->owner->getButtonTypeOptions()
-                        ),
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                         DropdownField::create(
                             'ButtonSize',
                             $this->owner->fieldLabel('ButtonSize'),
                             $this->owner->getButtonSizeOptions()
-                        ),
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder),
                         DropdownField::create(
                             'ButtonStyle',
                             $this->owner->fieldLabel('ButtonStyle'),
                             $this->owner->getButtonStyleOptions()
-                        )
+                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
                     ]
                 )
             ]
@@ -174,11 +162,55 @@ class ButtonStyle extends StyleExtension
      */
     public function getButtonTypeStyle()
     {
-        if ($this->owner->ButtonStyle == self::STYLE_OUTLINE) {
-            return sprintf('outline-%s', $this->owner->ButtonType);
+        $type = $this->owner->ButtonTypeOrDefault;
+        
+        if ($this->owner->ButtonStyleOrDefault == self::STYLE_OUTLINE) {
+            return sprintf('outline-%s', $type);
         }
         
-        return $this->owner->ButtonType;
+        return $type;
+    }
+    
+    /**
+     * Answers the defined button size or the default size.
+     *
+     * @return string
+     */
+    public function getButtonSizeOrDefault()
+    {
+        if ($this->owner->ButtonSize) {
+            return $this->owner->ButtonSize;
+        }
+        
+        return Config::inst()->get(static::class, 'default_button_size');
+    }
+    
+    /**
+     * Answers the defined button style or the default style.
+     *
+     * @return string
+     */
+    public function getButtonStyleOrDefault()
+    {
+        if ($this->owner->ButtonStyle) {
+            return $this->owner->ButtonStyle;
+        }
+        
+        return Config::inst()->get(static::class, 'default_button_style');
+    }
+    
+    /**
+     * Answers the defined button type or the default type.
+     *
+     * @return string
+     */
+    public function getButtonTypeOrDefault()
+    {
+        if ($this->owner->ButtonType) {
+            return $this->owner->ButtonType;
+        }
+        
+        return Config::inst()->get(static::class, 'default_button_type');
     }
     
     /**
@@ -188,7 +220,25 @@ class ButtonStyle extends StyleExtension
      */
     public function getButtonSizeClass()
     {
-        return $this->style('button', $this->owner->ButtonSize);
+        if ($size = $this->owner->ButtonSizeOrDefault) {
+            return $this->style('button', $size);
+        }
+    }
+    
+    /**
+     * Answers a string of extra classes for a button include.
+     *
+     * @return string
+     */
+    public function getButtonExtraClass()
+    {
+        $classes = [];
+        
+        if ($class = $this->owner->ButtonSizeClass) {
+            $classes[] = $class;
+        }
+        
+        return implode(' ', $classes);
     }
     
     /**
