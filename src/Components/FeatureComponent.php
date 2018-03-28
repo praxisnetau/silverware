@@ -436,7 +436,7 @@ class FeatureComponent extends BaseComponent
      */
     public function getBodyClassNames()
     {
-        $classes = ['body'];
+        $classes = ['body', 'typography'];
         
         $classes[] = $this->style('feature.body');
         
