@@ -22,6 +22,7 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Extensions\Style\ButtonStyle;
 use SilverWare\Extensions\Style\CornerStyle;
 use SilverWare\Extensions\Style\ThemeStyle;
 use SilverWare\FontIcons\Extensions\FontIconExtension;
@@ -120,10 +121,22 @@ class ContentComponent extends BaseComponent
      */
     private static $extensions = [
         AlignmentStyle::class,
+        ButtonStyle::class,
         CornerStyle::class,
         FontIconExtension::class,
         LinkToExtension::class,
         ThemeStyle::class
+    ];
+    
+    /**
+     * Defines the style extension classes to apply to this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $apply_styles = [
+        AlignmentStyle::class,
+        CornerStyle::class
     ];
     
     /**

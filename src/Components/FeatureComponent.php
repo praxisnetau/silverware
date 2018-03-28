@@ -26,6 +26,7 @@ use SilverStripe\Forms\TextField;
 use SilverWare\Extensions\Model\ImageResizeExtension;
 use SilverWare\Extensions\Model\LinkToExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Extensions\Style\ButtonStyle;
 use SilverWare\Extensions\Style\CornerStyle;
 use SilverWare\FontIcons\Extensions\FontIconExtension;
 use SilverWare\Forms\FieldSection;
@@ -174,6 +175,7 @@ class FeatureComponent extends BaseComponent
      * @config
      */
     private static $extensions = [
+        ButtonStyle::class,
         CornerStyle::class,
         AlignmentStyle::class,
         LinkToExtension::class,
