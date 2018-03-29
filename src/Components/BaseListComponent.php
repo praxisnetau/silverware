@@ -25,6 +25,7 @@ use SilverWare\Colorpicker\Forms\ColorField;
 use SilverWare\Extensions\Lists\ListSourceExtension;
 use SilverWare\Extensions\Model\ImageResizeExtension;
 use SilverWare\Extensions\Style\AlignmentStyle;
+use SilverWare\Extensions\Style\ButtonStyle;
 use SilverWare\Extensions\Style\PaginationStyle;
 use SilverWare\FontIcons\Forms\FontIconField;
 use SilverWare\Forms\FieldSection;
@@ -62,12 +63,6 @@ class BaseListComponent extends BaseComponent
     const IMAGE_LINK_FILE = 'file';
     
     /**
-     * Define button type constants.
-     */
-    const BUTTON_TYPE_LINK   = 'link';
-    const BUTTON_TYPE_BUTTON = 'button';
-    
-    /**
      * Defines the table name to use for this object.
      *
      * @var string
@@ -96,7 +91,7 @@ class BaseListComponent extends BaseComponent
         'ShowSummary' => 'Varchar(8)',
         'ShowContent' => 'Varchar(8)',
         'ShowFooter' => 'Varchar(8)',
-        'ButtonType' => 'Varchar(8)',
+        'ButtonLink' => 'Boolean',
         'ButtonIcon' => 'FontIcon',
         'ButtonLabel' => 'Varchar(128)',
         'HeadingLevel' => 'Varchar(2)',
@@ -132,6 +127,7 @@ class BaseListComponent extends BaseComponent
         'OverlayTitle' => 0,
         'LinkImages' => 1,
         'LinkTitles' => 1,
+        'ButtonLink' => 0,
         'HideNoDataMessage' => 0
     ];
     
@@ -150,9 +146,21 @@ class BaseListComponent extends BaseComponent
      * @config
      */
     private static $extensions = [
+        ButtonStyle::class,
         AlignmentStyle::class,
         ListSourceExtension::class,
         ImageResizeExtension::class,
+        PaginationStyle::class
+    ];
+    
+    /**
+     * Defines the style extension classes to apply to this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $apply_styles = [
+        AlignmentStyle::class,
         PaginationStyle::class
     ];
     
@@ -274,14 +282,13 @@ class BaseListComponent extends BaseComponent
                             $this->fieldLabel('ShowFooter'),
                             $this->getShowOptions()
                         ),
-                        DropdownField::create(
-                            'ButtonType',
-                            $this->fieldLabel('ButtonType'),
-                            $this->getButtonTypeOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
                         TextField::create(
                             'ButtonLabel',
                             $this->fieldLabel('ButtonLabel')
+                        ),
+                        CheckboxField::create(
+                            'ButtonLink',
+                            $this->fieldLabel('ButtonLink')
                         ),
                         CheckboxField::create(
                             'LinkTitles',
@@ -372,7 +379,7 @@ class BaseListComponent extends BaseComponent
         $labels['LinkImages'] = _t(__CLASS__ . '.LINKIMAGES', 'Link images');
         $labels['LinkTitles'] = _t(__CLASS__ . '.LINKTITLES', 'Link titles');
         $labels['ButtonIcon'] = _t(__CLASS__ . '.BUTTONICON', 'Button icon');
-        $labels['ButtonType'] = _t(__CLASS__ . '.BUTTONTYPE', 'Button type');
+        $labels['ButtonLink'] = _t(__CLASS__ . '.SHOWBUTTONSASLINKS', 'Show buttons as links');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['HeadingLevel'] = _t(__CLASS__ . '.HEADINGLEVEL', 'Heading level');
         $labels['ImageLinksTo'] = _t(__CLASS__ . '.IMAGELINKSTO', 'Image links to');
@@ -590,7 +597,7 @@ class BaseListComponent extends BaseComponent
      */
     public function isButtonLink()
     {
-        return ($this->ButtonType == self::BUTTON_TYPE_LINK);
+        return (boolean) $this->ButtonLink;
     }
     
     /**
@@ -633,19 +640,6 @@ class BaseListComponent extends BaseComponent
     public function getHideNoDataMessage()
     {
         return $this->getField('HideNoDataMessage');
-    }
-    
-    /**
-     * Answers an array of options for the button type field.
-     *
-     * @return array
-     */
-    public function getButtonTypeOptions()
-    {
-        return [
-            self::BUTTON_TYPE_LINK   => _t(__CLASS__ . '.LINK', 'Link'),
-            self::BUTTON_TYPE_BUTTON => _t(__CLASS__ . '.BUTTON', 'Button')
-        ];
     }
     
     /**

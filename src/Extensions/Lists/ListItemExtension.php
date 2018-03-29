@@ -341,15 +341,23 @@ class ListItemExtension extends Extension
                 
                 $href = isset($spec['href']) ? $spec['href'] : null;
                 
+                $type  = null;
+                $extra = null;
+                
+                if ($renderer = $this->owner->getRenderer()) {
+                    $type  = $renderer->ButtonTypeStyle;
+                    $extra = $renderer->ButtonExtraClass;
+                }
+                
                 if ($href) {
                     
                     $buttons->push(
                         ArrayData::create([
                             'Icon' => isset($spec['icon']) ? $spec['icon'] : null,
-                            'Type' => isset($spec['type']) ? $spec['type'] : null,
+                            'Type' => isset($spec['type']) ? $spec['type'] : $type,
                             'HREF' => isset($spec['href']) ? $spec['href'] : null,
                             'Text' => isset($spec['text']) ? $spec['text'] : null,
-                            'ExtraClass' => isset($spec['extraClass']) ? $spec['extraClass'] : null
+                            'ExtraClass' => isset($spec['extraClass']) ? $spec['extraClass'] : $extra
                         ])
                     );
                     
