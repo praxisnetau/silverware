@@ -16,6 +16,7 @@ require('forms/ToggleGroup.js');
 
 // Load Components:
 
+require('components/HeaderSection.js');
 require('components/ScrollToTopButton.js');
 require('components/TagCloudComponent.js');
 require('components/ToggleComponent.js');
