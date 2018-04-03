@@ -21,11 +21,17 @@ use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridFieldDetailForm;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverWare\Grid\Column;
+use SilverWare\Grid\ColumnSpan;
 use SilverWare\Model\Layout;
+use SilverWare\Model\SectionHolder;
 use SilverWare\Model\Template;
 use SilverWare\Security\SiteConfigPermissions;
 use Page;
@@ -90,6 +96,26 @@ class PageType extends DataObject
     ];
     
     /**
+     * Defines the has-many associations for this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $has_many = [
+        'ColumnSpans' => ColumnSpan::class
+    ];
+    
+    /**
+     * Maps field and method names to the class names of casting objects.
+     *
+     * @var array
+     * @config
+     */
+    private static $casting = [
+        'HasCustomSpans' => 'Boolean'
+    ];
+    
+    /**
      * Defines the summary fields of this record.
      *
      * @var array
@@ -98,7 +124,8 @@ class PageType extends DataObject
     private static $summary_fields = [
         'PageName',
         'MyTemplate.Title',
-        'MyLayout.Title'
+        'MyLayout.Title',
+        'HasCustomSpans.Nice'
     ];
     
     /**
@@ -151,6 +178,41 @@ class PageType extends DataObject
             ]
         );
         
+        // Create Grid Field Config:
+        
+        $spansConfig = GridFieldConfig_RecordEditor::create();
+        
+        // Obtain Edit Form Component:
+        
+        $editComponent = $spansConfig->getComponentByType(GridFieldDetailForm::class);
+        
+        // Define Edit Form Callback:
+        
+        $editComponent->setItemEditFormCallback(function ($form, $itemRequest) {
+            
+            // Define Column Options:
+            
+            $form->Fields()->dataFieldByName('ColumnID')->setSource($this->getColumnOptions());
+            
+        });
+        
+        // Create Column Spans Grid Field:
+        
+        $spans = GridField::create(
+            'ColumnSpans',
+            $this->fieldLabel('Spans'),
+            $this->ColumnSpans(),
+            $spansConfig
+        );
+        
+        // Create Column Spans Tab:
+        
+        $fields->findOrMakeTab('Root.ColumnSpans', $this->owner->fieldLabel('Spans'));
+        
+        // Add Grid Field to Column Spans Tab:
+        
+        $fields->addFieldToTab('Root.ColumnSpans', $spans);
+        
         // Extend Field Objects:
         
         $this->extend('updateCMSFields', $fields);
@@ -189,9 +251,13 @@ class PageType extends DataObject
         
         // Define Field Labels:
         
+        $labels['Spans'] = _t(__CLASS__ . '.SPANS', 'Spans');
+        
         $labels['PageName']     = $labels['PageClass'] = _t(__CLASS__ . '.TYPE', 'Type');
         $labels['MyLayoutID']   = $labels['MyLayout.Title'] = _t(__CLASS__ . '.LAYOUT', 'Layout');
         $labels['MyTemplateID'] = $labels['MyTemplate.Title'] = _t(__CLASS__ . '.TEMPLATE', 'Template');
+        
+        $labels['HasCustomSpans.Nice'] = _t(__CLASS__ . '.HASCUSTOMSPANS', 'Has Custom Spans');
         
         // Define Relation Labels:
         
@@ -266,6 +332,78 @@ class PageType extends DataObject
     public function getPageTemplate()
     {
         return $this->MyTemplate();
+    }
+    
+    /**
+     * Answers true if the receiver has custom column spans defined.
+     *
+     * @return boolean
+     */
+    public function getHasCustomSpans()
+    {
+        return $this->ColumnSpans()->exists();
+    }
+    
+    /**
+     * Answers an array of options for the column field in child column span records.
+     *
+     * @return array
+     */
+    public function getColumnOptions()
+    {
+        // Create Options Array:
+        
+        $options = [];
+        
+        // Merge Template Columns:
+        
+        if ($template = $this->getPageTemplate()) {
+            
+            foreach ($template->getAllComponentsByClass(Column::class) as $column) {
+                $options[$column->ID] = $this->getColumnLabel($column, $template);
+            }
+            
+        }
+        
+        // Merge Layout Columns:
+        
+        if ($layout = $this->getPageLayout()) {
+            
+            foreach ($layout->getAllComponentsByClass(Column::class) as $column) {
+                $options[$column->ID] = $this->getColumnLabel($column, $layout);
+            }
+            
+        }
+        
+        // Answer Options Array:
+        
+        return $options;
+    }
+    
+    /**
+     * Answers a label for a column field option.
+     *
+     * @param Column $column
+     * @param SectionHolder $holder
+     * @param integer $depth
+     *
+     * @return string
+     */
+    public function getColumnLabel(Column $column, SectionHolder $holder, $depth = 3)
+    {
+        $label = sprintf('%s > %s',
+            $holder->i18n_singular_name(),
+            $column->NestedTitle($depth, ' > ')
+        );
+        
+        if ($column->isSidebar()) {
+            $label .= sprintf(
+                ' (%s)',
+                _t(__CLASS__ . '.SIDEBAR', 'Sidebar')
+            );
+        }
+        
+        return $label;
     }
     
     /**

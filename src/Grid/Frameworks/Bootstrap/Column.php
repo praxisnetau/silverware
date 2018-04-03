@@ -105,7 +105,7 @@ class Column extends ColumnExtension
         $classes = [];
         
         if (!$span) {
-            $span = $this->owner->dbObject('Span');
+            $span = $this->owner->getSpanViewports();
         }
         
         if ($span->allEqualTo('auto')) {
@@ -147,7 +147,7 @@ class Column extends ColumnExtension
         $classes = [];
         
         if (!$offset) {
-            $offset = $this->owner->dbObject('Offset');
+            $offset = $this->owner->getOffsetViewports();
         }
         
         foreach ($offset->getViewports() as $viewport) {

@@ -26,6 +26,7 @@ use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverWare\Forms\FieldSection;
+use SilverWare\Grid\ColumnSpan;
 use SilverWare\Model\Layout;
 use SilverWare\Model\Link;
 use SilverWare\Model\Template;
@@ -55,6 +56,16 @@ class PageExtension extends DataExtension implements PermissionProvider
     private static $has_one = [
         'MyLayout' => Layout::class,
         'MyTemplate' => Template::class
+    ];
+    
+    /**
+     * Defines the reciprocal many-many associations for the extended object.
+     *
+     * @var array
+     * @config
+     */
+    private static $belongs_many_many = [
+        'Spans' => ColumnSpan::class
     ];
     
     /**

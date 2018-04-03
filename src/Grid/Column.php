@@ -96,6 +96,16 @@ class Column extends Grid
     ];
     
     /**
+     * Defines the has-many associations for this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $has_many = [
+        'ColumnSpans' => ColumnSpan::class
+    ];
+    
+    /**
      * Defines the default values for the fields of this object.
      *
      * @var array
@@ -271,6 +281,48 @@ class Column extends Grid
         $this->extend('updateColumnOffsetOptions', $options);
         
         return $options;
+    }
+    
+    /**
+     * Answers true if the column has custom spans defined.
+     *
+     * @return boolean
+     */
+    public function hasColumnSpans()
+    {
+        return $this->ColumnSpans()->exists();
+    }
+    
+    /**
+     * Answers the span viewports field defined for the column.
+     *
+     * @return DBViewports
+     */
+    public function getSpanViewports()
+    {
+        if ($this->hasColumnSpans()) {
+            
+            foreach ($this->ColumnSpans() as $span) {
+                
+                if ($span->isActive()) {
+                    return $span->getSpanViewports();
+                }
+                
+            }
+            
+        }
+        
+        return $this->owner->dbObject('Span');
+    }
+    
+    /**
+     * Answers the offsets viewports field defined for the column.
+     *
+     * @return DBViewports
+     */
+    public function getOffsetViewports()
+    {
+        return $this->owner->dbObject('Offset');
     }
     
     /**

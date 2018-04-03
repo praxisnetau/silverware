@@ -561,6 +561,18 @@ class Component extends SiteTree implements Flushable, PermissionProvider
     }
     
     /**
+     * Answers a list of all components within the receiver of the given class.
+     *
+     * @param string $class
+     *
+     * @return ArrayList
+     */
+    public function getAllComponentsByClass($class)
+    {
+        return $this->getAllComponents()->filter('ClassName', ClassInfo::subclassesFor($class));
+    }
+    
+    /**
      * Answers a list of the enabled children within the receiver.
      *
      * @return DataList
