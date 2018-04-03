@@ -74,6 +74,26 @@ class Column extends ColumnExtension
     ];
     
     /**
+     * Updates the given array of class names from the extended object.
+     *
+     * @param array $classes
+     *
+     * @return void
+     */
+    public function updateClassNames(&$classes)
+    {
+        // Update Class Names (via parent):
+        
+        parent::updateClassNames($classes);
+        
+        // Update Class Names:
+        
+        if ($this->owner->isEdgeToEdge()) {
+            $classes[] = $this->style('column.edge-to-edge');
+        }
+    }
+    
+    /**
      * Answers the span class names for the extended object.
      *
      * @param DBViewports $span Optional viewports field to use instead of extended object field.

@@ -66,6 +66,7 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
       large: btn-lg
     column:
       column: column
+      edge-to-edge: pl-0 pr-0
     content:
       content: content
       typography: typography
@@ -101,6 +102,7 @@ SilverWare\Grid\Frameworks\Bootstrap\Framework:
     row:
       row: row
       no-gutters: no-gutters
+      edge-to-edge: pl-0 pr-0
     section:
       edge-to-edge: pl-0 pr-0
     text:

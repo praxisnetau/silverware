@@ -91,7 +91,8 @@ class Column extends Grid
         'Span' => 'Viewports',
         'Offset' => 'Viewports',
         'Sidebar' => 'Boolean',
-        'HideEmpty' => 'Boolean'
+        'HideEmpty' => 'Boolean',
+        'EdgeToEdge' => 'Boolean'
     ];
     
     /**
@@ -102,7 +103,8 @@ class Column extends Grid
      */
     private static $defaults = [
         'Sidebar' => 0,
-        'HideEmpty' => 0
+        'HideEmpty' => 0,
+        'EdgeToEdge' => 0
     ];
     
     /**
@@ -192,6 +194,10 @@ class Column extends Grid
                     CheckboxField::create(
                         'HideEmpty',
                         $this->fieldLabel('HideEmpty')
+                    ),
+                    CheckboxField::create(
+                        'EdgeToEdge',
+                        $this->fieldLabel('EdgeToEdge')
                     )
                 ]
             )
@@ -221,6 +227,7 @@ class Column extends Grid
         $labels['Offset'] = _t(__CLASS__ . '.OFFSET', 'Offset');
         $labels['Sidebar'] = _t(__CLASS__ . '.SIDEBAR', 'Sidebar');
         $labels['HideEmpty'] = _t(__CLASS__ . '.HIDEWHENEMPTY', 'Hide when empty');
+        $labels['EdgeToEdge'] = _t(__CLASS__ . '.EDGETOEDGE', 'Edge-to-edge (remove padding)');
         $labels['ColumnStyle'] = $labels['ColumnOptions'] = _t(__CLASS__ . '.COLUMN', 'Column');
         
         // Answer Field Labels:
@@ -308,6 +315,16 @@ class Column extends Grid
         }
         
         return parent::getTag();
+    }
+    
+    /**
+     * Answers true if the column uses an edge-to-edge container.
+     *
+     * @return boolean
+     */
+    public function isEdgeToEdge()
+    {
+        return (boolean) $this->EdgeToEdge;
     }
     
     /**
