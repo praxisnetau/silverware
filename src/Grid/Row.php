@@ -94,7 +94,9 @@ class Row extends Grid
      * @config
      */
     private static $db = [
-        'NoGutters' => 'Boolean'
+        'NoGutters' => 'Boolean',
+        'EdgeToEdge' => 'Boolean',
+        'UseContainer' => 'Boolean'
     ];
     
     /**
@@ -104,7 +106,9 @@ class Row extends Grid
      * @config
      */
     private static $defaults = [
-        'NoGutters' => 0
+        'NoGutters' => 0,
+        'EdgeToEdge' => 0,
+        'UseContainer' => 0
     ];
     
     /**
@@ -139,6 +143,14 @@ class Row extends Grid
                     CheckboxField::create(
                         'NoGutters',
                         $this->fieldLabel('NoGutters')
+                    ),
+                    CheckboxField::create(
+                        'UseContainer',
+                        $this->fieldLabel('UseContainer')
+                    ),
+                    CheckboxField::create(
+                        'EdgeToEdge',
+                        $this->fieldLabel('EdgeToEdge')
                     )
                 ]
             )
@@ -164,12 +176,38 @@ class Row extends Grid
         
         // Define Field Labels:
         
-        $labels['NoGutters'] = _t(__CLASS__ . '.NOGUTTERS', 'No gutters');
-        $labels['RowOptions'] = _t(__CLASS__ . '.ROW', 'Row');
+        $labels['NoGutters']    = _t(__CLASS__ . '.NOGUTTERS', 'No gutters');
+        $labels['RowOptions']   = _t(__CLASS__ . '.ROW', 'Row');
+        $labels['EdgeToEdge']   = _t(__CLASS__ . '.EDGETOEDGE', 'Edge-to-edge (remove padding)');
+        $labels['UseContainer'] = _t(__CLASS__ . '.USECONTAINER', 'Use container');
         
         // Answer Field Labels:
         
         return $labels;
+    }
+    
+    /**
+     * Answers an array of container class names for the HTML template.
+     *
+     * @return array
+     */
+    public function getContainerClassNames()
+    {
+        $classes = [];
+        
+        $this->extend('updateContainerClassNames', $classes);
+        
+        return $classes;
+    }
+    
+    /**
+     * Answers true if the row uses an edge-to-edge container.
+     *
+     * @return boolean
+     */
+    public function isEdgeToEdge()
+    {
+        return (boolean) $this->EdgeToEdge;
     }
     
     /**
@@ -192,6 +230,28 @@ class Row extends Grid
      */
     public function renderSelf($layout = null, $title = null)
     {
-        return $this->renderTag($this->renderChildren($layout, $title));
+        return $this->renderTag($this->renderContainer($this->renderChildren($layout, $title)));
+    }
+    
+    /**
+     * Renders the container for the HTML template (if necessary).
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    public function renderContainer($content = null)
+    {
+        if ($this->UseContainer) {
+            
+            return sprintf(
+                "<div class=\"%s\">\n%s</div>\n",
+                $this->getContainerClass(),
+                $content
+            );
+            
+        }
+        
+        return $content;
     }
 }

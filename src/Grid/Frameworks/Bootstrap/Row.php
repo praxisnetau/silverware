@@ -43,4 +43,20 @@ class Row extends RowExtension
             $classes[] = $this->style('row.no-gutters');
         }
     }
+    
+    /**
+     * Answers the container class names for the extended object.
+     *
+     * @return array
+     */
+    public function getClassNamesForContainer()
+    {
+        $classes = ['container'];
+        
+        if ($this->owner->isEdgeToEdge()) {
+            $classes[] = $this->style('row.edge-to-edge');
+        }
+        
+        return $classes;
+    }
 }

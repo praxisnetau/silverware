@@ -28,4 +28,22 @@ namespace SilverWare\Grid\Extensions;
  */
 abstract class RowExtension extends GridExtension
 {
+    /**
+     * Answers the container class names for the extended object.
+     *
+     * @return array
+     */
+    abstract public function getClassNamesForContainer();
+    
+    /**
+     * Updates the container class names of the extended object.
+     *
+     * @param array $classes Array of container class names from the extended object.
+     *
+     * @return void
+     */
+    public function updateContainerClassNames(&$classes)
+    {
+        $classes += $this->owner->getClassNamesForContainer();
+    }
 }
