@@ -98,6 +98,34 @@ class ToggleGroup extends CompositeField
     }
     
     /**
+     * Answers a list of the child fields within the receiver.
+     *
+     * @return FieldList
+     */
+    public function getChildren()
+    {
+        $children = parent::getChildren();
+        
+        $children->unshift($this->getToggleField());
+        
+        return $children;
+    }
+    
+    /**
+     * Answers a list of child fields to be toggled as a group.
+     *
+     * @return FieldList
+     */
+    public function getGroupFields()
+    {
+        $children = $this->getChildren();
+        
+        $children->removeByName($this->getToggleName());
+        
+        return $children;
+    }
+    
+    /**
      * Defines the value of the toggleName attribute.
      *
      * @param string $toggleName

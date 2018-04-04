@@ -2,5 +2,7 @@
   $ToggleField.FieldHolder
 </div>
 <div class="group-fields">
-  <% include SilverStripe\Forms\CompositeField %>
+  <% loop $GroupFields %>
+    $FieldHolder
+  <% end_loop %>
 </div>
