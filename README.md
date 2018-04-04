@@ -170,6 +170,7 @@ SilverWare ships with the following components ready for use:
 - [`TileComponent`](#tilecomponent)
 - [`TitleComponent`](#titlecomponent)
 - [`ToggleComponent`](#togglecomponent)
+- [`VirtualComponent`](#virtualcomponent)
 
 ### AreaComponent
 
@@ -275,6 +276,13 @@ select the "Hide title of page" option in your `PageComponent`. This adds the cl
 Allows you to embed a block of rich-text content, edited using `HTMLEditorField`, with
 the visibility of the content toggleable via clicking on the header of the component.
 Can be started open or closed.
+
+### VirtualComponent
+
+Acts as a proxy for another component, allowing you to display a component in multiple
+locations without needing to create the component again. The virtual component
+may use a custom title, style ID and style classes, but will otherwise render an
+exact copy of the source component.
 
 ## Issues
 
