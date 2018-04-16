@@ -24,6 +24,7 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverWare\Extensions\Model\LinkToExtension;
+use SilverWare\Extensions\Style\ButtonStyle;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Forms\PageDropdownField;
 use SilverWare\Tools\ImageTools;
@@ -109,7 +110,10 @@ class Slide extends Component
         'HideTitle' => 'Boolean',
         'HideCaption' => 'Boolean',
         'LinkDisabled' => 'Boolean',
-        'TitleAfterCaption' => 'Boolean'
+        'LinkInFooter' => 'Boolean',
+        'TitleAfterCaption' => 'Boolean',
+        'ButtonLabel' => 'Varchar(128)',
+        'ButtonLink' => 'Boolean'
     ];
     
     /**
@@ -151,8 +155,10 @@ class Slide extends Component
     private static $defaults = [
         'HideImage' => 0,
         'HideTitle' => 1,
+        'ButtonLink' => 0,
         'HideCaption' => 0,
         'LinkDisabled' => 0,
+        'LinkInFooter' => 0,
         'TitleAfterCaption' => 0
     ];
     
@@ -163,8 +169,17 @@ class Slide extends Component
      * @config
      */
     private static $extensions = [
+        ButtonStyle::class,
         LinkToExtension::class
     ];
+    
+    /**
+     * Defines the style extension classes to apply to this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $apply_styles = [];
     
     /**
      * Defines the asset folder for uploading images.
@@ -220,28 +235,47 @@ class Slide extends Component
         
         // Create Options Fields:
         
-        $fields->fieldByName('Root.Options.LinkOptions')->merge([
-            CheckboxField::create(
-                'HideTitle',
-                $this->fieldLabel('HideTitle')
-            ),
-            CheckboxField::create(
-                'HideImage',
-                $this->fieldLabel('HideImage')
-            ),
-            CheckboxField::create(
-                'HideCaption',
-                $this->fieldLabel('HideCaption')
-            ),
-            CheckboxField::create(
-                'LinkDisabled',
-                $this->fieldLabel('LinkDisabled')
-            ),
-            CheckboxField::create(
-                'TitleAfterCaption',
-                $this->fieldLabel('TitleAfterCaption')
+        $fields->addFieldToTab(
+            'Root.Options',
+            FieldSection::create(
+                'SlideOptions',
+                $this->fieldLabel('SlideOptions'),
+                [
+                    CheckboxField::create(
+                        'HideTitle',
+                        $this->fieldLabel('HideTitle')
+                    ),
+                    CheckboxField::create(
+                        'HideImage',
+                        $this->fieldLabel('HideImage')
+                    ),
+                    CheckboxField::create(
+                        'HideCaption',
+                        $this->fieldLabel('HideCaption')
+                    ),
+                    CheckboxField::create(
+                        'LinkDisabled',
+                        $this->fieldLabel('LinkDisabled')
+                    ),
+                    CheckboxField::create(
+                        'TitleAfterCaption',
+                        $this->fieldLabel('TitleAfterCaption')
+                    ),
+                    CheckboxField::create(
+                        'LinkInFooter',
+                        $this->fieldLabel('LinkInFooter')
+                    ),
+                    CheckboxField::create(
+                        'ButtonLink',
+                        $this->fieldLabel('ButtonLink')
+                    ),
+                    TextField::create(
+                        'ButtonLabel',
+                        $this->fieldLabel('ButtonLabel')
+                    )
+                ]
             )
-        ]);
+        );
         
         // Answer Field Objects:
         
@@ -267,6 +301,8 @@ class Slide extends Component
         $labels['Caption'] = _t(__CLASS__ . '.CAPTION', 'Caption');
         $labels['StripThumbnail'] = _t(__CLASS__ . '.IMAGE', 'Image');
         $labels['CaptionLimited'] = _t(__CLASS__ . '.CAPTION', 'Caption');
+        $labels['SlideOptions'] = _t(__CLASS__ . '.SLIDE', 'Slide');
+        $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         
         // Define Checkbox Field Labels:
         
@@ -274,6 +310,8 @@ class Slide extends Component
         $labels['HideTitle'] = _t(__CLASS__ . '.HIDETITLE', 'Hide title');
         $labels['HideCaption'] = _t(__CLASS__ . '.HIDECAPTION', 'Hide caption');
         $labels['LinkDisabled'] = _t(__CLASS__ . '.LINKDISABLED', 'Link disabled');
+        $labels['LinkInFooter'] = _t(__CLASS__ . '.LINKINFOOTER', 'Link in footer');
+        $labels['ButtonLink'] = _t(__CLASS__ . '.SHOWBUTTONASLINK', 'Show button as link');
         $labels['TitleAfterCaption'] = _t(__CLASS__ . '.SHOWTITLEAFTERCAPTION', 'Show title after caption');
         
         // Define Relation Labels:
@@ -285,6 +323,22 @@ class Slide extends Component
         // Answer Field Labels:
         
         return $labels;
+    }
+    
+    /**
+     * Populates the default values for the fields of the receiver.
+     *
+     * @return void
+     */
+    public function populateDefaults()
+    {
+        // Populate Defaults (from parent):
+        
+        parent::populateDefaults();
+        
+        // Populate Defaults:
+        
+        $this->ButtonLabel = _t(__CLASS__ . '.DEFAULTBUTTONLABEL', 'More');
     }
     
     /**
@@ -612,13 +666,56 @@ class Slide extends Component
     }
     
     /**
+     * Answers an array of link class names for the template.
+     *
+     * @return array
+     */
+    public function getLinkClassNames()
+    {
+        if ($this->isButtonLink() || !$this->LinkInFooter) {
+            return [];
+        }
+        
+        $classes = [
+            $this->style('button'),
+            $this->ButtonTypeClass
+        ];
+        
+        if ($this->ButtonExtraClass) {
+            $classes[] = $this->ButtonExtraClass;
+        }
+        
+        return $classes;
+    }
+    
+    /**
      * Answers true if the slide link is to be shown.
      *
      * @return boolean
      */
     public function getLinkShown()
     {
-        return ($this->hasLink() && !$this->LinkDisabled);
+        return ($this->hasLink() && !$this->LinkDisabled && !$this->LinkInFooter);
+    }
+    
+    /**
+     * Answers true if the slide footer link is to be shown.
+     *
+     * @return boolean
+     */
+    public function getFooterLinkShown()
+    {
+        return ($this->hasLink() && !$this->LinkDisabled && $this->LinkInFooter);
+    }
+    
+    /**
+     * Answers true if the button is to be rendered as a link.
+     *
+     * @return boolean
+     */
+    public function isButtonLink()
+    {
+        return (boolean) $this->ButtonLink;
     }
     
     /**
