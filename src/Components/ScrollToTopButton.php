@@ -20,11 +20,14 @@ namespace SilverWare\Components;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
 use SilverWare\Extensions\Style\CornerStyle;
 use SilverWare\Extensions\Style\LinkColorStyle;
 use SilverWare\Extensions\Style\ThemeStyle;
 use SilverWare\FontIcons\Forms\FontIconField;
 use SilverWare\Forms\FieldSection;
+use SilverWare\Forms\ViewportsField;
 
 /**
  * An extension of the base component class for a scroll to top button.
@@ -101,7 +104,9 @@ class ScrollToTopButton extends BaseComponent
      */
     private static $db = [
         'Label' => 'Varchar(128)',
+        'IconSize' => 'Viewports',
         'ButtonIcon' => 'FontIcon',
+        'ButtonSize' => 'Viewports',
         'OffsetShow' => 'Int',
         'OffsetOpacity' => 'Int',
         'ScrollDuration' => 'Int'
@@ -161,6 +166,26 @@ class ScrollToTopButton extends BaseComponent
             ]
         );
         
+        // Create Style Fields:
+        
+        $fields->addFieldToTab(
+            'Root.Style',
+            FieldSection::create(
+                'ScrollToTopStyle',
+                $this->fieldLabel('ScrollToTopStyle'),
+                [
+                    ViewportsField::create(
+                        'ButtonSize',
+                        $this->fieldLabel('ButtonSize')
+                    )->setUseTextInput(true),
+                    ViewportsField::create(
+                        'IconSize',
+                        $this->fieldLabel('IconSize')
+                    )->setUseTextInput(true)
+                ]
+            )
+        );
+        
         // Create Options Fields:
         
         $fields->addFieldToTab(
@@ -207,10 +232,12 @@ class ScrollToTopButton extends BaseComponent
         
         $labels['Label'] = _t(__CLASS__ . '.LABEL', 'Label');
         $labels['ButtonIcon'] = _t(__CLASS__ . '.ICON', 'Icon');
+        $labels['IconSize'] = _t(__CLASS__ . '.ICONSIZEINPIXELS', 'Icon size (in pixels)');
+        $labels['ButtonSize'] = _t(__CLASS__ . '.BUTTONSIZEINPIXELS', 'Button size (in pixels)');
         $labels['OffsetShow'] = _t(__CLASS__ . '.OFFSETSHOWINPIXELS', 'Show offset (in pixels)');
         $labels['OffsetOpacity'] = _t(__CLASS__ . '.OFFSETOPACITYINPIXELS', 'Opacity offset (in pixels)');
         $labels['ScrollDuration'] = _t(__CLASS__ . '.SCROLLDURATIONINMS', 'Scroll duration (in milliseconds)');
-        $labels['ScrollToTopOptions'] = _t(__CLASS__ . '.SCROLLTOTOP', 'Scroll to Top');
+        $labels['ScrollToTopStyle'] = $labels['ScrollToTopOptions'] = _t(__CLASS__ . '.SCROLLTOTOP', 'Scroll to Top');
         
         // Answer Field Labels:
         
@@ -265,5 +292,61 @@ class ScrollToTopButton extends BaseComponent
     public function renderSelf($layout = null, $title = null)
     {
         return $this->getController()->renderWith(self::class);
+    }
+    
+    /**
+     * Answers a list of button dimensions for the custom CSS template.
+     *
+     * @return ArrayList
+     */
+    public function getButtonDimensions()
+    {
+        // Initialise:
+        
+        $data = [];
+        
+        // Obtain Dimensions:
+        
+        $sizes = $this->dbObject('ButtonSize');
+        
+        // Iterate Size Viewports:
+        
+        foreach ($sizes->getViewports() as $viewport) {
+            
+            if ($value = $sizes->getField($viewport)) {
+                $data[$viewport]['Size'] = $value;
+                $data[$viewport]['Breakpoint'] = $sizes->getBreakpoint($viewport);
+            }
+            
+        }
+        
+        // Obtain Icon Dimensions:
+        
+        $iconSizes = $this->dbObject('IconSize');
+        
+        // Iterate Icon Size Viewports:
+        
+        foreach ($iconSizes->getViewports() as $viewport) {
+            
+            if ($value = $iconSizes->getField($viewport)) {
+                $data[$viewport]['IconSize'] = $value;
+                $data[$viewport]['Breakpoint'] = $iconSizes->getBreakpoint($viewport);
+            }
+            
+        }
+        
+        // Create Items List:
+        
+        $items = ArrayList::create();
+        
+        // Create Data Items:
+        
+        foreach ($data as $item) {
+            $items->push(ArrayData::create($item));
+        }
+        
+        // Answer Items List:
+        
+        return $items;
     }
 }
