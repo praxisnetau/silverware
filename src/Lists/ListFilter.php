@@ -36,6 +36,13 @@ trait ListFilter
     protected $listFilters = [];
     
     /**
+     * Defines the where clauses to be applied to the list source.
+     *
+     * @var array
+     */
+    protected $listWhere = [];
+    
+    /**
      * Defines the value of the listFilters attribute.
      *
      * @param array $listFilters
@@ -60,6 +67,30 @@ trait ListFilter
     }
     
     /**
+     * Defines the value of the listWhere attribute.
+     *
+     * @param array $listWhere
+     *
+     * @return $this
+     */
+    public function setListWhere($listWhere)
+    {
+        $this->listWhere = (array) $listWhere;
+        
+        return $this;
+    }
+    
+    /**
+     * Answers the value of the listWhere attribute.
+     *
+     * @return array
+     */
+    public function getListWhere()
+    {
+        return $this->listWhere;
+    }
+    
+    /**
      * Adds the given filter array to the array of filters.
      *
      * @param array $filter
@@ -69,6 +100,20 @@ trait ListFilter
     public function addListFilter($filter = [])
     {
         $this->listFilters[] = $filter;
+        
+        return $this;
+    }
+    
+    /**
+     * Adds the given where clause array to the array of where clauses.
+     *
+     * @param array $where
+     *
+     * @return $this
+     */
+    public function addListWhere($where = [])
+    {
+        $this->listWhere[] = $where;
         
         return $this;
     }

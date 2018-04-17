@@ -232,19 +232,27 @@ class ListSourceExtension extends DataExtension
         
         if ($source = $this->owner->getSource()) {
             
-            // Merge List Items:
+            // Obtain Source List:
             
-            $items->merge($source->getListItems());
+            $list = $source->getListItems();
             
             // Filter List Items (if applicable):
             
             if (in_array(ListFilter::class, class_uses($source))) {
                 
+                if ($where = $source->getListWhere()) {
+                    $list = $list->where($where);
+                }
+                
                 foreach ($source->getListFilters() as $filter) {
-                    $items = $items->filter($filter);
+                    $list = $list->filter($filter);
                 }
                 
             }
+            
+            // Merge List Items:
+            
+            $items->merge($list);
             
         }
         
