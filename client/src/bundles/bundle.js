@@ -5,8 +5,9 @@
 
 require('styles/bundle.scss');
 
-// Load jQuery Plugins:
+// Load jQuery Scripts:
 
+require('jquery/popovers.js');
 require('jquery/tagcanvas.js');
 
 // Load Form Scripts:
