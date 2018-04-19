@@ -14,12 +14,12 @@
       <% if $TitleShownAfterCaption %>
         <{$HeadingTag}>{$FontIconTag}<span class="text">{$Title}</span></{$HeadingTag}>
       <% end_if %>
+      <% if $FooterLinkShown %>
+        <footer>
+          <a $LinkAttributesHTML>$ButtonLabel</a>
+        </footer>
+      <% end_if %>
     </div>
-  <% end_if %>
-  <% if $FooterLinkShown %>
-    <footer>
-      <a $LinkAttributesHTML>$ButtonLabel</a>
-    </footer>
   <% end_if %>
   <% if $LinkShown %></a><% end_if %>
 </$Tag>
