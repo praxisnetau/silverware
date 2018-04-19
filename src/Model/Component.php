@@ -336,6 +336,10 @@ class Component extends SiteTree implements Flushable, PermissionProvider
         
         if (isset($context['Parent'])) {
             
+            // Obtain Parent:
+            
+            $parent = $context['Parent'];
+            
             // Obtain Parent Class:
             
             $class = get_class($context['Parent']);
@@ -374,6 +378,14 @@ class Component extends SiteTree implements Flushable, PermissionProvider
                     
                 }
                 
+            }
+            
+            // Check Allowed Children of Parent:
+            
+            $strictParentInstance = ($parent && $parent instanceof SiteTree);
+            
+            if ($strictParentInstance && !in_array(static::class, $parent->allowedChildren())) {
+                return false;
             }
             
         }
