@@ -245,8 +245,9 @@ class Row extends Grid
         if ($this->UseContainer) {
             
             return sprintf(
-                "<div class=\"%s\">\n%s</div>\n",
+                "<div class=\"%s\">\n<div class=\"%s\">\n%s</div>\n</div>\n",
                 $this->getContainerClass(),
+                $this->getHTMLClass(),
                 $content
             );
             
