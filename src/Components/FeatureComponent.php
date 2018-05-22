@@ -99,6 +99,7 @@ class FeatureComponent extends BaseComponent
         'ButtonLabel' => 'Varchar(128)',
         'LinkHeading' => 'Boolean',
         'LinkFeature' => 'Boolean',
+        'LinkImage' => 'Boolean',
         'ShowIcon' => 'Boolean',
         'ShowImage' => 'Boolean',
         'ShowHeader' => 'Boolean',
@@ -135,6 +136,7 @@ class FeatureComponent extends BaseComponent
     private static $defaults = [
         'LinkFeature' => 0,
         'LinkHeading' => 1,
+        'LinkImage' => 0,
         'ShowIcon' => 1,
         'ShowImage' => 1,
         'ShowHeader' => 1,
@@ -149,7 +151,8 @@ class FeatureComponent extends BaseComponent
      * @config
      */
     private static $casting = [
-        'SummaryText' => 'HTMLFragment'
+        'SummaryText' => 'HTMLFragment',
+        'ImageLinkAttributesHTML' => 'HTMLFragment'
     ];
     
     /**
@@ -315,6 +318,10 @@ class FeatureComponent extends BaseComponent
                         'LinkFeature',
                         $this->fieldLabel('LinkFeature')
                     ),
+                    CheckboxField::create(
+                        'LinkImage',
+                        $this->fieldLabel('LinkImage')
+                    ),
                     TextField::create(
                         'ButtonLabel',
                         $this->fieldLabel('ButtonLabel')
@@ -352,6 +359,7 @@ class FeatureComponent extends BaseComponent
         $labels['ShowFooter'] = _t(__CLASS__ . '.SHOWFOOTER', 'Show footer');
         $labels['LinkHeading'] = _t(__CLASS__ . '.LINKHEADING', 'Link heading');
         $labels['LinkFeature'] = _t(__CLASS__ . '.LINKFEATURE', 'Link feature');
+        $labels['LinkImage'] = _t(__CLASS__ . '.LINKIMAGE', 'Link image');
         $labels['ButtonLabel'] = _t(__CLASS__ . '.BUTTONLABEL', 'Button label');
         $labels['Heading'] = _t(__CLASS__ . '.HEADING', 'Heading');
         $labels['SubHeading'] = _t(__CLASS__ . '.SUBHEADING', 'Sub-heading');
@@ -490,6 +498,33 @@ class FeatureComponent extends BaseComponent
     }
     
     /**
+     * Answers an array of attributes for the image link element.
+     *
+     * @return array
+     */
+    public function getImageLinkAttributes()
+    {
+        $attributes = [
+            'href' =>  $this->getLink(),
+            'class' => 'image'
+        ];
+        
+        $this->extend('updateImageLinkAttributes', $attributes);
+        
+        return $attributes;
+    }
+    
+    /**
+     * Answers a string of attributes for the image link element.
+     *
+     * @return string
+     */
+    public function getImageLinkAttributesHTML()
+    {
+        return $this->getAttributesHTML($this->getImageLinkAttributes());
+    }
+    
+    /**
      * Answers the heading tag for the receiver.
      *
      * @return string
@@ -624,6 +659,16 @@ class FeatureComponent extends BaseComponent
     }
     
     /**
+     * Answers true if the image is to be linked.
+     *
+     * @return boolean
+     */
+    public function getImageLinked()
+    {
+        return ($this->LinkImage && $this->hasLink() && !$this->LinkFeature);
+    }
+    
+    /**
      * Answers true if the summary is to be shown in the template.
      *
      * @return boolean
@@ -651,7 +696,7 @@ class FeatureComponent extends BaseComponent
     public function getSummaryText()
     {
         if ($this->Summary) {
-            return $this->Summary;
+            return $this->dbObject('Summary');
         }
         
         if ($this->hasLinkPage()) {
