@@ -506,7 +506,7 @@ class Component extends SiteTree implements Flushable, PermissionProvider
      */
     public function getTitleID()
     {
-        return str_replace(' ', '', ucwords(preg_replace('/\s+/', ' ', $this->Title)));
+        return Convert::raw2htmlid(str_replace(' ', '', ucwords(preg_replace('/\s+/', ' ', $this->Title))));
     }
     
     /**
