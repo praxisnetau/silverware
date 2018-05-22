@@ -31,6 +31,7 @@ use SilverWare\Components\BaseListComponent;
 use SilverWare\Forms\DimensionsField;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Tools\ImageTools;
+use SilverWare\Tools\StringTools;
 use SilverWare\Tools\ViewTools;
 use SilverWare\View\GridAware;
 
@@ -599,7 +600,7 @@ class MetaDataExtension extends DataExtension
         }
         
         if ($content = $this->owner->getMetaContent()) {
-            return DBField::create_field('HTMLFragment', sprintf('<p>%s</p>', $this->getContentSummary($content)));
+            return DBField::create_field('HTMLFragment', sprintf('<p>%s</p>', $this->owner->getContentSummary($content)));
         }
     }
     
@@ -1141,7 +1142,7 @@ class MetaDataExtension extends DataExtension
      *
      * @return string
      */
-    protected function getContentSummary(DBHTMLText $content)
+    public function getContentSummary(DBHTMLText $content)
     {
         switch ($this->owner->SummaryMode) {
             case self::SUMMARY_FIRST_SENTENCE:
@@ -1149,7 +1150,7 @@ class MetaDataExtension extends DataExtension
             case self::SUMMARY_FIRST_PARAGRAPH:
                 return $content->FirstParagraph();
             default:
-                return $content->Summary();
+                return StringTools::singleton()->getContentSummary($content);
         }
     }
     
