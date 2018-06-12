@@ -15,7 +15,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // Define Base:
 
-const BASE = '/resources/silverware/silverware';
+const BASE = '/resources/vendor/silverware/silverware';
 
 // Define Paths:
 
