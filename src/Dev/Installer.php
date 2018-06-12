@@ -103,8 +103,8 @@ class Installer
         'files' => [
             'app/_config.php',
             'app/_config/config.yml',
-            'app/code/Page.php',
-            'app/code/PageController.php',
+            'app/src/Page.php',
+            'app/src/PageController.php',
             'app/src/Pages/HomePage.php',
             'app/src/Pages/HomePageController.php',
             'deploy.php',
