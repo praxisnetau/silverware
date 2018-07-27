@@ -591,17 +591,17 @@ class MetaDataExtension extends DataExtension
      */
     public function getMetaSummary()
     {
+        $summary = '';
+        
         if ($this->owner->SummaryMeta) {
-            return $this->owner->dbObject('SummaryMeta');
+            $summary = $this->owner->SummaryMeta;
+        } elseif ($this->owner->hasField('Summary') && $this->owner->Summary) {
+            $summary = $this->owner->Summary;
+        } elseif ($content = $this->owner->getMetaContent()) {
+            $summary = sprintf('<p>%s</p>', $this->owner->getContentSummary($content));
         }
         
-        if ($this->owner->hasField('Summary') && $this->owner->Summary) {
-            return $this->owner->dbObject('Summary');
-        }
-        
-        if ($content = $this->owner->getMetaContent()) {
-            return DBField::create_field('HTMLFragment', sprintf('<p>%s</p>', $this->owner->getContentSummary($content)));
-        }
+        return DBField::create_field('HTMLFragment', $summary);
     }
     
     /**
