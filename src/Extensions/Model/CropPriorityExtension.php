@@ -147,7 +147,7 @@ class CropPriorityExtension extends DataExtension
             } elseif ($priority == 'right') {
                 $backend = $backend->crop(0, $overWidth, $width, $height);
             } else {
-                $backend = $backend->crop(0, $overWidth / 2, $width, $height);
+                $backend = $backend->crop(0, floor($overWidth / 2), $width, $height);
             }
             
         } else {
@@ -167,7 +167,7 @@ class CropPriorityExtension extends DataExtension
             } elseif ($priority == 'bottom') {
                 $backend = $backend->crop($overHeight, 0, $width, $height);
             } else {
-                $backend = $backend->crop($overHeight / 2, 0, $width, $height);
+                $backend = $backend->crop(floor($overHeight / 2), 0, $width, $height);
             }
             
         }
