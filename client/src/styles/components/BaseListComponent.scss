@@ -16,9 +16,10 @@
       > div.image {
         
         position: relative;
+        margin-bottom: $spacer;
         
         a {
-          display: block;
+          display: inline-block;
         }
         
         img {
@@ -84,8 +85,6 @@
       }
       
       > section.content {
-        
-        margin-top: $spacer;
         
         header {
           
