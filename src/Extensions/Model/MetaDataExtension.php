@@ -601,7 +601,7 @@ class MetaDataExtension extends DataExtension
             $summary = sprintf('<p>%s</p>', $this->owner->getContentSummary($content));
         }
         
-        return DBField::create_field('HTMLFragment', $summary);
+        return DBField::create_field('HTMLFragment', $summary)->setProcessShortcodes(true);
     }
     
     /**
