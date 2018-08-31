@@ -17,6 +17,8 @@
 
 namespace SilverWare\Components;
 
+use SilverWare\Extensions\Style\AlignmentStyle;
+
 /**
  * An extension of the base component class for a tagline component.
  *
