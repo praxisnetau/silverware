@@ -167,6 +167,7 @@ SilverWare ships with the following components ready for use:
 - [`ScrollToTopButton`](#scrolltotopbutton)
 - [`TableComponent`](#tablecomponent)
 - [`TagCloudComponent`](#tagcloudcomponent)
+- [`TaglineComponent`](#taglinecomponent)
 - [`TileComponent`](#tilecomponent)
 - [`TitleComponent`](#titlecomponent)
 - [`ToggleComponent`](#togglecomponent)
@@ -255,6 +256,10 @@ The cloud is rendered as an HTML5 canvas (supported by most modern browsers), an
 can be rotated by the user using the mouse or touch gestures. The component has
 configurable text and outline colors, along with zoom, rotation, and font size options.
 Weighted tags are also supported.
+
+### TaglineComponent
+
+Shows the tagline for the site as a heading. The tagline is defined through site settings.
 
 ### TileComponent
 
