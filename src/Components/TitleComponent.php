@@ -135,6 +135,20 @@ class TitleComponent extends BaseComponent
     }
     
     /**
+     * Overrides the parent method so style extensions can add classes to the component class names.
+     *
+     * @return array
+     */
+    public function getClassNames()
+    {
+        $classes = parent::getClassNames();
+        
+        $this->extend('updateContentClassNames', $classes);
+        
+        return $classes;
+    }
+    
+    /**
      * Renders the component for the HTML template.
      *
      * @param string $layout Page layout passed from template.
