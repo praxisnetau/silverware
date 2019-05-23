@@ -278,6 +278,13 @@ class ListSourceExtension extends DataExtension
             $items = $items->reverse();
         }
         
+
+        // Ensure items can be rendered correctly
+        
+        $items = $items->filterByCallback(function ($item) {
+            return $item->hasMethod('setRenderer');
+        });
+        
         // Limit Items (if applicable):
         
         if ($limit = $this->owner->NumberOfItems) {
