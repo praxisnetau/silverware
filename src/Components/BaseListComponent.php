@@ -187,152 +187,150 @@ class BaseListComponent extends BaseComponent
      */
     public function getCMSFields()
     {
-        // Obtain Field Objects (from parent):
         
-        $fields = parent::getCMSFields();
+        $this->beforeUpdateCMSFields(function (FieldList $fields) {
+
+            // Define Placeholders:
+            
+            $placeholderDefault = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
+            
+            // Create Style Fields:
+            
+            $fields->addFieldsToTab(
+                'Root.Style',
+                [
+                    FieldSection::create(
+                        'ListStyle',
+                        $this->fieldLabel('ListStyle'),
+                        [
+                            DropdownField::create(
+                                'HeadingLevel',
+                                $this->fieldLabel('HeadingLevel'),
+                                $this->getTitleLevelOptions()
+                            )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
+                            DropdownField::create(
+                                'ImageAlign',
+                                $this->fieldLabel('ImageAlign'),
+                                $this->getImageAlignOptions()
+                            )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
+                            ColorField::create(
+                                'OverlayBackground',
+                                $this->fieldLabel('OverlayBackground')
+                            ),
+                            ColorField::create(
+                                'OverlayForeground',
+                                $this->fieldLabel('OverlayForeground')
+                            ),
+                            FontIconField::create(
+                                'OverlayIcon',
+                                $this->fieldLabel('OverlayIcon')
+                            ),
+                            ColorField::create(
+                                'OverlayIconColor',
+                                $this->fieldLabel('OverlayIconColor')
+                            ),
+                            FontIconField::create(
+                                'ButtonIcon',
+                                $this->fieldLabel('ButtonIcon')
+                            )
+                        ]
+                    )
+                ]
+            );
+            
+            // Add List Style Fields:
+            
+            $fields->addFieldsToTab('Root.Style', $this->getListStyleFields());
+            
+            // Create Options Fields:
+            
+            $fields->addFieldsToTab(
+                'Root.Options',
+                [
+                    FieldSection::create(
+                        'ListOptions',
+                        $this->fieldLabel('ListOptions'),
+                        [
+                            DropdownField::create(
+                                'ShowImage',
+                                $this->fieldLabel('ShowImage'),
+                                $this->getShowOptions()
+                            ),
+                            DropdownField::create(
+                                'ShowHeader',
+                                $this->fieldLabel('ShowHeader'),
+                                $this->getShowOptions()
+                            ),
+                            DropdownField::create(
+                                'ShowDetails',
+                                $this->fieldLabel('ShowDetails'),
+                                $this->getShowOptions()
+                            ),
+                            DropdownField::create(
+                                'ShowSummary',
+                                $this->fieldLabel('ShowSummary'),
+                                $this->getShowOptions()
+                            ),
+                            DropdownField::create(
+                                'ShowContent',
+                                $this->fieldLabel('ShowContent'),
+                                $this->getShowOptions()
+                            ),
+                            DropdownField::create(
+                                'ShowFooter',
+                                $this->fieldLabel('ShowFooter'),
+                                $this->getShowOptions()
+                            ),
+                            TextField::create(
+                                'ButtonLabel',
+                                $this->fieldLabel('ButtonLabel')
+                            ),
+                            CheckboxField::create(
+                                'ButtonLink',
+                                $this->fieldLabel('ButtonLink')
+                            ),
+                            CheckboxField::create(
+                                'LinkTitles',
+                                $this->fieldLabel('LinkTitles')
+                            ),
+                            CheckboxField::create(
+                                'HideNoDataMessage',
+                                $this->fieldLabel('HideNoDataMessage')
+                            )
+                        ]
+                    ),
+                    FieldSection::create(
+                        'ListImageOptions',
+                        $this->fieldLabel('ListImageOptions'),
+                        [
+                            DropdownField::create(
+                                'ImageLinksTo',
+                                $this->fieldLabel('ImageLinksTo'),
+                                $this->getImageLinksToOptions()
+                            ),
+                            CheckboxField::create(
+                                'OverlayImages',
+                                $this->fieldLabel('OverlayImages')
+                            ),
+                            CheckboxField::create(
+                                'OverlayTitle',
+                                $this->fieldLabel('OverlayTitle')
+                            ),
+                            CheckboxField::create(
+                                'LinkImages',
+                                $this->fieldLabel('LinkImages')
+                            )
+                        ]
+                    )
+                ]
+            );
+            
+            // Add List Option Fields:
+            
+            $fields->addFieldsToTab('Root.Options', $this->getListOptionFields());
+        });
         
-        // Define Placeholders:
-        
-        $placeholderDefault = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
-        
-        // Create Style Fields:
-        
-        $fields->addFieldsToTab(
-            'Root.Style',
-            [
-                FieldSection::create(
-                    'ListStyle',
-                    $this->fieldLabel('ListStyle'),
-                    [
-                        DropdownField::create(
-                            'HeadingLevel',
-                            $this->fieldLabel('HeadingLevel'),
-                            $this->getTitleLevelOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
-                        DropdownField::create(
-                            'ImageAlign',
-                            $this->fieldLabel('ImageAlign'),
-                            $this->getImageAlignOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholderDefault),
-                        ColorField::create(
-                            'OverlayBackground',
-                            $this->fieldLabel('OverlayBackground')
-                        ),
-                        ColorField::create(
-                            'OverlayForeground',
-                            $this->fieldLabel('OverlayForeground')
-                        ),
-                        FontIconField::create(
-                            'OverlayIcon',
-                            $this->fieldLabel('OverlayIcon')
-                        ),
-                        ColorField::create(
-                            'OverlayIconColor',
-                            $this->fieldLabel('OverlayIconColor')
-                        ),
-                        FontIconField::create(
-                            'ButtonIcon',
-                            $this->fieldLabel('ButtonIcon')
-                        )
-                    ]
-                )
-            ]
-        );
-        
-        // Add List Style Fields:
-        
-        $fields->addFieldsToTab('Root.Style', $this->getListStyleFields());
-        
-        // Create Options Fields:
-        
-        $fields->addFieldsToTab(
-            'Root.Options',
-            [
-                FieldSection::create(
-                    'ListOptions',
-                    $this->fieldLabel('ListOptions'),
-                    [
-                        DropdownField::create(
-                            'ShowImage',
-                            $this->fieldLabel('ShowImage'),
-                            $this->getShowOptions()
-                        ),
-                        DropdownField::create(
-                            'ShowHeader',
-                            $this->fieldLabel('ShowHeader'),
-                            $this->getShowOptions()
-                        ),
-                        DropdownField::create(
-                            'ShowDetails',
-                            $this->fieldLabel('ShowDetails'),
-                            $this->getShowOptions()
-                        ),
-                        DropdownField::create(
-                            'ShowSummary',
-                            $this->fieldLabel('ShowSummary'),
-                            $this->getShowOptions()
-                        ),
-                        DropdownField::create(
-                            'ShowContent',
-                            $this->fieldLabel('ShowContent'),
-                            $this->getShowOptions()
-                        ),
-                        DropdownField::create(
-                            'ShowFooter',
-                            $this->fieldLabel('ShowFooter'),
-                            $this->getShowOptions()
-                        ),
-                        TextField::create(
-                            'ButtonLabel',
-                            $this->fieldLabel('ButtonLabel')
-                        ),
-                        CheckboxField::create(
-                            'ButtonLink',
-                            $this->fieldLabel('ButtonLink')
-                        ),
-                        CheckboxField::create(
-                            'LinkTitles',
-                            $this->fieldLabel('LinkTitles')
-                        ),
-                        CheckboxField::create(
-                            'HideNoDataMessage',
-                            $this->fieldLabel('HideNoDataMessage')
-                        )
-                    ]
-                ),
-                FieldSection::create(
-                    'ListImageOptions',
-                    $this->fieldLabel('ListImageOptions'),
-                    [
-                        DropdownField::create(
-                            'ImageLinksTo',
-                            $this->fieldLabel('ImageLinksTo'),
-                            $this->getImageLinksToOptions()
-                        ),
-                        CheckboxField::create(
-                            'OverlayImages',
-                            $this->fieldLabel('OverlayImages')
-                        ),
-                        CheckboxField::create(
-                            'OverlayTitle',
-                            $this->fieldLabel('OverlayTitle')
-                        ),
-                        CheckboxField::create(
-                            'LinkImages',
-                            $this->fieldLabel('LinkImages')
-                        )
-                    ]
-                )
-            ]
-        );
-        
-        // Add List Option Fields:
-        
-        $fields->addFieldsToTab('Root.Options', $this->getListOptionFields());
-        
-        // Answer Field Objects:
-        
-        return $fields;
+        return parent::getCMSFields();;
     }
     
     /**
