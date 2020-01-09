@@ -191,11 +191,9 @@ class BaseListComponent extends BaseComponent
         $this->beforeUpdateCMSFields(function (FieldList $fields) {
 
             // Define Placeholders:
-            
             $placeholderDefault = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
             
             // Create Style Fields:
-            
             $fields->addFieldsToTab(
                 'Root.Style',
                 [
@@ -239,11 +237,9 @@ class BaseListComponent extends BaseComponent
             );
             
             // Add List Style Fields:
-            
             $fields->addFieldsToTab('Root.Style', $this->getListStyleFields());
             
             // Create Options Fields:
-            
             $fields->addFieldsToTab(
                 'Root.Options',
                 [
@@ -326,7 +322,6 @@ class BaseListComponent extends BaseComponent
             );
             
             // Add List Option Fields:
-            
             $fields->addFieldsToTab('Root.Options', $this->getListOptionFields());
         });
         
