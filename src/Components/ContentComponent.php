@@ -307,7 +307,8 @@ class ContentComponent extends BaseComponent
      */
     public function renderSelf($layout = null, $title = null)
     {
-        return $this->getController()->renderWith(self::class);
+        $ancestry = $this->getComponentAncestry();
+        return $this->getController()->renderWith($ancestry);
     }
     
     /**

@@ -19,6 +19,7 @@ namespace SilverWare\Components;
 
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldList;
 use SilverWare\Forms\FieldSection;
 use SilverWare\Model\Component;
 
@@ -126,54 +127,48 @@ class BaseComponent extends Component
      */
     public function getCMSFields()
     {
-        // Obtain Field Objects (from parent):
-        
-        $fields = parent::getCMSFields();
-        
-        // Define Placeholder:
-        
-        $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
-        
-        // Create Style Fields:
-        
-        $fields->addFieldsToTab(
-            'Root.Style',
-            [
-                FieldSection::create(
-                    'TitleStyle',
-                    $this->fieldLabel('TitleStyle'),
-                    [
-                        DropdownField::create(
-                            'TitleLevel',
-                            $this->fieldLabel('TitleLevel'),
-                            $this->getTitleLevelOptions()
-                        )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
-                    ]
-                )
-            ]
-        );
-        
-        // Create Options Fields:
-        
-        $fields->addFieldsToTab(
-            'Root.Options',
-            [
-                FieldSection::create(
-                    'TitleOptions',
-                    $this->fieldLabel('TitleOptions'),
-                    [
-                        CheckboxField::create(
-                            'HideTitle',
-                            $this->fieldLabel('HideTitle')
-                        )
-                    ]
-                )
-            ]
-        );
-        
-        // Answer Field Objects:
-        
-        return $fields;
+        $this->beforeUpdateCMSFields(function (FieldList $fields) {
+            
+            $placeholder = _t(__CLASS__ . '.DROPDOWNDEFAULT', '(default)');
+            
+            // Create Style Fields:
+            $fields->addFieldsToTab(
+                'Root.Style',
+                [
+                    FieldSection::create(
+                        'TitleStyle',
+                        $this->fieldLabel('TitleStyle'),
+                        [
+                            DropdownField::create(
+                                'TitleLevel',
+                                $this->fieldLabel('TitleLevel'),
+                                $this->getTitleLevelOptions()
+                            )->setEmptyString(' ')->setAttribute('data-placeholder', $placeholder)
+                        ]
+                    )
+                ]
+            );
+            
+            // Create Options Fields:
+            $fields->addFieldsToTab(
+                'Root.Options',
+                [
+                    FieldSection::create(
+                        'TitleOptions',
+                        $this->fieldLabel('TitleOptions'),
+                        [
+                            CheckboxField::create(
+                                'HideTitle',
+                                $this->fieldLabel('HideTitle')
+                            )
+                        ]
+                    )
+                ]
+            );
+
+        });
+                
+        return parent::getCMSFields();;
     }
     
     /**
